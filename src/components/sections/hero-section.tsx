@@ -57,7 +57,7 @@ export function HeroSection() {
           </motion.p>
           <motion.div 
             variants={FADE_IN_ANIMATION_VARIANTS}
-            className="mt-8 flex justify-center gap-4"
+            className="mt-8 flex flex-col sm:flex-row justify-center gap-4"
           >
             <Button size="lg" asChild>
               <Link href="/projects">View My Work</Link>

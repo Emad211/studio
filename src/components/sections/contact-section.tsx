@@ -189,7 +189,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     </div>
                     <p className="text-sm text-center flex-grow text-muted-foreground">bash</p>
                 </div>
-                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm">
+                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm md:text-base">
                     {welcomeMessages.map((item, index) => (
                         <p key={`welcome-${index}`} className="whitespace-pre-wrap text-foreground">{item.text}</p>
                     ))}
