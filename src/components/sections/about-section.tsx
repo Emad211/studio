@@ -18,7 +18,7 @@ export function AboutSection() {
           <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-border p-2 group-hover:border-primary transition-colors duration-300">
              <div className="absolute inset-4 bg-primary/10 rounded-md -z-10 transform transition-transform duration-300 group-hover:scale-105"></div>
             <Image
-              src="/pic.jpg"
+              src="/profile-pic.jpg"
               alt="Emad Karimi"
               width={500}
               height={500}
