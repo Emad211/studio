@@ -22,6 +22,7 @@ const welcomeMessages: HistoryItem[] = [
     { type: 'response', text: "Available commands:" },
     { type: 'response', text: "  send-message    - Send a message to me." },
     { type: 'response', text: "  faq             - Read frequently asked questions." },
+    { type: 'response', text: "  socials         - View my social media profiles." },
     { type: 'response', text: "  clear           - Clear the terminal screen." }
 ];
 
@@ -37,6 +38,14 @@ const faqContent: HistoryItem[] = [
     { type: 'response', text: "  A: You can see my projects on the projects page or my GitHub profile."}
 ];
 
+const socialsContent: HistoryItem[] = [
+    { type: 'response', text: "My social media profiles:"},
+    { type: 'response', text: "  GitHub    - https://github.com/your-username" },
+    { type: 'response', text: "  LinkedIn  - https://linkedin.com/in/your-username" },
+    { type: 'response', text: "  Twitter   - https://twitter.com/your-username" },
+];
+
+
 export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     // For now, we ignore `lang` as requested and only use English.
     const t = {
@@ -47,7 +56,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         commandNotFound: "command not found:",
     };
 
-    const [history, setHistory] = useState<HistoryItem[]>(welcomeMessages);
+    const [history, setHistory] = useState<HistoryItem[]>([]);
     const [commandHistory, setCommandHistory] = useState<HistoryItem[]>([]);
     const [step, setStep] = useState(0);
     const [inputValue, setInputValue] = useState("");
@@ -56,6 +65,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     const containerRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
+        setHistory([...welcomeMessages]);
         setCommandHistory([{ type: 'prompt', text: '' }]);
     }, []);
 
@@ -67,7 +77,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
     useEffect(() => {
         inputRef.current?.focus();
-    }, [commandHistory]);
+    }, [commandHistory, history]);
 
     const handleFocus = () => {
         inputRef.current?.focus();
@@ -83,13 +93,16 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             case 'faq':
                 response = [...faqContent];
                 break;
+            case 'socials':
+                response = [...socialsContent];
+                break;
             case 'send-message':
                 response.push({ type: 'response', text: t.prompts[0] });
                 setStep(1);
                 break;
             case 'clear':
                 setCommandHistory([]);
-                setHistory([]); // This will be reset by the welcome messages in the next render cycle if needed.
+                setHistory([]);
                  setTimeout(() => {
                     setHistory([...welcomeMessages]);
                     setCommandHistory([{ type: 'prompt', text: '' }]);
@@ -100,7 +113,8 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                   response.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
                 }
         }
-        setCommandHistory([...newCommandHistory, ...response, { type: 'prompt', text: '' }]);
+        setCommandHistory([...newCommandHistory, ...response]);
+        setHistory(prev => [...prev, ...newCommandHistory, ...response]);
     }
     
     const handleSubmit = async (e: React.FormEvent) => {
@@ -109,14 +123,15 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
         const currentInput = inputValue.trim();
         setInputValue("");
+        
+        const newHistory = [...history, { type: 'command', text: currentInput }];
+        setHistory(newHistory);
+
 
         if (step === 0) {
             processCommand(currentInput);
             return;
         }
-
-        const newCommandHistory: HistoryItem[] = [ ...commandHistory ];
-        newCommandHistory[newCommandHistory.length - 1] = { type: 'command', text: `> ${currentInput}` };
         
         let response: HistoryItem[] = [];
 
@@ -132,7 +147,9 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             setFormValues(v => ({ ...v, message: currentInput }));
             setStep(4);
             
-            setCommandHistory([...newCommandHistory, { type: 'response', text: t.prompts[3] }]);
+            const sendingMessageHistory = [...newHistory, { type: 'response', text: t.prompts[3] }];
+            setHistory(sendingMessageHistory);
+
 
             // Simulate sending message
             await new Promise(res => setTimeout(res, 1000));
@@ -142,16 +159,14 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 { type: 'response', text: t.restart }
             ];
 
-            setCommandHistory(prev => [...prev, ...finalLines, { type: 'prompt', text: '' }]);
+            setHistory(prev => [...prev, ...finalLines]);
             setStep(0);
             setFormValues({ name: "", email: "", message: "" });
             return;
         }
 
-        setCommandHistory([...newCommandHistory, ...response, { type: 'prompt', text: '' }]);
+        setHistory(prev => [...prev, ...response]);
     };
-    
-    const allHistory = [...history, ...commandHistory];
 
     return (
         <section id="contact" className="container">
@@ -172,36 +187,9 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     </div>
                     <p className="text-sm text-center flex-grow text-muted-foreground">bash</p>
                 </div>
-                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm text-foreground">
-                    {allHistory.map((item, index) => {
-                        if (item.type === 'prompt') {
-                             if (index === allHistory.length - 1) { // Only render input for the last prompt
-                                return (
-                                    <form onSubmit={handleSubmit} key={index}>
-                                      <Prompt>
-                                          <input
-                                            ref={inputRef}
-                                            type="text"
-                                            value={inputValue}
-                                            onChange={(e) => setInputValue(e.target.value)}
-                                            className="bg-transparent border-0 focus:outline-none w-full text-foreground"
-                                            autoFocus
-                                            autoComplete="off"
-                                            aria-label="terminal-input"
-                                            disabled={step === 4}
-                                          />
-                                      </Prompt>
-                                    </form>
-                                );
-                            }
-                             // Render previous prompts as static text
-                             return (
-                                 <Prompt key={index}>
-                                     <span className="text-foreground">{item.text}</span>
-                                 </Prompt>
-                             );
-                        }
-                        if (item.type === 'command') {
+                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm">
+                    {history.map((item, index) => {
+                         if (item.type === 'command') {
                             return (
                                 <Prompt key={index}>
                                     <span className="text-foreground">{item.text}</span>
@@ -211,8 +199,26 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                         if(item.type === 'error'){
                             return <p key={index} className="whitespace-pre-wrap text-red-500">{item.text}</p>;
                         }
-                        return <p key={index} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
+                        if (item.type === 'response') {
+                             return <p key={index} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
+                        }
+                        return null; // Should not happen
                     })}
+                    <form onSubmit={handleSubmit}>
+                        <Prompt>
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                className="bg-transparent border-0 focus:outline-none w-full text-foreground"
+                                autoFocus
+                                autoComplete="off"
+                                aria-label="terminal-input"
+                                disabled={step === 4}
+                            />
+                        </Prompt>
+                    </form>
                 </div>
             </div>
         </section>
