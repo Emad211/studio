@@ -10,9 +10,13 @@ export function HeroBackground() {
     // This effect runs once on mount to get the initial theme colors.
     // It's important that this is done on the client side.
     const computedStyle = getComputedStyle(document.documentElement);
-    const primaryColor = `hsl(${computedStyle.getPropertyValue('--primary').trim()})`;
-    const backgroundColor = `hsl(${computedStyle.getPropertyValue('--background').trim()})`;
-    setThemeColors({ primary: primaryColor, background: backgroundColor });
+    const primaryHsl = computedStyle.getPropertyValue('--primary').trim();
+    const backgroundHsl = computedStyle.getPropertyValue('--background').trim();
+    
+    setThemeColors({ 
+      primary: `hsl(${primaryHsl})`, 
+      background: `hsl(${backgroundHsl})` 
+    });
   }, []);
 
   useEffect(() => {
@@ -101,8 +105,8 @@ export function HeroBackground() {
 
     function animate() {
       if (!ctx) return;
-      // Clear the canvas for a transparent background
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = themeColors.background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
         p.update();
@@ -130,5 +134,5 @@ export function HeroBackground() {
     };
   }, [themeColors]);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full -z-10" />;
+  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full -z-10" />;
 }
