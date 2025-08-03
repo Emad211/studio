@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
              <SidebarMenuItem>
                <SidebarMenuButton tooltip="Profile">
                 <UserCircle />
-                <span>Alex Doe</span>
+                <span>Emad Karimi</span>
                </SidebarMenuButton>
              </SidebarMenuItem>
              <SidebarMenuItem>

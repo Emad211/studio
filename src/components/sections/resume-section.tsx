@@ -11,7 +11,7 @@ export function ResumeSection() {
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">My academic and professional journey.</p>
       </div>
-      <div className="mt-12 grid md:grid-cols-2 gap-8">
+      <div className="mt-12 grid md:grid-cols-2 gap-6 md:gap-8">
         <div>
           <h3 className="text-2xl font-bold font-headline mb-6 flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-secondary" />
@@ -25,7 +25,7 @@ export function ResumeSection() {
                   <p className="text-sm text-muted-foreground">{edu.university}</p>
                    {edu.specialization && <p className="text-sm text-primary">{edu.specialization}</p>}
                 </CardHeader>
-                <CardContent className="flex justify-between items-center text-sm">
+                <CardContent className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm gap-2">
                   <span>{edu.duration}</span>
                   <span>GPA: {edu.gpa}</span>
                 </CardContent>

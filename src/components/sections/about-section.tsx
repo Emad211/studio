@@ -18,7 +18,7 @@ export function AboutSection() {
             I'm passionate about teamwork and knowledge sharing. My goal is to contribute to technological advancement and improve people's lives through innovative projects and solving complex problems.
           </p>
         </div>
-        <div className="md:col-span-2 relative group">
+        <div className="md:col-span-2 relative group row-start-1 md:row-auto">
           <div className="aspect-square relative">
             <Image
               src="https://placehold.co/500x500.png"

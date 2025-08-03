@@ -68,10 +68,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         <>
             <ReadingProgress />
             <div className="container py-12 md:py-20">
-                <div className="grid lg:grid-cols-4 gap-12">
+                <div className="grid lg:grid-cols-4 gap-8 md:gap-12">
                     <article className="lg:col-span-3">
                         <div className="mb-8">
-                            <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
+                            <h1 className="text-3xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
                             <p className="mt-2 text-muted-foreground">
                                 Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
@@ -87,7 +87,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                         </div>
                     </article>
 
-                    <aside className="lg:col-span-1 relative">
+                    <aside className="hidden lg:block lg:col-span-1 relative">
                         <TableOfContents headings={headings} />
                     </aside>
                 </div>

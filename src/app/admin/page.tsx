@@ -6,8 +6,8 @@ import { RecentMessages } from "@/components/admin/recent-messages"
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="space-y-4 md:space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Visitors"
           value="12,345"
@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-7">
         <Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle>Overview</CardTitle>

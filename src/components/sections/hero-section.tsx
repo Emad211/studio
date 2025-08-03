@@ -39,19 +39,19 @@ export function HeroSection() {
           </motion.p>
           <motion.h1 
             variants={FADE_IN_ANIMATION_VARIANTS}
-            className="text-5xl font-extrabold tracking-tight md:text-7xl lg:text-8xl font-headline bg-clip-text text-transparent bg-gradient-to-b from-foreground/90 to-foreground/60"
+            className="text-4xl sm:text-5xl font-extrabold tracking-tight md:text-7xl lg:text-8xl font-headline bg-clip-text text-transparent bg-gradient-to-b from-foreground/90 to-foreground/60"
           >
             Emad Karimi.
           </motion.h1>
           <motion.h2 
             variants={FADE_IN_ANIMATION_VARIANTS}
-            className="mt-4 text-3xl font-bold md:text-5xl lg:text-6xl text-foreground/70 font-headline h-16 md:h-20"
+            className="mt-4 text-2xl sm:text-3xl font-bold md:text-5xl lg:text-6xl text-foreground/70 font-headline h-16 md:h-20"
           >
             I am a <TypeAnimation sequence={specializations} />
           </motion.h2>
           <motion.p 
              variants={FADE_IN_ANIMATION_VARIANTS}
-            className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground"
+            className="mx-auto mt-6 max-w-xl text-base sm:text-lg text-muted-foreground"
           >
             I specialize in building exceptional digital experiences. Currently, I’m focused on building accessible, human-centered products.
           </motion.p>
