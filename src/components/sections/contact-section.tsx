@@ -48,7 +48,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     };
 
     const [history, setHistory] = useState<HistoryItem[]>([]);
-    const [commandHistory, setCommandHistory] = useState<HistoryItem[]>([...welcomeMessages, { type: 'prompt', text: '' }]);
+    const [commandHistory, setCommandHistory] = useState<HistoryItem[]>([]);
     const [step, setStep] = useState(0);
     const [inputValue, setInputValue] = useState("");
     const [formValues, setFormValues] = useState({ name: "", email: "", message: "" });
@@ -81,17 +81,16 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
     const typeResponse = useCallback((lines: HistoryItem[], onFinished?: () => void) => {
         setIsTyping(true);
-        let allLines = lines.flatMap(line => line.text.split('\n').map(text => ({...line, text})));
         let lineIndex = 0;
         
         const typeLine = () => {
-            if (lineIndex >= allLines.length) {
+            if (lineIndex >= lines.length) {
                 setIsTyping(false);
                 onFinished?.();
                 return;
             }
 
-            const currentLine = allLines[lineIndex];
+            const currentLine = lines[lineIndex];
             setCommandHistory(prev => [...prev, { type: currentLine.type, text: "" }]);
 
             let charIndex = 0;
@@ -133,7 +132,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 setStep(1);
                 break;
             case 'clear':
-                setCommandHistory([{ type: 'prompt', text: '' }]);
+                 setCommandHistory([{ type: 'prompt', text: '' }]);
                 return;
             default:
                 if (command.trim() !== '') {
