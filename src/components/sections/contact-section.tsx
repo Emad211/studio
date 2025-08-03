@@ -21,23 +21,33 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     // For now, we ignore `lang` as requested and only use English.
     const t = {
         title: "Get In Touch",
-        command: "send-message",
-        helpText: [
-          "Available commands:",
-          "  send-message    - Send a message to me.",
-          "  help            - Show this help message.",
-          "  clear           - Clear the terminal screen."
+        faqText: [
+            "Frequently Asked Questions:",
+            "  Q: What technologies do you specialize in?",
+            "  A: I specialize in the MERN stack, Next.js, and Tailwind CSS.",
+            "",
+            "  Q: Are you available for freelance work?",
+            "  A: Yes, I am currently accepting new projects. Use the 'send-message' command to get in touch!",
+            "",
+            "  Q: Where can I see your projects?",
+            "  A: You can see my projects on the projects page or my GitHub profile."
         ],
         prompts: ["Enter your name:", "Enter your email:", "Enter your message:", "Sending message..."],
         success: "Message sent successfully! Thank you for reaching out.",
         restart: "You can run 'send-message' again to send another message.",
         commandNotFound: "command not found:",
-        welcome: "Welcome to my interactive terminal! Type 'help' to see available commands."
+        welcome: [
+            "Welcome to my interactive terminal!",
+            "Available commands:",
+            "  send-message    - Send a message to me.",
+            "  faq             - Read frequently asked questions.",
+            "  clear           - Clear the terminal screen."
+        ]
     };
 
-    const [history, setHistory] = useState<HistoryItem[]>([
-      { type: 'response', text: t.welcome },
-      { type: 'prompt', text: '' }
+    const [history, setHistory] = useState<HistoryItem[]>(() => [
+        ...t.welcome.map(line => ({ type: 'response' as const, text: line })),
+        { type: 'prompt', text: '' }
     ]);
     const [step, setStep] = useState(0);
     const [inputValue, setInputValue] = useState("");
@@ -64,8 +74,8 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         newHistory[newHistory.length - 1] = { type: 'prompt', text: command };
         
         switch (command.toLowerCase()) {
-            case 'help':
-                newHistory.push(...t.helpText.map(line => ({ type: 'response' as const, text: line })));
+            case 'faq':
+                newHistory.push(...t.faqText.map(line => ({ type: 'response' as const, text: line })));
                 break;
             case 'send-message':
                 newHistory.push({ type: 'response', text: t.prompts[0] });
