@@ -2,7 +2,6 @@
 import Link from "next/link"
 import { Code, Book, Home, PanelLeft, Languages } from "lucide-react"
 import { Logo } from "@/components/logo"
-import { ThemeSwitcher } from "@/components/theme-switcher"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -104,7 +103,6 @@ export function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <ThemeSwitcher />
         </div>
       </div>
     </header>
