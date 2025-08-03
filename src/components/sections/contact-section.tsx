@@ -87,10 +87,6 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
       }
     }, [history, commandHistory]);
 
-    useEffect(() => {
-        inputRef.current?.focus();
-    }, [commandHistory, history]);
-
     const handleFocus = () => {
         inputRef.current?.focus();
     };
@@ -221,7 +217,6 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 className="bg-transparent border-0 focus:outline-none w-full text-foreground"
-                                autoFocus
                                 autoComplete="off"
                                 aria-label="terminal-input"
                                 disabled={step === 4}
