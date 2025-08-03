@@ -1,14 +1,4 @@
 import Image from 'next/image'
-import { Check } from 'lucide-react'
-
-const skillsList = [
-  "Generative AI & Agent Development",
-  "Deep Learning & Neural Networks",
-  "Python, R, & MATLAB",
-  "TensorFlow, PyTorch, & Scikit-learn",
-  "Data Analysis & Statistics",
-  "Computer Vision & NLP"
-]
 
 export function AboutSection() {
   return (
@@ -32,20 +22,17 @@ export function AboutSection() {
           <h2 className="text-3xl font-bold font-headline text-primary">
             <span className="font-mono text-xl text-secondary">01.</span> About Me
           </h2>
-          <p className="mt-6 text-lg text-muted-foreground">
-            Hello! I'm Emad Karimi, a Computer Engineer with a deep passion for Artificial Intelligence. I thrive on solving complex problems and building intelligent systems that push the boundaries of technology.
-          </p>
-          <p className="mt-4 text-lg text-muted-foreground">
-            With over 3 years of experience, my focus lies in creating innovative solutions from data-driven insights. Here are a few of the technologies I've been working with recently:
-          </p>
-          <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-            {skillsList.map((skill) => (
-              <li key={skill} className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-primary" />
-                <span className="text-muted-foreground">{skill}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-6 text-lg text-muted-foreground space-y-4">
+            <p>
+              My journey began with a degree in computer engineering, where I built a solid foundation in logic and systems. However, I quickly realized my true passion wasn't just in making machines work, but in making them think. This curiosity led me down the fascinating path of artificial intelligence.
+            </p>
+            <p>
+              For me, AI is the ultimate puzzle. It's a blend of intricate mathematics, creative problem-solving, and a deep understanding of data to build systems that don't just follow instructions, but learn, adapt, and create. Whether it's crafting a complex algorithm or developing an intelligent agent, I am driven by the challenge of pushing the boundaries of what's possible.
+            </p>
+             <p>
+              I believe we are at a pivotal moment in technology, and I am excited to be part of building an intelligent future, one line of code at a time.
+            </p>
+          </div>
         </div>
       </div>
     </section>
