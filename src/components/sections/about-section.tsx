@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { CheckCircle } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 const skillsList = [
   "Generative AI & Agent Development",
@@ -14,16 +14,18 @@ export function AboutSection() {
   return (
     <section id="about" className="container">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <div className="relative group order-2 lg:order-1">
-          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-border p-2 group-hover:border-primary transition-colors duration-300">
-             <div className="absolute inset-4 bg-primary/10 rounded-md -z-10 transform transition-transform duration-300 group-hover:scale-105"></div>
-            <Image
-              src="/profile-pic.jpg"
-              alt="Emad Karimi"
-              width={500}
-              height={500}
-              className="rounded-lg object-cover z-10 relative transition-transform duration-300 group-hover:scale-105"
-            />
+        <div className="order-2 lg:order-1 flex justify-center lg:justify-start">
+          <div className="relative group w-full max-w-sm">
+            <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-border p-2 group-hover:border-primary transition-colors duration-300">
+              <div className="absolute inset-4 bg-primary/10 rounded-md -z-10 transform transition-transform duration-300 group-hover:scale-105"></div>
+              <Image
+                src="/profile-pic.jpg"
+                alt="Emad Karimi"
+                width={500}
+                height={500}
+                className="rounded-lg object-cover z-10 relative transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
           </div>
         </div>
         <div className="order-1 lg:order-2">
@@ -39,7 +41,7 @@ export function AboutSection() {
           <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {skillsList.map((skill) => (
               <li key={skill} className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-primary" />
+                <Check className="w-5 h-5 text-primary" />
                 <span className="text-muted-foreground">{skill}</span>
               </li>
             ))}
