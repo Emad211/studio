@@ -5,7 +5,6 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { TypeAnimation } from "@/components/type-animation"
 import { ArrowRight, Mail } from "lucide-react"
-import { HeroBackground } from "./hero-background"
 
 const specializations = ["Computer Engineer", "AI Specialist"]
 
@@ -18,7 +17,6 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center text-center overflow-hidden">
-      <HeroBackground />
       <div className="relative z-10">
         <motion.div
           initial="hidden"

@@ -3,6 +3,7 @@ import './globals.css';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
+import { HeroBackground } from '@/components/sections/hero-background';
 
 export const metadata: Metadata = {
   title: 'CodeCanvas Portfolio',
@@ -25,7 +26,8 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased transition-colors duration-300">
-        <div className="flex min-h-screen flex-col">
+        <HeroBackground />
+        <div className="relative z-10 flex min-h-screen flex-col bg-background/80 backdrop-blur-sm">
           <Header />
           <main className="flex-grow">{children}</main>
           <Footer />
