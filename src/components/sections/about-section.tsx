@@ -1,35 +1,50 @@
 import Image from 'next/image'
+import { CheckCircle } from 'lucide-react'
+
+const skillsList = [
+  "Generative AI & Agent Development",
+  "Deep Learning & Neural Networks",
+  "Python, R, & MATLAB",
+  "TensorFlow, PyTorch, & Scikit-learn",
+  "Data Analysis & Statistics",
+  "Computer Vision & NLP"
+]
 
 export function AboutSection() {
   return (
     <section id="about" className="container">
-      <div className="grid md:grid-cols-5 gap-8 md:gap-12 items-center">
-        <div className="md:col-span-3">
-          <h2 className="text-3xl font-bold font-headline text-primary">
-            <span className="font-mono text-xl text-secondary">01.</span> About Me
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Hello! I'm Emad Karimi, a Computer Engineer with over 3 years of experience in Artificial Intelligence and Machine Learning. I specialize in Generative AI, Agent Development, Deep Learning, and statistical analysis.
-          </p>
-          <p className="mt-4 text-lg text-muted-foreground">
-            My core skills include programming with Python, R, and MATLAB, neural network development, data analysis, and thesis writing. I have successfully completed over 80 projects and am always ready to take on new challenges in the technology field.
-          </p>
-           <p className="mt-4 text-lg text-muted-foreground">
-            I'm passionate about teamwork and knowledge sharing. My goal is to contribute to technological advancement and improve people's lives through innovative projects and solving complex problems.
-          </p>
-        </div>
-        <div className="md:col-span-2 relative group row-start-1 md:row-auto">
-          <div className="aspect-square relative">
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative group order-2 lg:order-1">
+          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-border p-2 group-hover:border-primary transition-colors duration-300">
+             <div className="absolute inset-4 bg-primary/10 rounded-md -z-10 transform transition-transform duration-300 group-hover:scale-105"></div>
             <Image
               src="https://placehold.co/500x500.png"
               alt="Emad Karimi"
               width={500}
               height={500}
-              className="rounded-lg object-cover z-10 relative group-hover:scale-105 transition-transform duration-300"
+              className="rounded-lg object-cover z-10 relative transition-transform duration-300 group-hover:scale-105"
               data-ai-hint="portrait person"
             />
-            <div className="absolute inset-0 bg-primary/20 rounded-lg transform transition-transform duration-300 group-hover:translate-x-4 group-hover:translate-y-4"></div>
           </div>
+        </div>
+        <div className="order-1 lg:order-2">
+          <h2 className="text-3xl font-bold font-headline text-primary">
+            <span className="font-mono text-xl text-secondary">01.</span> About Me
+          </h2>
+          <p className="mt-6 text-lg text-muted-foreground">
+            Hello! I'm Emad Karimi, a Computer Engineer with a deep passion for Artificial Intelligence. I thrive on solving complex problems and building intelligent systems that push the boundaries of technology.
+          </p>
+          <p className="mt-4 text-lg text-muted-foreground">
+            With over 3 years of experience, my focus lies in creating innovative solutions from data-driven insights. Here are a few of the technologies I've been working with recently:
+          </p>
+          <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            {skillsList.map((skill) => (
+              <li key={skill} className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-primary" />
+                <span className="text-muted-foreground">{skill}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
