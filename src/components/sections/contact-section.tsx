@@ -7,7 +7,7 @@ type HistoryItem = {
     text: string;
 };
 
-const Prompt = ({ text, children }: { text: string, children?: React.ReactNode }) => (
+const Prompt = ({ children }: { children?: React.ReactNode }) => (
     <div className="flex items-center gap-2">
         <span className="text-green-400">guest@codecanvas</span>
         <span className="text-foreground">:</span>
@@ -60,10 +60,8 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     };
 
     const processCommand = (command: string) => {
-        const newHistory: HistoryItem[] = [
-            ...history.slice(0, -1),
-            { type: 'prompt', text: '' }
-        ];
+        let newHistory: HistoryItem[] = [...history];
+        newHistory[newHistory.length - 1] = { type: 'prompt', text: command };
         
         switch (command.toLowerCase()) {
             case 'help':
@@ -71,14 +69,15 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 break;
             case 'send-message':
                 newHistory.push({ type: 'response', text: t.prompts[0] });
-                newHistory.push({ type: 'prompt', text: ' >' });
                 setStep(1);
                 break;
             case 'clear':
                 setHistory([{ type: 'prompt', text: '' }]);
                 return;
             default:
-                newHistory.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
+                if (command.trim() !== '') {
+                  newHistory.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
+                }
         }
         newHistory.push({ type: 'prompt', text: '' });
         setHistory(newHistory);
@@ -92,29 +91,22 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         setInputValue("");
 
         if (step === 0) {
-            const newHistory: HistoryItem[] = [
-                ...history.slice(0, -1),
-                { type: 'prompt', text: '' }
-            ];
-            setHistory(newHistory);
             processCommand(currentInput);
             return;
         }
 
         const newHistory: HistoryItem[] = [
-            ...history.slice(0, -1),
+            ...history,
             { type: 'prompt', text: ` > ${currentInput}` }
         ];
 
         if (step === 1) { // Name
             setFormValues(v => ({ ...v, name: currentInput }));
             newHistory.push({ type: 'response', text: t.prompts[1] });
-            newHistory.push({ type: 'prompt', text: ' >' });
             setStep(2);
         } else if (step === 2) { // Email
             setFormValues(v => ({ ...v, email: currentInput }));
             newHistory.push({ type: 'response', text: t.prompts[2] });
-            newHistory.push({ type: 'prompt', text: ' >' });
             setStep(3);
         } else if (step === 3) { // Message
             setFormValues(v => ({ ...v, message: currentInput }));
@@ -135,6 +127,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             return;
         }
         
+        newHistory.push({ type: 'prompt', text: '' });
         setHistory(newHistory);
     };
 
@@ -157,28 +150,35 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     </div>
                     <p className="text-sm text-center flex-grow text-muted-foreground">bash</p>
                 </div>
-                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm">
+                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm text-foreground">
                     {history.map((item, index) => {
                         if (item.type === 'prompt') {
-                            return (
-                                <div key={index} className="flex items-center gap-2">
-                                  {item.text.startsWith(' >') ? <span className="text-muted-foreground">{item.text}</span> : <Prompt text={item.text} />}
-                                  {index === history.length - 1 && step < 4 && (
-                                    <form onSubmit={handleSubmit} className="flex-1">
-                                      <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={inputValue}
-                                        onChange={(e) => setInputValue(e.target.value)}
-                                        className="bg-transparent border-0 focus:outline-none w-full text-foreground"
-                                        autoFocus
-                                        autoComplete="off"
-                                        aria-label="terminal-input"
-                                        disabled={step >= 4}
-                                      />
+                            if (index === history.length - 1) {
+                                return (
+                                    <form onSubmit={handleSubmit} key={index}>
+                                      <Prompt>
+                                          <input
+                                            ref={inputRef}
+                                            type="text"
+                                            value={inputValue}
+                                            onChange={(e) => setInputValue(e.target.value)}
+                                            className="bg-transparent border-0 focus:outline-none w-full text-foreground"
+                                            autoFocus
+                                            autoComplete="off"
+                                            aria-label="terminal-input"
+                                            disabled={step >= 4}
+                                          />
+                                      </Prompt>
                                     </form>
-                                  )}
-                                </div>
+                                );
+                            }
+                            if (item.text.startsWith(' >')) {
+                                return <p key={index} className="text-muted-foreground whitespace-pre-wrap">{item.text}</p>;
+                            }
+                            return (
+                                <Prompt key={index}>
+                                    <span className="text-foreground">{item.text}</span>
+                                </Prompt>
                             );
                         }
                         if(item.type === 'error'){
@@ -186,7 +186,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                         }
                         return <p key={index} className="whitespace-pre-wrap">{item.text}</p>;
                     })}
-                     {step < 4 && <div className="inline-block w-2 h-4 bg-foreground animate-blink ml-1" />}
+                     {step < 4 && <div className="inline-block w-2 h-4 bg-foreground animate-blink" />}
                 </div>
             </div>
         </section>
