@@ -60,6 +60,7 @@ const PulseDot = ({ x1, y1, x2, y2 }: { x1: number, y1: number, x2: number, y2: 
         <motion.circle
             r="3"
             fill="hsl(var(--primary))"
+            filter="url(#glow)"
         >
             <animateMotion
                 dur={`${dur}s`}
