@@ -7,6 +7,8 @@ export function HeroBackground() {
   const [themeColors, setThemeColors] = useState({ primary: 'hsl(266, 100%, 50%)', background: 'hsl(0, 0%, 7%)' });
 
   useEffect(() => {
+    // This effect runs once on mount to get the initial theme colors.
+    // It's important that this is done on the client side.
     const computedStyle = getComputedStyle(document.documentElement);
     const primaryColor = `hsl(${computedStyle.getPropertyValue('--primary').trim()})`;
     const backgroundColor = `hsl(${computedStyle.getPropertyValue('--background').trim()})`;
@@ -99,7 +101,10 @@ export function HeroBackground() {
 
     function animate() {
       if (!ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Fill the background first
+      ctx.fillStyle = themeColors.background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
       particles.forEach(p => {
         p.update();
         p.draw();
