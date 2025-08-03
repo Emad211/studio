@@ -18,12 +18,11 @@ export function AboutSection() {
           <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-border p-2 group-hover:border-primary transition-colors duration-300">
              <div className="absolute inset-4 bg-primary/10 rounded-md -z-10 transform transition-transform duration-300 group-hover:scale-105"></div>
             <Image
-              src="https://placehold.co/500x500.png"
+              src="/pic.jpg"
               alt="Emad Karimi"
               width={500}
               height={500}
               className="rounded-lg object-cover z-10 relative transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint="portrait person"
             />
           </div>
         </div>
