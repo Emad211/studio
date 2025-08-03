@@ -5,16 +5,16 @@ import { SkillsSection } from '@/components/sections/skills-section';
 import { ProjectsSection } from '@/components/sections/projects-section';
 import { ContactSection } from '@/components/sections/contact-section';
 
-export default function Home() {
+export default function HomeFa() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" dir="rtl">
       <HeroSection />
       <div className="space-y-24 md:space-y-32 my-24 md:my-32">
         <AboutSection />
         <ServicesSection />
         <SkillsSection />
         <ProjectsSection />
-        <ContactSection lang="en" />
+        <ContactSection lang="fa" />
       </div>
     </div>
   );

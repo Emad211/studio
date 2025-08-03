@@ -6,9 +6,9 @@ import type { Project } from "@/lib/data"
 import { cn } from "@/lib/utils"
 import { ArrowUpRight } from "lucide-react"
 
-export function ProjectCard({ project, className }: { project: Project, className?: string }) {
+export function ProjectCard({ project, className, lang = 'en' }: { project: Project, className?: string, lang?: 'en' | 'fa' }) {
   return (
-    <Link href={`/projects/${project.slug}`} className="group block h-full">
+    <Link href={lang === 'fa' ? `/fa/projects/${project.slug}` : `/projects/${project.slug}`} className="group block h-full">
       <Card className={cn(
         "h-full flex flex-col transition-all duration-300 border-2 border-transparent hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10",
         className)}>

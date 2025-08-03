@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Code, Book, Home, PanelLeft } from "lucide-react"
+import { Code, Book, Home, PanelLeft, Languages } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,12 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -20,6 +26,7 @@ const navLinks = [
 
 export function Header() {
   const pathname = usePathname()
+  const lang = pathname.startsWith("/fa") ? "fa" : "en";
 
   const renderNavLinks = (isMobile: boolean = false) =>
     navLinks.map((link) => (
@@ -29,13 +36,13 @@ export function Header() {
         asChild
         className={cn(
           "justify-start text-base",
-          pathname === link.href ? "bg-accent text-accent-foreground" : "",
+          pathname === (lang === 'fa' ? `/fa${link.href === '/' ? '' : link.href}`: link.href) ? "bg-accent text-accent-foreground" : "",
           isMobile ? "w-full" : ""
         )}
       >
-        <Link href={link.href}>
+        <Link href={lang === 'fa' ? `/fa${link.href === '/' ? '' : link.href}`: link.href}>
           <link.icon className="mr-2 h-4 w-4" />
-          {link.label}
+          {lang === 'fa' ? (link.label === 'Home' ? 'خانه' : link.label === 'Projects' ? 'پروژه‌ها' : 'بلاگ') : link.label}
         </Link>
       </Button>
     ))
@@ -44,7 +51,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Link href={lang === 'fa' ? '/fa' : '/'} className="mr-6 flex items-center space-x-2">
             <Logo />
             <span className="hidden font-bold sm:inline-block font-headline">
               CodeCanvas
@@ -67,7 +74,7 @@ export function Header() {
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
             <Link
-              href="/"
+              href={lang === 'fa' ? '/fa' : '/'}
               className="mr-6 flex items-center space-x-2 mb-6"
             >
               <Logo />
@@ -81,6 +88,22 @@ export function Header() {
           </SheetContent>
         </Sheet>
         <div className="flex flex-1 items-center justify-end space-x-2">
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Languages className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">Change language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={pathname.replace('/fa', '') || '/'} prefetch={false}>English</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/fa${pathname}`} prefetch={false}>فارسی</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ThemeSwitcher />
         </div>
       </div>
