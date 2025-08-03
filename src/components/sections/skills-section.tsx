@@ -1,7 +1,19 @@
 import { skills } from "@/lib/data"
-import { CircularProgress } from "@/components/ui/circular-progress"
+import { Badge } from "@/components/ui/badge"
 
 export function SkillsSection() {
+
+  const skillCategories: Record<string, string[]> = {
+    "Programming Languages": ["Python", "R", "MATLAB"],
+    "AI & Machine Learning": ["Deep Learning", "Generative AI", "Computer Vision", "Agent Development", "NLP", "Neural Networks"],
+    "AI Frameworks & Libraries": ["TensorFlow", "PyTorch", "Scikit-learn", "OpenCV", "LangChain", "AutoGen"],
+    "Data Science & Analytics": ["Pandas", "NumPy", "Statistics", "Matplotlib", "Seaborn", "Plotly"],
+    "Web Development & Design": ["HTML5", "CSS3", "React", "Node.js", "Flask", "Bootstrap"],
+    "Databases": ["SQL", "PostgreSQL", "MySQL", "MongoDB"],
+    "Tools & Technologies": ["Git", "GitHub", "Docker", "Terminal", "SPSS"],
+    "Research & Academic": ["Thesis Writing", "Research Methods", "LaTeX", "Academic Writing"]
+  }
+
   return (
     <section id="skills" className="container">
       <div className="text-center">
@@ -10,11 +22,18 @@ export function SkillsSection() {
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">A showcase of my technical expertise and capabilities.</p>
       </div>
-      <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 text-center">
-        {skills.map((skill) => (
-          <div key={skill.name} className="flex flex-col items-center gap-2">
-            <CircularProgress value={skill.level} />
-            <p className="font-semibold text-sm">{skill.name}</p>
+      <div className="mt-12 space-y-8">
+        {Object.entries(skillCategories).map(([category, skills]) => (
+          <div key={category}>
+            <h3 className="text-xl font-bold font-headline mb-4 text-center md:text-left">{category}</h3>
+            <div className="flex flex-wrap justify-center md:justify-start gap-2">
+              {skills.map((skillName) => {
+                 const skill = { name: skillName, level: "Expert" }; // Placeholder level
+                 return(
+                  <Badge key={skill.name} variant="secondary" className="text-sm font-medium px-3 py-1">{skill.name}</Badge>
+                 )
+              })}
+            </div>
           </div>
         ))}
       </div>

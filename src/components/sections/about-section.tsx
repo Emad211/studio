@@ -9,17 +9,20 @@ export function AboutSection() {
             <span className="font-mono text-xl text-secondary">01.</span> About Me
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Hello! I'm Alex, a passionate software engineer with a knack for creating elegant solutions in the digital realm. My journey into code began years ago, and since then, I've been captivated by the power of technology to solve real-world problems.
+            Hello! I'm Emad Karimi, a Computer Engineer with over 3 years of experience in Artificial Intelligence and Machine Learning. I specialize in Generative AI, Agent Development, Deep Learning, and statistical analysis.
           </p>
           <p className="mt-4 text-lg text-muted-foreground">
-            I thrive on turning complex ideas into simple, beautiful, and intuitive designs. Whether it's crafting a responsive front-end or architecting a robust back-end, I am dedicated to building high-quality software that is both functional and delightful to use.
+            My core skills include programming with Python, R, and MATLAB, neural network development, data analysis, and thesis writing. I have successfully completed over 80 projects and am always ready to take on new challenges in the technology field.
+          </p>
+           <p className="mt-4 text-lg text-muted-foreground">
+            I'm passionate about teamwork and knowledge sharing. My goal is to contribute to technological advancement and improve people's lives through innovative projects and solving complex problems.
           </p>
         </div>
         <div className="md:col-span-2 relative group">
           <div className="aspect-square relative">
             <Image
               src="https://placehold.co/500x500.png"
-              alt="Alex Doe"
+              alt="Emad Karimi"
               width={500}
               height={500}
               className="rounded-lg object-cover z-10 relative group-hover:scale-105 transition-transform duration-300"

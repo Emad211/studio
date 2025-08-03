@@ -14,7 +14,7 @@ export function Footer() {
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon" asChild>
-              <Link href="#" aria-label="Github">
+              <Link href="https://github.com/Emad211" target="_blank" rel="noopener noreferrer" aria-label="Github">
                 <Github />
               </Link>
             </Button>
