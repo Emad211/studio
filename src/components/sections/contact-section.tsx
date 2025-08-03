@@ -1,47 +1,46 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 
 type HistoryItem = {
-    type: 'command' | 'response' | 'prompt';
+    type: 'command' | 'response' | 'prompt' | 'error';
     text: string;
 };
 
 const Prompt = ({ text, children }: { text: string, children?: React.ReactNode }) => (
     <div className="flex items-center gap-2">
-        <span className="text-green-400">{text}</span>
-        {children}
+        <span className="text-green-400">guest@codecanvas</span>
+        <span className="text-foreground">:</span>
+        <span className="text-blue-400">~</span>
+        <span className="text-foreground">$</span>
+        <div className="flex-1">{children}</div>
     </div>
 );
 
 export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
+    // For now, we ignore `lang` as requested and only use English.
     const t = {
-        en: {
-            title: "Get In Touch",
-            prompt: "guest@codecanvas:~$",
-            command: "send-message",
-            prompts: ["Enter your name:", "Enter your email:", "Enter your message:", "Sending message..."],
-            success: "Message sent successfully! Thank you for reaching out.",
-            restart: "You can run 'send-message' again to send another message.",
-        },
-        fa: {
-            title: "در تماس باشید",
-            prompt: "مهمان@کدبوم:~$",
-            command: "ارسال-پیام",
-            prompts: ["نام خود را وارد کنید:", "ایمیل خود را وارد کنید:", "پیام خود را وارد کنید:", "در حال ارسال پیام..."],
-            success: "پیام با موفقیت ارسال شد! از شما برای تماس سپاسگزارم.",
-            restart: "می‌توانید دستور 'ارسال-پیام' را برای ارسال پیام دیگر اجرا کنید.",
-        }
+        title: "Get In Touch",
+        command: "send-message",
+        helpText: [
+          "Available commands:",
+          "  send-message    - Send a message to me.",
+          "  help            - Show this help message.",
+          "  clear           - Clear the terminal screen."
+        ],
+        prompts: ["Enter your name:", "Enter your email:", "Enter your message:", "Sending message..."],
+        success: "Message sent successfully! Thank you for reaching out.",
+        restart: "You can run 'send-message' again to send another message.",
+        commandNotFound: "command not found:",
+        welcome: "Welcome to my interactive terminal! Type 'help' to see available commands."
     };
 
-    const translations = t[lang];
-
     const [history, setHistory] = useState<HistoryItem[]>([
-      { type: 'prompt', text: translations.prompt }
+      { type: 'response', text: t.welcome },
+      { type: 'prompt', text: '' }
     ]);
     const [step, setStep] = useState(0);
-    const [inputValue, setInputValue] = useState(translations.command);
+    const [inputValue, setInputValue] = useState("");
     const [formValues, setFormValues] = useState({ name: "", email: "", message: "" });
     const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -60,49 +59,78 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         inputRef.current?.focus();
     };
 
+    const processCommand = (command: string) => {
+        const newHistory: HistoryItem[] = [
+            ...history.slice(0, -1),
+            { type: 'prompt', text: '' }
+        ];
+        
+        switch (command.toLowerCase()) {
+            case 'help':
+                newHistory.push(...t.helpText.map(line => ({ type: 'response' as const, text: line })));
+                break;
+            case 'send-message':
+                newHistory.push({ type: 'response', text: t.prompts[0] });
+                newHistory.push({ type: 'prompt', text: ' >' });
+                setStep(1);
+                break;
+            case 'clear':
+                setHistory([{ type: 'prompt', text: '' }]);
+                return;
+            default:
+                newHistory.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
+        }
+        newHistory.push({ type: 'prompt', text: '' });
+        setHistory(newHistory);
+    }
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if(step === 4) return; // Already submitting
+        if(step === 4) return;
 
-        const newHistory: HistoryItem[] = [
-            ...history.slice(0, -1), // remove current prompt
-            { type: 'prompt', text: `${translations.prompt} ${inputValue}` }
-        ];
-
+        const currentInput = inputValue.trim();
         setInputValue("");
 
-        if (step === 0) { // Command
-            newHistory.push({ type: 'response', text: translations.prompts[0] });
-            newHistory.push({ type: 'prompt', text: ' >' });
-            setStep(1);
-        } else if (step === 1) { // Name
-            setFormValues(v => ({ ...v, name: inputValue }));
-            newHistory.push({ type: 'response', text: translations.prompts[1] });
+        if (step === 0) {
+            const newHistory: HistoryItem[] = [
+                ...history.slice(0, -1),
+                { type: 'prompt', text: '' }
+            ];
+            setHistory(newHistory);
+            processCommand(currentInput);
+            return;
+        }
+
+        const newHistory: HistoryItem[] = [
+            ...history.slice(0, -1),
+            { type: 'prompt', text: ` > ${currentInput}` }
+        ];
+
+        if (step === 1) { // Name
+            setFormValues(v => ({ ...v, name: currentInput }));
+            newHistory.push({ type: 'response', text: t.prompts[1] });
             newHistory.push({ type: 'prompt', text: ' >' });
             setStep(2);
         } else if (step === 2) { // Email
-            setFormValues(v => ({ ...v, email: inputValue }));
-            newHistory.push({ type: 'response', text: translations.prompts[2] });
+            setFormValues(v => ({ ...v, email: currentInput }));
+            newHistory.push({ type: 'response', text: t.prompts[2] });
             newHistory.push({ type: 'prompt', text: ' >' });
             setStep(3);
         } else if (step === 3) { // Message
-            setFormValues(v => ({ ...v, message: inputValue }));
-            newHistory.push({ type: 'response', text: translations.prompts[3] });
+            setFormValues(v => ({ ...v, message: currentInput }));
+            newHistory.push({ type: 'response', text: t.prompts[3] });
             setHistory(newHistory);
-            setStep(4); // Submitting state
+            setStep(4);
 
-            // Simulate API call
             await new Promise(res => setTimeout(res, 1500));
             
             const finalHistory: HistoryItem[] = [...newHistory];
-            finalHistory.push({ type: 'response', text: translations.success });
-            finalHistory.push({ type: 'response', text: translations.restart });
-            finalHistory.push({ type: 'prompt', text: translations.prompt });
+            finalHistory.push({ type: 'response', text: t.success });
+            finalHistory.push({ type: 'response', text: t.restart });
+            finalHistory.push({ type: 'prompt', text: '' });
             setHistory(finalHistory);
 
-            // Reset
             setStep(0);
-            setInputValue(translations.command);
             setFormValues({ name: "", email: "", message: "" });
             return;
         }
@@ -114,11 +142,11 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         <section id="contact" className="container">
             <div className="text-center">
                 <h2 className="text-3xl font-bold font-headline text-primary">
-                    <span className="font-mono text-xl text-secondary">05.</span> {translations.title}
+                    <span className="font-mono text-xl text-secondary">05.</span> {t.title}
                 </h2>
             </div>
             <div 
-                className="max-w-4xl mx-auto mt-12 font-code bg-card border rounded-lg shadow-lg overflow-hidden cursor-text"
+                className="dark max-w-4xl mx-auto mt-12 font-code bg-card border rounded-lg shadow-lg overflow-hidden cursor-text"
                 onClick={handleFocus}
             >
                 <div className="flex items-center px-4 py-2 bg-muted/30 border-b">
@@ -133,7 +161,8 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     {history.map((item, index) => {
                         if (item.type === 'prompt') {
                             return (
-                                <Prompt key={index} text={item.text}>
+                                <div key={index} className="flex items-center gap-2">
+                                  {item.text.startsWith(' >') ? <span className="text-muted-foreground">{item.text}</span> : <Prompt text={item.text} />}
                                   {index === history.length - 1 && step < 4 && (
                                     <form onSubmit={handleSubmit} className="flex-1">
                                       <input
@@ -149,8 +178,11 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                                       />
                                     </form>
                                   )}
-                                </Prompt>
+                                </div>
                             );
+                        }
+                        if(item.type === 'error'){
+                            return <p key={index} className="whitespace-pre-wrap text-red-500">{item.text}</p>;
                         }
                         return <p key={index} className="whitespace-pre-wrap">{item.text}</p>;
                     })}
