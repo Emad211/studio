@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 
 export function HeroBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [themeColors, setThemeColors] = useState({ primary: 'hsl(266, 100%, 50%)', background: 'hsl(0, 0%, 7%)' });
+  const [themeColors, setThemeColors] = useState({ primary: 'hsl(266, 100%, 50%)', background: 'hsl(220, 40%, 5%)' });
 
   useEffect(() => {
     // This effect runs once on mount to get the initial theme colors.
@@ -101,9 +101,8 @@ export function HeroBackground() {
 
     function animate() {
       if (!ctx) return;
-      // Fill the background first
-      ctx.fillStyle = themeColors.background;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Clear the canvas for a transparent background
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
         p.update();

@@ -25,9 +25,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased transition-colors duration-300">
+      <body className="font-body antialiased transition-colors duration-300 bg-background">
         <HeroBackground />
-        <div className="relative z-10 flex min-h-screen flex-col bg-background/80 backdrop-blur-sm">
+        <div className="relative z-10 flex min-h-screen flex-col">
           <Header />
           <main className="flex-grow">{children}</main>
           <Footer />
