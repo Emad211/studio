@@ -50,16 +50,13 @@ export function NeuralNetworkAnimation() {
     <motion.circle
       r="3"
       fill="hsl(var(--primary))"
-      initial={{ offsetDistance: "0%" }}
-      animate={{ offsetDistance: "100%" }}
-      transition={{
-        duration: 2 + Math.random() * 2,
-        repeat: Infinity,
-        ease: "linear",
-        delay: Math.random() * 2,
-      }}
     >
-      <animateMotion dur={`${2 + Math.random() * 2}s`} repeatCount="indefinite" path={`M${x1},${y1} L${x2},${y2}`} />
+       <animateMotion
+        dur={`${2 + Math.random() * 2}s`}
+        repeatCount="indefinite"
+        path={`M${x1},${y1} L${x2},${y2}`}
+        begin={`${Math.random() * 2}s`}
+      />
     </motion.circle>
   );
 
