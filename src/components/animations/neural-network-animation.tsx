@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const NODE_RADIUS = 8;
@@ -45,25 +45,91 @@ const codeSnippets = [
   { text: "const pulse = () => {}", x: 20, y: 240 },
 ]
 
-export function NeuralNetworkAnimation() {
-  const PulseDot = ({ x1, y1, x2, y2 } : {x1:number, y1:number, x2:number, y2:number}) => (
-    <motion.circle
-      r="3"
-      fill="hsl(var(--primary))"
-    >
-       <animateMotion
-        dur={`${2 + Math.random() * 2}s`}
-        repeatCount="indefinite"
-        path={`M${x1},${y1} L${x2},${y2}`}
-        begin={`${Math.random() * 2}s`}
-      />
-    </motion.circle>
-  );
+const PulseDot = ({ x1, y1, x2, y2 }: { x1: number, y1: number, x2: number, y2: number }) => {
+    const [dur, setDur] = useState(0);
+    const [begin, setBegin] = useState(0);
 
+    useEffect(() => {
+        setDur(2 + Math.random() * 2);
+        setBegin(Math.random() * 2);
+    }, []);
+
+    if (dur === 0) return null;
+
+    return (
+        <motion.circle
+            r="3"
+            fill="hsl(var(--primary))"
+        >
+            <animateMotion
+                dur={`${dur}s`}
+                repeatCount="indefinite"
+                path={`M${x1},${y1} L${x2},${y2}`}
+                begin={`${begin}s`}
+            />
+        </motion.circle>
+    );
+};
+
+const AnimatedNode = ({ node }: { node: typeof nodes[0] }) => {
+    const [dur, setDur] = useState(0);
+
+    useEffect(() => {
+        setDur(2 + Math.random() * 2);
+    }, []);
+    
+    if (dur === 0) {
+      return (
+         <motion.circle
+            key={node.id}
+            cx={node.x}
+            cy={node.y}
+            r={NODE_RADIUS}
+            fill="hsl(var(--background))"
+            stroke="hsl(var(--primary))"
+            strokeWidth="1"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: node.layer * 0.2 }}
+            filter="url(#glow)"
+        />
+      )
+    }
+
+    return (
+        <motion.circle
+            key={node.id}
+            cx={node.x}
+            cy={node.y}
+            r={NODE_RADIUS}
+            fill="hsl(var(--background))"
+            stroke="hsl(var(--primary))"
+            strokeWidth="1"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: node.layer * 0.2 }}
+            filter="url(#glow)"
+        >
+            <animate
+                attributeName="stroke"
+                values="hsl(var(--primary));hsl(var(--secondary));hsl(var(--primary))"
+                dur={`${dur}s`}
+                repeatCount="indefinite"
+            />
+        </motion.circle>
+    );
+};
+
+export function NeuralNetworkAnimation() {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   return (
     <div className="relative aspect-square w-full max-w-lg mx-auto">
-       {codeSnippets.map((snippet, i) => (
+       {isClient && codeSnippets.map((snippet, i) => (
          <motion.p
           key={i}
           className="absolute font-code text-xs text-muted-foreground"
@@ -101,29 +167,10 @@ export function NeuralNetworkAnimation() {
           />
         ))}
         
-        {lines.map((line, i) => i % 5 === 0 && <PulseDot key={`pulse-${line.id}`} {...line} />)}
+        {isClient && lines.map((line, i) => i % 5 === 0 && <PulseDot key={`pulse-${line.id}`} {...line} />)}
 
         {nodes.map(node => (
-          <motion.circle
-            key={node.id}
-            cx={node.x}
-            cy={node.y}
-            r={NODE_RADIUS}
-            fill="hsl(var(--background))"
-            stroke="hsl(var(--primary))"
-            strokeWidth="1"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 20, delay: node.layer * 0.2 }}
-            filter="url(#glow)"
-          >
-            <animate
-                attributeName="stroke"
-                values="hsl(var(--primary));hsl(var(--secondary));hsl(var(--primary))"
-                dur={`${2 + Math.random() * 2}s`}
-                repeatCount="indefinite"
-             />
-          </motion.circle>
+          <AnimatedNode key={node.id} node={node} />
         ))}
       </svg>
     </div>
