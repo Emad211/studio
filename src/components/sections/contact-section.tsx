@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
 type HistoryItem = {
     type: 'command' | 'response' | 'prompt' | 'error';
@@ -47,17 +47,15 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         commandNotFound: "command not found:",
     };
 
-    const [history, setHistory] = useState<HistoryItem[]>([]);
+    const [history, setHistory] = useState<HistoryItem[]>(welcomeMessages);
     const [commandHistory, setCommandHistory] = useState<HistoryItem[]>([]);
     const [step, setStep] = useState(0);
     const [inputValue, setInputValue] = useState("");
     const [formValues, setFormValues] = useState({ name: "", email: "", message: "" });
-    const [isTyping, setIsTyping] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
-        setHistory([...welcomeMessages]);
         setCommandHistory([{ type: 'prompt', text: '' }]);
     }, []);
 
@@ -68,84 +66,46 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     }, [history, commandHistory]);
 
     useEffect(() => {
-        if (!isTyping) {
-            inputRef.current?.focus();
-        }
-    }, [isTyping]);
+        inputRef.current?.focus();
+    }, [commandHistory]);
 
     const handleFocus = () => {
-        if (!isTyping) {
-            inputRef.current?.focus();
-        }
+        inputRef.current?.focus();
     };
-
-    const typeResponse = useCallback((lines: HistoryItem[], onFinished?: () => void) => {
-        setIsTyping(true);
-        let lineIndex = 0;
-        
-        const typeLine = () => {
-            if (lineIndex >= lines.length) {
-                setIsTyping(false);
-                onFinished?.();
-                return;
-            }
-
-            const currentLine = lines[lineIndex];
-            setCommandHistory(prev => [...prev, { type: currentLine.type, text: "" }]);
-
-            let charIndex = 0;
-            const typeChar = () => {
-                if (charIndex < currentLine.text.length) {
-                    setCommandHistory(prev => {
-                        const newHist = [...prev];
-                        newHist[newHist.length - 1].text += currentLine.text[charIndex];
-                        return newHist;
-                    });
-                    charIndex++;
-                    setTimeout(typeChar, 10);
-                } else {
-                    lineIndex++;
-                    setTimeout(typeLine, 10);
-                }
-            };
-            typeChar();
-        };
-        typeLine();
-    }, []);
 
     const processCommand = (command: string) => {
         const newCommandHistory: HistoryItem[] = [...commandHistory];
         newCommandHistory[newCommandHistory.length - 1] = { type: 'command', text: command };
+
+        let response: HistoryItem[] = [];
         
         switch (command.toLowerCase()) {
             case 'faq':
-                setCommandHistory(newCommandHistory);
-                typeResponse(faqContent, () => {
-                     setCommandHistory(prev => [...prev, { type: 'prompt', text: '' }]);
-                });
+                response = [...faqContent];
                 break;
             case 'send-message':
-                setCommandHistory(newCommandHistory);
-                typeResponse([{ type: 'response', text: t.prompts[0] }], () => {
-                    setCommandHistory(prev => [...prev, { type: 'prompt', text: '' }]);
-                });
+                response.push({ type: 'response', text: t.prompts[0] });
                 setStep(1);
                 break;
             case 'clear':
-                 setCommandHistory([{ type: 'prompt', text: '' }]);
+                setCommandHistory([]);
+                setHistory([]); // This will be reset by the welcome messages in the next render cycle if needed.
+                 setTimeout(() => {
+                    setHistory([...welcomeMessages]);
+                    setCommandHistory([{ type: 'prompt', text: '' }]);
+                 }, 0);
                 return;
             default:
                 if (command.trim() !== '') {
-                  newCommandHistory.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
+                  response.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
                 }
-                newCommandHistory.push({ type: 'prompt', text: '' });
-                setCommandHistory(newCommandHistory);
         }
+        setCommandHistory([...newCommandHistory, ...response, { type: 'prompt', text: '' }]);
     }
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if(step === 4 || isTyping) return;
+        if(step === 4) return;
 
         const currentInput = inputValue.trim();
         setInputValue("");
@@ -155,40 +115,40 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             return;
         }
 
-        const newHistory: HistoryItem[] = [ ...commandHistory ];
-        newHistory[newHistory.length - 1] = { type: 'command', text: `> ${currentInput}` };
-        setCommandHistory(newHistory);
+        const newCommandHistory: HistoryItem[] = [ ...commandHistory ];
+        newCommandHistory[newCommandHistory.length - 1] = { type: 'command', text: `> ${currentInput}` };
+        
+        let response: HistoryItem[] = [];
 
         if (step === 1) { // Name
             setFormValues(v => ({ ...v, name: currentInput }));
-            typeResponse([{ type: 'response', text: t.prompts[1] }], () => {
-                 setCommandHistory(prev => [...prev, { type: 'prompt', text: '' }]);
-            });
+            response.push({ type: 'response', text: t.prompts[1] });
             setStep(2);
         } else if (step === 2) { // Email
             setFormValues(v => ({ ...v, email: currentInput }));
-            typeResponse([{ type: 'response', text: t.prompts[2] }], () => {
-                 setCommandHistory(prev => [...prev, { type: 'prompt', text: '' }]);
-            });
+            response.push({ type: 'response', text: t.prompts[2] });
             setStep(3);
         } else if (step === 3) { // Message
             setFormValues(v => ({ ...v, message: currentInput }));
             setStep(4);
             
-            typeResponse([{ type: 'response', text: t.prompts[3] }], async () => {
-                await new Promise(res => setTimeout(res, 1000));
-                const finalLines = [
-                    { type: 'response', text: t.success },
-                    { type: 'response', text: t.restart }
-                ];
-                typeResponse(finalLines, () => {
-                    setCommandHistory(prev => [...prev, { type: 'prompt', text: '' }]);
-                    setStep(0);
-                    setFormValues({ name: "", email: "", message: "" });
-                });
-            });
+            setCommandHistory([...newCommandHistory, { type: 'response', text: t.prompts[3] }]);
+
+            // Simulate sending message
+            await new Promise(res => setTimeout(res, 1000));
+            
+            const finalLines = [
+                { type: 'response', text: t.success },
+                { type: 'response', text: t.restart }
+            ];
+
+            setCommandHistory(prev => [...prev, ...finalLines, { type: 'prompt', text: '' }]);
+            setStep(0);
+            setFormValues({ name: "", email: "", message: "" });
             return;
         }
+
+        setCommandHistory([...newCommandHistory, ...response, { type: 'prompt', text: '' }]);
     };
     
     const allHistory = [...history, ...commandHistory];
@@ -228,7 +188,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                                             autoFocus
                                             autoComplete="off"
                                             aria-label="terminal-input"
-                                            disabled={step >= 4 || isTyping}
+                                            disabled={step === 4}
                                           />
                                       </Prompt>
                                     </form>
@@ -253,7 +213,6 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                         }
                         return <p key={index} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
                     })}
-                     {isTyping && <div className="inline-block w-2 h-4 bg-foreground animate-blink" />}
                 </div>
             </div>
         </section>
