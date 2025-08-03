@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { Github, Linkedin, Twitter } from "lucide-react";
+import Link from "next/link";
 
 type HistoryItem = {
     type: 'command' | 'response' | 'prompt' | 'error';
-    text: string;
+    text?: string;
+    component?: React.ReactNode;
 };
 
 const Prompt = ({ children }: { children?: React.ReactNode }) => (
@@ -14,6 +17,15 @@ const Prompt = ({ children }: { children?: React.ReactNode }) => (
         <span className="text-blue-400">~</span>
         <span className="text-foreground">$</span>
         <div className="flex-1">{children}</div>
+    </div>
+);
+
+const SocialLink = ({ icon, name, url }: { icon: React.ReactNode, name: string, url: string }) => (
+    <div className="flex items-center gap-4">
+        {icon}
+        <Link href={url} target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary hover:underline">
+            {name}
+        </Link>
     </div>
 );
 
@@ -27,22 +39,22 @@ const welcomeMessages: HistoryItem[] = [
 ];
 
 const faqContent: HistoryItem[] = [
-    { type: 'response', text: "Frequently Asked Questions:"},
-    { type: 'response', text: "  Q: What technologies do you specialize in?"},
-    { type: 'response', text: "  A: I specialize in the MERN stack, Next.js, and Tailwind CSS."},
-    { type: 'response', text: ""},
-    { type: 'response', text: "  Q: Are you available for freelance work?"},
-    { type: 'response', text: "  A: Yes, I am currently accepting new projects. Use the 'send-message' command to get in touch!"},
-    { type: 'response', text: ""},
-    { type: 'response', text: "  Q: Where can I see your projects?"},
-    { type: 'response', text: "  A: You can see my projects on the projects page or my GitHub profile."}
+    { type: 'response', text: "Frequently Asked Questions:" },
+    { type: 'response', text: "  Q: What technologies do you specialize in?" },
+    { type: 'response', text: "  A: I specialize in the MERN stack, Next.js, and Tailwind CSS." },
+    { type: 'response', text: "" },
+    { type: 'response', text: "  Q: Are you available for freelance work?" },
+    { type: 'response', text: "  A: Yes, I am currently accepting new projects. Use the 'send-message' command to get in touch!" },
+    { type: 'response', text: "" },
+    { type: 'response', text: "  Q: Where can I see your projects?" },
+    { type: 'response', text: "  A: You can see my projects on the projects page or my GitHub profile." }
 ];
 
 const socialsContent: HistoryItem[] = [
-    { type: 'response', text: "My social media profiles:"},
-    { type: 'response', text: "  GitHub    - https://github.com/your-username" },
-    { type: 'response', text: "  LinkedIn  - https://linkedin.com/in/your-username" },
-    { type: 'response', text: "  Twitter   - https://twitter.com/your-username" },
+    { type: 'response', text: "My social media profiles:" },
+    { type: 'response', component: <SocialLink icon={<Github className="w-5 h-5"/>} name="GitHub" url="https://github.com/Emad211" /> },
+    { type: 'response', component: <SocialLink icon={<Linkedin className="w-5 h-5"/>} name="LinkedIn" url="https://linkedin.com/in/your-username" /> },
+    { type: 'response', component: <SocialLink icon={<Twitter className="w-5 h-5"/>} name="Twitter" url="https://twitter.com/your-username" /> },
 ];
 
 
@@ -65,7 +77,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     const containerRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
-        setHistory([...welcomeMessages]);
+        setHistory([]);
         setCommandHistory([{ type: 'prompt', text: '' }]);
     }, []);
 
@@ -84,8 +96,8 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     };
 
     const processCommand = (command: string) => {
-        const newCommandHistory: HistoryItem[] = [...commandHistory];
-        newCommandHistory[newCommandHistory.length - 1] = { type: 'command', text: command };
+        const newHistoryEntry: HistoryItem = { type: 'command', text: command };
+        setHistory(prev => [...prev, newHistoryEntry]);
 
         let response: HistoryItem[] = [];
         
@@ -101,20 +113,14 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 setStep(1);
                 break;
             case 'clear':
-                setCommandHistory([]);
                 setHistory([]);
-                 setTimeout(() => {
-                    setHistory([...welcomeMessages]);
-                    setCommandHistory([{ type: 'prompt', text: '' }]);
-                 }, 0);
                 return;
             default:
                 if (command.trim() !== '') {
                   response.push({ type: 'error', text: `${t.commandNotFound} ${command}` });
                 }
         }
-        setCommandHistory([...newCommandHistory, ...response]);
-        setHistory(prev => [...prev, ...newCommandHistory, ...response]);
+        setHistory(prev => [...prev, ...response]);
     }
     
     const handleSubmit = async (e: React.FormEvent) => {
@@ -159,7 +165,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 { type: 'response', text: t.restart }
             ];
 
-            setHistory(prev => [...prev, ...finalLines]);
+            setHistory(prev => [...prev.slice(0, -1), ...finalLines]); // Replace "Sending message..."
             setStep(0);
             setFormValues({ name: "", email: "", message: "" });
             return;
@@ -188,6 +194,9 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     <p className="text-sm text-center flex-grow text-muted-foreground">bash</p>
                 </div>
                 <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm">
+                    {welcomeMessages.map((item, index) => (
+                        <p key={`welcome-${index}`} className="whitespace-pre-wrap text-foreground">{item.text}</p>
+                    ))}
                     {history.map((item, index) => {
                          if (item.type === 'command') {
                             return (
@@ -199,10 +208,10 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                         if(item.type === 'error'){
                             return <p key={index} className="whitespace-pre-wrap text-red-500">{item.text}</p>;
                         }
-                        if (item.type === 'response') {
-                             return <p key={index} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
+                        if(item.component){
+                            return <div key={index} className="whitespace-pre-wrap text-foreground">{item.component}</div>;
                         }
-                        return null; // Should not happen
+                        return <p key={index} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
                     })}
                     <form onSubmit={handleSubmit}>
                         <Prompt>
