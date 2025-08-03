@@ -1,0 +1,39 @@
+import { Github, Linkedin, Twitter } from "lucide-react"
+import { Logo } from "@/components/logo"
+import { Button } from "../ui/button"
+import Link from "next/link"
+
+export function Footer() {
+  return (
+    <footer className="border-t">
+      <div className="container py-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center space-x-2">
+            <Logo />
+            <span className="font-bold font-headline">CodeCanvas</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="#" aria-label="Github">
+                <Github />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="#" aria-label="Twitter">
+                <Twitter />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="#" aria-label="LinkedIn">
+                <Linkedin />
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} CodeCanvas. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  )
+}
