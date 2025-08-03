@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { TypeAnimation } from "@/components/type-animation"
 import { ArrowRight, Mail } from "lucide-react"
-import { NeuralNetworkAnimation } from "@/components/animations/neural-network-animation"
+import { HeroBackground } from "./hero-background"
 
 const specializations = ["Computer Engineer", "AI Specialist"]
 
@@ -17,8 +17,9 @@ export function HeroSection() {
   };
 
   return (
-    <section className="container relative min-h-[calc(100vh-4rem)] flex items-center">
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
+    <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center text-center overflow-hidden">
+      <HeroBackground />
+      <div className="relative z-10">
         <motion.div
           initial="hidden"
           animate="show"
@@ -31,7 +32,7 @@ export function HeroSection() {
               },
             },
           }}
-          className="flex flex-col items-center lg:items-start text-center lg:text-left"
+          className="flex flex-col items-center"
         >
           <motion.h1 
             variants={FADE_UP_ANIMATION_VARIANTS}
@@ -47,13 +48,13 @@ export function HeroSection() {
           </motion.h2>
           <motion.p 
              variants={FADE_UP_ANIMATION_VARIANTS}
-            className="mx-auto lg:mx-0 mt-6 max-w-xl text-base sm:text-lg text-muted-foreground"
+            className="mx-auto mt-6 max-w-xl text-base sm:text-lg text-muted-foreground"
           >
              Shaping the intelligence of tomorrow, one line of code at a time. I build and deploy advanced AI solutions that drive innovation.
           </motion.p>
           <motion.div 
             variants={FADE_UP_ANIMATION_VARIANTS}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button size="lg" asChild className="group">
               <Link href="/projects">
@@ -69,9 +70,6 @@ export function HeroSection() {
             </Button>
           </motion.div>
         </motion.div>
-        <div className="hidden lg:block">
-            <NeuralNetworkAnimation />
-        </div>
       </div>
     </section>
   )
