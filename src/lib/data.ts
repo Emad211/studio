@@ -1,4 +1,4 @@
-import { BrainCircuit, Book, Database, Code, Activity, Bot, Languages, Server } from 'lucide-react';
+import { BrainCircuit, Book, Database, Code, Activity, Bot, Languages, Server, Wrench } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface Project {
@@ -63,119 +63,106 @@ export const projects: Project[] = [
 export const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
 
 
-export const skillGraph = {
-  nodes: [
-    { id: 'python', name: 'Python', category: 'Language' },
-    { id: 'r', name: 'R', category: 'Language' },
-    { id: 'matlab', name: 'MATLAB', category: 'Language' },
-    
-    { id: 'deep-learning', name: 'Deep Learning', category: 'AI/ML' },
-    { id: 'gen-ai', name: 'Generative AI', category: 'AI/ML' },
-    { id: 'computer-vision', name: 'Computer Vision', category: 'AI/ML' },
-    { id: 'agent-dev', name: 'Agent Development', category: 'AI/ML' },
-    { id: 'nlp', name: 'NLP', category: 'AI/ML' },
-    { id: 'neural-networks', name: 'Neural Networks', category: 'AI/ML' },
+interface Skill {
+    name: string;
+    level: 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner';
+}
 
-    { id: 'tensorflow', name: 'TensorFlow', category: 'AI Framework' },
-    { id: 'pytorch', name: 'PyTorch', category: 'AI Framework' },
-    { id: 'scikit-learn', name: 'Scikit-learn', category: 'AI Framework' },
-    { id: 'opencv', name: 'OpenCV', category: 'AI Framework' },
-    { id: 'langchain', name: 'LangChain', category: 'AI Framework' },
-    { id: 'autogen', name: 'AutoGen', category: 'AI Framework' },
-    
-    { id: 'pandas', name: 'Pandas', category: 'Data Science' },
-    { id: 'numpy', name: 'NumPy', category: 'Data Science' },
-    { id: 'statistics', name: 'Statistics', category: 'Data Science' },
-    { id: 'matplotlib', name: 'Matplotlib', category: 'Data Science' },
-    { id: 'seaborn', name: 'Seaborn', category: 'Data Science' },
-    { id: 'plotly', name: 'Plotly', category: 'Data Science' },
-    
-    { id: 'research', name: 'Research Methods', category: 'Research' },
-    { id: 'latex', name: 'LaTeX', category: 'Research' },
-    { id: 'academic-writing', name: 'Academic Writing', category: 'Research' },
-    { id: 'spss', name: 'SPSS', category: 'Research' },
+interface SkillCategory {
+    title: string;
+    icon: LucideIcon;
+    skills: Skill[];
+}
 
-    { id: 'html', name: 'HTML5', category: 'Web Dev' },
-    { id: 'css', name: 'CSS3', category: 'Web Dev' },
-    { id: 'react', name: 'React', category: 'Web Dev' },
-    { id: 'nodejs', name: 'Node.js', category: 'Web Dev' },
-    { id: 'flask', name: 'Flask', category: 'Web Dev' },
-    { id: 'bootstrap', name: 'Bootstrap', category: 'Web Dev' },
-    
-    { id: 'sql', name: 'SQL', category: 'Database' },
-    { id: 'postgres', name: 'PostgreSQL', category: 'Database' },
-    { id: 'mysql', name: 'MySQL', category: 'Database' },
-    { id: 'mongodb', name: 'MongoDB', category: 'Database' },
-    
-    { id: 'git', name: 'Git', category: 'Tools' },
-    { id: 'github', name: 'GitHub', category: 'Tools' },
-    { id: 'docker', name: 'Docker', category: 'Tools' },
-    { id: 'terminal', name: 'Terminal', category: 'Tools' },
-  ],
-  links: [
-    // Python ecosystem
-    { source: 'python', target: 'deep-learning' },
-    { source: 'python', target: 'tensorflow' },
-    { source: 'python', target: 'pytorch' },
-    { source: 'python', target: 'scikit-learn' },
-    { source: 'python', target: 'pandas' },
-    { source: 'python', target: 'numpy' },
-    { source: 'python', target: 'flask' },
-    { source: 'python', target: 'opencv' },
-    { source: 'python', target: 'langchain' },
-    
-    // AI/ML core
-    { source: 'deep-learning', target: 'neural-networks' },
-    { source: 'deep-learning', target: 'tensorflow' },
-    { source: 'deep-learning', target: 'pytorch' },
-    { source: 'gen-ai', target: 'deep-learning' },
-    { source: 'gen-ai', target: 'agent-dev' },
-    { source: 'gen-ai', target: 'langchain' },
-    { source: 'agent-dev', target: 'autogen' },
-    { source: 'agent-dev', target: 'langchain' },
-    { source: 'nlp', target: 'deep-learning' },
-    { source: 'nlp', target: 'langchain' },
-    { source: 'computer-vision', target: 'deep-learning' },
-    { source: 'computer-vision', target: 'opencv' },
-    { source: 'neural-networks', target: 'tensorflow' },
-    { source: 'neural-networks', target: 'pytorch' },
-
-    // Data Science
-    { source: 'pandas', target: 'numpy' },
-    { source: 'pandas', target: 'scikit-learn' },
-    { source: 'statistics', target: 'scikit-learn' },
-    { source: 'statistics', target: 'r' },
-    { source: 'statistics', target: 'spss' },
-    { source: 'matplotlib', target: 'pandas' },
-    { source: 'seaborn', target: 'matplotlib' },
-    { source: 'plotly', target: 'pandas' },
-    
-    // Research
-    { source: 'research', target: 'academic-writing' },
-    { source: 'research', target: 'statistics' },
-    { source: 'latex', target: 'academic-writing' },
-    
-    // Web Development
-    { source: 'html', target: 'css' },
-    { source: 'css', target: 'bootstrap' },
-    { source: 'react', target: 'html' },
-    { source: 'react', target: 'nodejs' },
-    { source: 'flask', target: 'sql' },
-    { source: 'nodejs', target: 'sql' },
-    
-    // Databases
-    { source: 'sql', target: 'postgres' },
-    { source: 'sql', target: 'mysql' },
-    { source: 'nodejs', target: 'mongodb' },
-    
-    // Tools
-    { source: 'git', target: 'github' },
-    { source: 'docker', target: 'flask' },
-    { source: 'docker', target: 'nodejs' },
-    { source: 'terminal', target: 'git' },
-  ],
-};
-
+export const skillCategories: SkillCategory[] = [
+    {
+        title: "AI & Machine Learning",
+        icon: BrainCircuit,
+        skills: [
+            { name: "Deep Learning", level: "Expert" },
+            { name: "Generative AI", level: "Expert" },
+            { name: "Neural Networks", level: "Expert" },
+            { name: "Agent Development", level: "Advanced" },
+            { name: "Computer Vision", level: "Advanced" },
+            { name: "NLP", level: "Advanced" },
+        ],
+    },
+    {
+        title: "AI Frameworks",
+        icon: Server,
+        skills: [
+            { name: "TensorFlow", level: "Expert" },
+            { name: "PyTorch", level: "Expert" },
+            { name: "Scikit-learn", level: "Advanced" },
+            { name: "OpenCV", level: "Advanced" },
+            { name: "LangChain", level: "Advanced" },
+            { name: "AutoGen", level: "Intermediate" },
+        ],
+    },
+    {
+        title: "Programming Languages",
+        icon: Languages,
+        skills: [
+            { name: "Python", level: "Expert" },
+            { name: "R", level: "Advanced" },
+            { name: "MATLAB", level: "Advanced" },
+        ],
+    },
+    {
+        title: "Data Science",
+        icon: Activity,
+        skills: [
+            { name: "Pandas", level: "Expert" },
+            { name: "NumPy", level: "Expert" },
+            { name: "Statistics", level: "Expert" },
+            { name: "Matplotlib", level: "Advanced" },
+            { name: "Seaborn", level: "Advanced" },
+            { name: "Plotly", level: "Intermediate" },
+        ],
+    },
+    {
+        title: "Web Development",
+        icon: Code,
+        skills: [
+            { name: "Flask", level: "Advanced" },
+            { name: "HTML5", level: "Advanced" },
+            { name: "CSS3", level: "Advanced" },
+            { name: "Bootstrap", level: "Advanced" },
+            { name: "React", level: "Intermediate" },
+            { name: "Node.js", level: "Intermediate" },
+        ],
+    },
+    {
+        title: "Databases",
+        icon: Database,
+        skills: [
+            { name: "SQL", level: "Advanced" },
+            { name: "PostgreSQL", level: "Intermediate" },
+            { name: "MySQL", level: "Intermediate" },
+            { name: "MongoDB", level: "Beginner" },
+        ],
+    },
+    {
+        title: "Research & Writing",
+        icon: Book,
+        skills: [
+            { name: "Research Methods", level: "Expert" },
+            { name: "LaTeX", level: "Expert" },
+            { name: "Academic Writing", level: "Advanced" },
+            { name: "SPSS", level: "Advanced" },
+        ],
+    },
+    {
+        title: "Tools & Technologies",
+        icon: Wrench,
+        skills: [
+            { name: "Git", level: "Advanced" },
+            { name: "GitHub", level: "Advanced" },
+            { name: "Terminal", level: "Advanced" },
+            { name: "Docker", level: "Intermediate" },
+        ],
+    },
+];
 
 interface Service {
   title: string;
