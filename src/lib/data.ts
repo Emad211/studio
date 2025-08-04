@@ -128,6 +128,11 @@ export const services: Service[] = [
     description: "Providing expertise in academic research, experimental design, and writing high-quality technical papers and theses.",
     icon: Book,
   },
+   {
+    title: "Web Development & Design",
+    description: "Creating modern, responsive, and high-performance websites and web applications tailored to your specific needs.",
+    icon: Code,
+  },
 ];
 
 export const blogPosts = [
