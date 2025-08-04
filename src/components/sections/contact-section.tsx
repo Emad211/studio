@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 type HistoryItem = {
     type: 'command' | 'response' | 'prompt' | 'error';
@@ -29,13 +30,21 @@ const SocialLink = ({ icon, name, url }: { icon: React.ReactNode, name: string, 
     </div>
 );
 
+const CommandHelp = ({ command, description }: { command: string, description: string }) => (
+    <div className="flex items-start">
+        <span className="w-28 shrink-0">{command}</span>
+        <span className="mr-4 shrink-0">-</span>
+        <span className="flex-1">{description}</span>
+    </div>
+);
+
 const welcomeMessages: HistoryItem[] = [
     { type: 'response', text: "Welcome to my interactive terminal!" },
     { type: 'response', text: "Available commands:" },
-    { type: 'response', text: "  send-message    - Send a message to me." },
-    { type: 'response', text: "  faq             - Read frequently asked questions." },
-    { type: 'response', text: "  socials         - View my social media profiles." },
-    { type: 'response', text: "  clear           - Clear the terminal screen." }
+    { type: 'response', component: <CommandHelp command="send-message" description="Send a message to me." /> },
+    { type: 'response', component: <CommandHelp command="faq" description="Read frequently asked questions." /> },
+    { type: 'response', component: <CommandHelp command="socials" description="View my social media profiles." /> },
+    { type: 'response', component: <CommandHelp command="clear" description="Clear the terminal screen." /> },
 ];
 
 const faqContent: HistoryItem[] = [
@@ -170,6 +179,27 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         setHistory(prev => [...prev, ...response]);
     };
 
+    const renderHistoryItem = (item: HistoryItem, index: number) => {
+        const key = `history-${index}`;
+        switch (item.type) {
+            case 'command':
+                return (
+                    <Prompt key={key}>
+                        <span className="text-foreground">{item.text}</span>
+                    </Prompt>
+                );
+            case 'error':
+                return <p key={key} className="whitespace-pre-wrap text-red-500">{item.text}</p>;
+            case 'response':
+                if (item.component) {
+                    return <div key={key} className={cn("pl-2", item.text ? "mt-1" : "")}>{item.component}</div>;
+                }
+                return <p key={key} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
+            default:
+                return null;
+        }
+    };
+
     return (
         <section id="contact" className="container">
             <div className="text-center">
@@ -189,26 +219,9 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     </div>
                     <p className="text-sm text-center flex-grow text-muted-foreground">bash</p>
                 </div>
-                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm md:text-base">
-                    {welcomeMessages.map((item, index) => (
-                        <p key={`welcome-${index}`} className="whitespace-pre-wrap text-foreground">{item.text}</p>
-                    ))}
-                    {history.map((item, index) => {
-                         if (item.type === 'command') {
-                            return (
-                                <Prompt key={index}>
-                                    <span className="text-foreground">{item.text}</span>
-                                </Prompt>
-                            );
-                        }
-                        if(item.type === 'error'){
-                            return <p key={index} className="whitespace-pre-wrap text-red-500">{item.text}</p>;
-                        }
-                        if(item.component){
-                            return <div key={index} className="whitespace-pre-wrap text-foreground">{item.component}</div>;
-                        }
-                        return <p key={index} className="whitespace-pre-wrap text-foreground">{item.text}</p>;
-                    })}
+                <div ref={containerRef} className="p-4 h-96 overflow-y-auto text-sm md:text-base space-y-2">
+                     {welcomeMessages.map((item, index) => renderHistoryItem(item, `welcome-${index}`))}
+                    {history.map((item, index) => renderHistoryItem(item, index))}
                     <form onSubmit={handleSubmit}>
                         <Prompt>
                             <input
