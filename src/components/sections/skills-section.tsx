@@ -76,57 +76,69 @@ Link.displayName = 'Link';
 export function SkillsSection() {
     const [positions, setPositions] = useState<any>({});
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+    const [isGraphReady, setIsGraphReady] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!containerRef.current) return;
-        const { width, height } = containerRef.current.getBoundingClientRect();
+        const container = containerRef.current;
+        if (!container) return;
         
-        let newPositions = Object.fromEntries(skillGraph.nodes.map(node => [node.id, { x: width / 2 + (Math.random() - 0.5) * 500, y: height / 2 + (Math.random() - 0.5) * 500 }]));
+        const updateDimensionsAndSimulate = () => {
+            const { width, height } = container.getBoundingClientRect();
 
-        const simulationSteps = 120;
-        for (let i = 0; i < simulationSteps; i++) {
-            const forces: any = {};
+            if (width === 0 || height === 0) return;
 
-            // Repulsion force
-            for (const node1 of skillGraph.nodes) {
-                forces[node1.id] = { fx: 0, fy: 0 };
-                for (const node2 of skillGraph.nodes) {
-                    if (node1.id === node2.id) continue;
-                    const dx = newPositions[node1.id].x - newPositions[node2.id].x;
-                    const dy = newPositions[node1.id].y - newPositions[node2.id].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy) || 1;
-                    const force = SIMULATION_STRENGTH / (distance * distance);
-                    forces[node1.id].fx += (dx / distance) * force;
-                    forces[node1.id].fy += (dy / distance) * force;
+            let newPositions = Object.fromEntries(skillGraph.nodes.map(node => [node.id, { x: width / 2 + (Math.random() - 0.5) * 500, y: height / 2 + (Math.random() - 0.5) * 500 }]));
+
+            const simulationSteps = 120;
+            for (let i = 0; i < simulationSteps; i++) {
+                const forces: any = {};
+
+                // Repulsion force
+                for (const node1 of skillGraph.nodes) {
+                    forces[node1.id] = { fx: 0, fy: 0 };
+                    for (const node2 of skillGraph.nodes) {
+                        if (node1.id === node2.id) continue;
+                        const dx = newPositions[node1.id].x - newPositions[node2.id].x;
+                        const dy = newPositions[node1.id].y - newPositions[node2.id].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                        const force = SIMULATION_STRENGTH / (distance * distance);
+                        forces[node1.id].fx += (dx / distance) * force;
+                        forces[node1.id].fy += (dy / distance) * force;
+                    }
+                }
+
+                // Attraction force
+                for (const link of skillGraph.links) {
+                    const sourceNode = newPositions[link.source];
+                    const targetNode = newPositions[link.target];
+                    const dx = targetNode.x - sourceNode.x;
+                    const dy = targetNode.y - sourceNode.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const force = 0.03 * distance;
+                    forces[link.source].fx += (dx / distance) * force;
+                    forces[link.source].fy += (dy / distance) * force;
+                    forces[link.target].fx -= (dx / distance) * force;
+                    forces[link.target].fy -= (dy / distance) * force;
+                }
+
+                // Update positions
+                for (const node of skillGraph.nodes) {
+                    newPositions[node.id].x -= forces[node.id].fx;
+                    newPositions[node.id].y -= forces[node.id].fy;
+                    
+                    newPositions[node.id].x = Math.max(10, Math.min(width - 10, newPositions[node.id].x));
+                    newPositions[node.id].y = Math.max(10, Math.min(height - 10, newPositions[node.id].y));
                 }
             }
-
-            // Attraction force
-            for (const link of skillGraph.links) {
-                const sourceNode = newPositions[link.source];
-                const targetNode = newPositions[link.target];
-                const dx = targetNode.x - sourceNode.x;
-                const dy = targetNode.y - sourceNode.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const force = 0.03 * distance;
-                forces[link.source].fx += (dx / distance) * force;
-                forces[link.source].fy += (dy / distance) * force;
-                forces[link.target].fx -= (dx / distance) * force;
-                forces[link.target].fy -= (dy / distance) * force;
-            }
-
-            // Update positions
-            for (const node of skillGraph.nodes) {
-                newPositions[node.id].x -= forces[node.id].fx;
-                newPositions[node.id].y -= forces[node.id].fy;
-                
-                // Contain within bounds
-                newPositions[node.id].x = Math.max(10, Math.min(width - 10, newPositions[node.id].x));
-                newPositions[node.id].y = Math.max(10, Math.min(height - 10, newPositions[node.id].y));
-            }
+            setPositions(newPositions);
+            setIsGraphReady(true);
         }
-        setPositions(newPositions);
+
+        updateDimensionsAndSimulate();
+        window.addEventListener('resize', updateDimensionsAndSimulate);
+        
+        return () => window.removeEventListener('resize', updateDimensionsAndSimulate);
     }, []);
 
     const neighboringNodes = useMemo(() => {
@@ -138,8 +150,6 @@ export function SkillsSection() {
         });
         return neighbors;
     }, [hoveredNode]);
-
-    const isGraphReady = Object.keys(positions).length === skillGraph.nodes.length;
     
     return (
         <section id="skills" className="container">
