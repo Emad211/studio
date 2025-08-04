@@ -1,8 +1,40 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+"use client"
+
+import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import { services } from "@/lib/data"
-import { ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+const ServiceCard = ({ service, isSelected, onClick }: { service: typeof services[0], isSelected: boolean, onClick: () => void }) => {
+  return (
+    <motion.div
+      onClick={onClick}
+      className={cn(
+        "p-6 rounded-lg cursor-pointer border-2 transition-all duration-300 text-center flex flex-col items-center gap-4 h-full",
+        isSelected
+          ? "bg-primary/10 border-primary shadow-lg shadow-primary/20"
+          : "bg-card/50 backdrop-blur-sm border-transparent hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+      )}
+      layout
+    >
+      <motion.div
+        className={cn("p-3 rounded-full transition-colors", isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-primary")}
+      >
+        <service.icon className="w-8 h-8" />
+      </motion.div>
+      <motion.h3
+        className="text-lg font-headline text-foreground"
+        layout="position"
+      >
+        {service.title}
+      </motion.h3>
+    </motion.div>
+  )
+}
 
 export function ServicesSection() {
+  const [selectedService, setSelectedService] = useState(services[0]);
+
   return (
     <section id="services" className="container">
       <div className="text-center">
@@ -11,30 +43,35 @@ export function ServicesSection() {
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">My services are tailored to bring your digital vision to life.</p>
       </div>
-      <div className="max-w-3xl mx-auto mt-12">
-        <Accordion type="single" collapsible className="w-full space-y-4">
-          {services.map((service, index) => (
-            <AccordionItem key={index} value={`item-${index}`} className="bg-card/50 backdrop-blur-sm border rounded-lg transition-all hover:border-primary/50">
-              <AccordionTrigger className="p-6 text-left hover:no-underline group">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-muted rounded-full text-primary group-data-[state=open]:text-primary group-data-[state=open]:bg-primary/10 transition-colors">
-                     <service.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-headline text-foreground group-data-[state=open]:text-primary transition-colors">
-                    {service.title}
-                  </h3>
-                </div>
-                <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[state=open]:text-primary" />
-              </AccordionTrigger>
-              <AccordionContent className="p-6 pt-0">
-                <p className="text-muted-foreground">
-                  {service.description}
-                </p>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+      
+      <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {services.map((service) => (
+          <ServiceCard 
+            key={service.title}
+            service={service}
+            isSelected={selectedService.title === service.title}
+            onClick={() => setSelectedService(service)}
+          />
+        ))}
       </div>
+
+      <div className="mt-8 min-h-[100px] w-full">
+         <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedService.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="p-8 rounded-lg bg-card/50 backdrop-blur-sm border text-center"
+            >
+              <p className="text-muted-foreground text-lg">
+                {selectedService.description}
+              </p>
+            </motion.div>
+        </AnimatePresence>
+      </div>
+
     </section>
   )
 }
