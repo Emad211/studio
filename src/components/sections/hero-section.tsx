@@ -46,21 +46,21 @@ export function HeroSection() {
           </motion.h2>
           <motion.p 
              variants={FADE_UP_ANIMATION_VARIANTS}
-            className="mx-auto mt-6 max-w-xl text-base sm:text-lg text-muted-foreground"
+            className="mx-auto mt-6 max-w-xl text-base sm:text-lg text-muted-foreground px-4"
           >
              Shaping the intelligence of tomorrow, one line of code at a time. I build and deploy advanced AI solutions that drive innovation.
           </motion.p>
           <motion.div 
             variants={FADE_UP_ANIMATION_VARIANTS}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="mt-8 flex w-full flex-col sm:flex-row items-center justify-center gap-4 px-4 sm:px-0"
           >
-            <Button size="lg" asChild className="group">
+            <Button size="lg" asChild className="group w-full sm:w-auto">
               <Link href="/projects">
                 Explore My Work
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
                <Link href="#contact">
                  <Mail className="mr-2 h-4 w-4" />
                  Get In Touch
