@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent } from "@/components/ui/card"
 import { Github, Mail, MapPin, Phone, Send } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
@@ -90,21 +89,20 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         </h2>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardContent className="p-0">
-          <div className="grid lg:grid-cols-2">
-            <div className="p-8 md:p-12 bg-card/80 backdrop-blur-sm">
+       <div className="max-w-5xl mx-auto rounded-lg border bg-card/60 backdrop-blur-sm p-8 md:p-12 shadow-2xl shadow-primary/10">
+        <div className="grid md:grid-cols-2 gap-12">
+            <div>
               <h3 className="text-2xl font-bold font-headline mb-4">{t.subtitle}</h3>
-              <div className="space-y-6 text-muted-foreground">
-                <div className="flex items-start gap-4">
+              <div className="space-y-6 text-muted-foreground mt-8">
+                <div className="flex items-start gap-4 hover:text-foreground transition-colors">
                   <Mail className="h-6 w-6 text-primary mt-1 shrink-0" />
-                  <span>{t.email}</span>
+                  <a href={`mailto:${t.email}`}>{t.email}</a>
                 </div>
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 hover:text-foreground transition-colors">
                   <Phone className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <span>{t.phone}</span>
                 </div>
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 hover:text-foreground transition-colors">
                   <MapPin className="h-6 w-6 text-primary mt-1 shrink-0" />
                   <span>{t.location}</span>
                 </div>
@@ -119,7 +117,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 ))}
               </div>
             </div>
-            <div className="p-8 md:p-12">
+            <div>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
@@ -165,15 +163,14 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+                  <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
                     {form.formState.isSubmitting ? "Sending..." : t.submitButton}
                   </Button>
                 </form>
               </Form>
             </div>
           </div>
-        </CardContent>
-      </Card>
+       </div>
     </section>
   )
 }
