@@ -62,41 +62,89 @@ export const projects: Project[] = [
 
 export const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
 
-export const skillCategories = [
+
+export const skillGraphData = [
     {
-        name: "Artificial Intelligence",
-        icon: BrainCircuit,
+        category: "AI & Machine Learning",
         skills: [
-            { name: "Deep Learning", level: 95 },
-            { name: "Generative AI", level: 95 },
-            { name: "Computer Vision", level: 92 },
-            { name: "Natural Language Processing", level: 88 },
-            { name: "Agent Development", level: 92 },
+            { name: "Deep Learning", level: "Expert" },
+            { name: "Generative AI", level: "Expert" },
+            { name: "Neural Networks", level: "Expert" },
+            { name: "Agent Development", level: "Advanced" },
+            { name: "Computer Vision", level: "Advanced" },
+            { name: "NLP", level: "Advanced" },
         ]
     },
     {
-        name: "Web Development",
-        icon: Code,
+        category: "AI Frameworks",
         skills: [
-            { name: "Next.js", level: 88 },
-            { name: "React", level: 85 },
-            { name: "Tailwind CSS", level: 92 },
-            { name: "Flask", level: 80 },
-            { name: "Firebase", level: 85 },
+            { name: "TensorFlow", level: "Expert" },
+            { name: "PyTorch", level: "Expert" },
+            { name: "Scikit-learn", level: "Advanced" },
+            { name: "OpenCV", level: "Advanced" },
+            { name: "LangChain", level: "Advanced" },
+            { name: "AutoGen", level: "Intermediate" },
         ]
     },
     {
-        name: "Languages & Tools",
-        icon: Languages,
+        category: "Programming Languages",
         skills: [
-            { name: "Python", level: 95 },
-            { name: "R", level: 90 },
-            { name: "JavaScript / TypeScript", level: 85 },
-            { name: "SQL", level: 90 },
-            { name: "TensorFlow & PyTorch", level: 95 },
+            { name: "Python", level: "Expert" },
+            { name: "R", level: "Advanced" },
+            { name: "MATLAB", level: "Advanced" },
+        ]
+    },
+     {
+        category: "Data Science & Analytics",
+        skills: [
+            { name: "Pandas", level: "Expert" },
+            { name: "NumPy", level: "Expert" },
+            { name: "Statistics", level: "Expert" },
+            { name: "Matplotlib", level: "Advanced" },
+            { name: "Seaborn", level: "Advanced" },
+            { name: "Plotly", level: "Intermediate" },
+        ]
+    },
+    {
+        category: "Research & Academia",
+        skills: [
+            { name: "Research Methods", level: "Expert" },
+            { name: "LaTeX", level: "Expert" },
+            { name: "Academic Writing", level: "Advanced" },
+            { name: "SPSS", level: "Advanced" },
+        ]
+    },
+    {
+        category: "Web Development",
+        skills: [
+            { name: "Flask", level: "Advanced" },
+            { name: "HTML5", level: "Advanced" },
+            { name: "CSS3", level: "Advanced" },
+            { name: "Bootstrap", level: "Advanced" },
+            { name: "React", level: "Intermediate" },
+            { name: "Node.js", level: "Intermediate" },
+        ]
+    },
+    {
+        category: "Databases",
+        skills: [
+            { name: "SQL", level: "Advanced" },
+            { name: "PostgreSQL", level: "Intermediate" },
+            { name: "MySQL", level: "Intermediate" },
+            { name: "MongoDB", level: "Beginner" },
+        ]
+    },
+    {
+        category: "Tools & Technologies",
+        skills: [
+            { name: "Git", level: "Advanced" },
+            { name: "GitHub", level: "Advanced" },
+            { name: "Docker", level: "Intermediate" },
+            { name: "Terminal", level: "Advanced" },
         ]
     }
 ];
+
 
 
 interface Service {
