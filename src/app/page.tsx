@@ -8,13 +8,13 @@ import { ContactSection } from '@/components/sections/contact-section';
 export default function Home() {
   return (
     <div className="flex flex-col">
-      <HeroSection />
+      <HeroSection lang="en"/>
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection />
         <ServicesSection />
         <SkillsSection />
         <ProjectsSection />
-        <ContactSection />
+        <ContactSection lang="en" />
       </div>
     </div>
   );
