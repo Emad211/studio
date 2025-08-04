@@ -46,6 +46,7 @@ export function AboutSection() {
                                 width={500}
                                 height={500}
                                 className="rounded-lg object-contain z-10 relative transition-transform duration-300 group-hover:scale-105"
+                                data-ai-hint="portrait man"
                             />
                         </div>
                     </div>
