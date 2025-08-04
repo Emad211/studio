@@ -22,7 +22,7 @@ export function AboutSection() {
           <h2 className="text-3xl font-bold font-headline text-primary">
             <span className="font-mono text-xl text-secondary">01.</span> About Me
           </h2>
-          <div className="mt-6 text-lg text-muted-foreground space-y-4 text-justify">
+          <div className="mt-6 text-lg text-muted-foreground space-y-4">
             <p>
               My journey began with a degree in computer engineering, where I built a solid foundation in logic and systems. However, I quickly realized my true passion wasn't just in making machines work, but in making them think. This curiosity led me down the fascinating path of artificial intelligence.
             </p>
