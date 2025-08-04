@@ -7,9 +7,13 @@ import { cn } from '@/lib/utils'
 
 const TimelineCard = ({ item, side }: { item: typeof education[0] | typeof experience[0], side: 'top' | 'bottom' }) => {
     return (
-        <div className={cn("relative flex flex-col items-center w-64", side === 'top' ? 'mb-8' : 'mt-8')}>
-            <div className="absolute w-px h-8 bg-border" style={side === 'top' ? { bottom: '-2rem' } : { top: '-2rem' }}></div>
-            <div className="absolute w-3 h-3 rounded-full bg-primary ring-4 ring-background" style={side === 'top' ? { bottom: '-0.375rem' } : { top: '-0.375rem' }}></div>
+        <div className="relative flex flex-col items-center w-64">
+            <div className="absolute w-px h-8 bg-border hidden md:block" style={side === 'top' ? { bottom: '-2rem' } : { top: '-2rem' }}></div>
+            <div className="absolute w-3 h-3 rounded-full bg-primary ring-4 ring-background hidden md:block" style={side === 'top' ? { bottom: '-0.375rem' } : { top: '-0.375rem' }}></div>
+
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-border md:hidden">
+                <div className="absolute w-3 h-3 rounded-full bg-primary ring-4 ring-background top-0 -translate-y-1/2"></div>
+            </div>
 
             <Card className="bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors duration-300 w-full">
                 <CardHeader>
@@ -67,7 +71,7 @@ export function AboutSection() {
             </div>
 
             {/* Resume Timeline */}
-            <div className="mt-24">
+            <div className="mt-16">
                 <h3 className="text-2xl font-bold font-headline text-center mb-12">My Journey</h3>
                 <Tabs defaultValue="experience" className="w-full">
                     <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
@@ -82,9 +86,8 @@ export function AboutSection() {
                     </TabsList>
                     <div className="mt-16 overflow-x-auto pb-8">
                         <TabsContent value="experience">
-                            <div className="relative flex flex-col md:flex-row justify-center items-center px-4">
+                            <div className="relative flex justify-center items-center px-4">
                                 <div className="absolute top-1/2 left-0 w-full h-px bg-border -translate-y-1/2 hidden md:block"></div>
-                                <div className="absolute top-0 left-1/2 w-px h-full bg-border -translate-x-1/2 md:hidden"></div>
                                 <div className="flex flex-col md:flex-row gap-8 md:gap-16">
                                     {experience.map((item, index) => (
                                         <TimelineCard key={index} item={item} side={index % 2 === 0 ? 'bottom' : 'top'} />
@@ -93,9 +96,8 @@ export function AboutSection() {
                             </div>
                         </TabsContent>
                         <TabsContent value="education">
-                            <div className="relative flex flex-col md:flex-row justify-center items-center px-4">
+                            <div className="relative flex justify-center items-center px-4">
                                 <div className="absolute top-1/2 left-0 w-full h-px bg-border -translate-y-1/2 hidden md:block"></div>
-                                 <div className="absolute top-0 left-1/2 w-px h-full bg-border -translate-x-1/2 md:hidden"></div>
                                 <div className="flex flex-col md:flex-row gap-8 md:gap-16">
                                     {education.map((item, index) => (
                                          <TimelineCard key={index} item={item} side={index % 2 === 0 ? 'bottom' : 'top'} />
