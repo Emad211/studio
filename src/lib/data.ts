@@ -1,4 +1,4 @@
-import { BrainCircuit, Book, Database, Code, Activity, Bot } from 'lucide-react';
+import { BrainCircuit, Book, Database, Code, Activity, Bot, Languages, Server } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface Project {
@@ -62,67 +62,40 @@ export const projects: Project[] = [
 
 export const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
 
-
-export const skillTree = [
-  // Root
-  { id: 'cs', name: 'Computer Science', parent: null, level: 95 },
-
-  // Layer 1: Core Pillars
-  { id: 'ai', name: 'Artificial Intelligence', parent: 'cs', level: 95 },
-  { id: 'web', name: 'Web Development', parent: 'cs', level: 85 },
-  { id: 'langs', name: 'Programming Languages', parent: 'cs', level: 95 },
-
-  // Layer 2: AI Specializations
-  { id: 'dl', name: 'Deep Learning', parent: 'ai', level: 95 },
-  { id: 'gen-ai', name: 'Generative AI', parent: 'ai', level: 95 },
-  { id: 'cv', name: 'Computer Vision', parent: 'ai', level: 92 },
-  { id: 'nlp', name: 'NLP', parent: 'ai', level: 88 },
-
-  // Layer 2: Web Specializations
-  { id: 'frontend', name: 'Front-End', parent: 'web', level: 90 },
-  { id: 'backend', name: 'Back-End', parent: 'web', level: 80 },
-
-  // Layer 2: Languages
-  { id: 'python', name: 'Python', parent: 'langs', level: 95 },
-  { id: 'r', name: 'R', parent: 'langs', level: 90 },
-  { id: 'js-ts', name: 'JavaScript / TypeScript', parent: 'langs', level: 85 },
-  { id: 'sql', name: 'SQL', parent: 'langs', level: 90 },
-
-  // Layer 3: AI Frameworks & Libraries
-  { id: 'tf', name: 'TensorFlow', parent: 'dl', level: 95 },
-  { id: 'pytorch', name: 'PyTorch', parent: 'dl', level: 95 },
-  { id: 'sklearn', name: 'Scikit-learn', parent: 'dl', level: 90 },
-  { id: 'langchain', name: 'LangChain', parent: 'gen-ai', level: 90 },
-  
-  // Layer 3: Frontend Frameworks
-  { id: 'react', name: 'React', parent: 'frontend', level: 85 },
-  { id: 'nextjs', name: 'Next.js', parent: 'frontend', level: 88 },
-  { id: 'tailwind', name: 'Tailwind CSS', parent: 'frontend', level: 92 },
-];
-
-export const skills = [
-  // Layer 1: Foundation (Languages & Core Concepts)
-  { name: "Python", level: 95, layer: 1, position: 1 },
-  { name: "R", level: 90, layer: 1, position: 2 },
-  { name: "SQL", level: 90, layer: 1, position: 3 },
-  { name: "Statistics", level: 95, layer: 1, position: 4 },
-  { name: "React", level: 80, layer: 1, position: 5 },
-  
-  // Layer 2: Specialization (Frameworks & Libraries)
-  { name: "Deep Learning", level: 95, layer: 2, position: 1 },
-  { name: "Generative AI", level: 95, layer: 2, position: 2 },
-  { name: "Computer Vision", level: 92, layer: 2, position: 3 },
-  { name: "NLP", level: 88, layer: 2, position: 4 },
-  { name: "TensorFlow", level: 95, layer: 2, position: 5 },
-  { name: "PyTorch", level: 95, layer: 2, position: 6 },
-  { name: "Scikit-learn", level: 90, layer: 2, position: 7 },
-  { name: "LangChain", level: 90, layer: 2, position: 8 },
-
-  // Layer 3: Application (Outputs & Tools)
-  { name: "Agent Development", level: 92, layer: 3, position: 1 },
-  { name: "Data Analysis", level: 95, layer: 3, position: 2 },
-  { name: "Web Development", level: 85, layer: 3, position: 3 },
-  { name: "Research", level: 90, layer: 3, position: 4 },
+export const skillCategories = [
+    {
+        name: "Artificial Intelligence",
+        icon: BrainCircuit,
+        skills: [
+            { name: "Deep Learning", level: 95 },
+            { name: "Generative AI", level: 95 },
+            { name: "Computer Vision", level: 92 },
+            { name: "Natural Language Processing", level: 88 },
+            { name: "Agent Development", level: 92 },
+        ]
+    },
+    {
+        name: "Web Development",
+        icon: Code,
+        skills: [
+            { name: "Next.js", level: 88 },
+            { name: "React", level: 85 },
+            { name: "Tailwind CSS", level: 92 },
+            { name: "Flask", level: 80 },
+            { name: "Firebase", level: 85 },
+        ]
+    },
+    {
+        name: "Languages & Tools",
+        icon: Languages,
+        skills: [
+            { name: "Python", level: 95 },
+            { name: "R", level: 90 },
+            { name: "JavaScript / TypeScript", level: 85 },
+            { name: "SQL", level: 90 },
+            { name: "TensorFlow & PyTorch", level: 95 },
+        ]
+    }
 ];
 
 
