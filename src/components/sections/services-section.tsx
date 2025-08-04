@@ -78,10 +78,10 @@ export function ServicesSection() {
               <AnimatePresence>
                 {isSelected && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0, y: -20 }}
-                    animate={{ opacity: 1, height: 'auto', y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -20 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border -mt-2"
                   >
                     <p className="text-muted-foreground text-center">
