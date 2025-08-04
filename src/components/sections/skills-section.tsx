@@ -1,30 +1,19 @@
 "use client"
 
 import {
-  BrainCircuit,
-  Code,
-  Database,
-  Languages,
-  Book,
-  Server,
-  Wrench,
-  Activity,
-} from "lucide-react"
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { skillCategories } from "@/lib/data"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
 
 const levelColorMap: { [key: string]: string } = {
   Expert: "bg-primary text-primary-foreground",
   Advanced: "bg-primary/80 text-primary-foreground",
   Intermediate: "bg-secondary text-secondary-foreground",
   Beginner: "bg-muted text-muted-foreground",
-}
-
-const FADE_UP_ANIMATION_VARIANTS = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" } },
 }
 
 export function SkillsSection() {
@@ -38,31 +27,18 @@ export function SkillsSection() {
           A collection of my technical capabilities.
         </p>
       </div>
-      <motion.div
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        variants={{
-          hidden: {},
-          show: {
-            transition: {
-              staggerChildren: 0.1,
-            },
-          },
-        }}
-        className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {skillCategories.map((category) => (
-          <motion.div key={category.title} variants={FADE_UP_ANIMATION_VARIANTS}>
-            <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors duration-300">
-              <CardHeader className="flex flex-row items-center gap-4">
-                <category.icon className="h-8 w-8 text-primary" />
-                <CardTitle className="font-headline text-xl">
-                  {category.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
+      <div className="mt-12 max-w-3xl mx-auto">
+         <Accordion type="single" collapsible defaultValue={skillCategories[0].title}>
+          {skillCategories.map((category) => (
+            <AccordionItem key={category.title} value={category.title}>
+              <AccordionTrigger className="text-lg hover:no-underline">
+                <div className="flex items-center gap-4">
+                  <category.icon className="h-6 w-6 text-primary" />
+                  <span className="font-headline">{category.title}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                 <ul className="space-y-4 pt-4 pl-4">
                   {category.skills.map((skill) => (
                     <li
                       key={skill.name}
@@ -79,11 +55,11 @@ export function SkillsSection() {
                     </li>
                   ))}
                 </ul>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </section>
   )
 }
