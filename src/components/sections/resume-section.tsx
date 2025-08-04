@@ -4,9 +4,9 @@ import { Building, GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const TimelineItem = ({ children, isLast }: { children: React.ReactNode; isLast: boolean }) => (
-  <div className="relative flex items-start">
+  <div className="relative flex items-start h-full">
     <div className={cn("absolute left-[1.1875rem] top-[1.1875rem] h-full w-px bg-border", isLast && "h-[calc(1.1875rem)]")} />
-    <div className="relative flex-shrink-0">
+    <div className="relative flex-shrink-0 w-full">
       {children}
     </div>
   </div>
