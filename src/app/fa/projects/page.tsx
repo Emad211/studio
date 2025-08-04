@@ -6,10 +6,15 @@ export default function ProjectsPage({ searchParams }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
   const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : (Array.isArray(searchParams?.tags) ? searchParams.tags : []);
+  const searchTerm = typeof searchParams?.search === 'string' ? searchParams.search.toLowerCase() : '';
 
-  const filteredProjects = selectedTags.length > 0
-    ? projects.filter(project => selectedTags.every(tag => project.tags.includes(tag)))
-    : projects;
+  const filteredProjects = projects.filter(project => {
+    const tagsMatch = selectedTags.length > 0 ? selectedTags.every(tag => project.tags.includes(tag)) : true;
+    const searchMatch = searchTerm 
+      ? project.title_fa.toLowerCase().includes(searchTerm) || project.description_fa.toLowerCase().includes(searchTerm)
+      : true;
+    return tagsMatch && searchMatch;
+  });
 
   return (
     <div className="container py-12">
@@ -18,7 +23,7 @@ export default function ProjectsPage({ searchParams }: {
         <p className="mt-2 text-lg text-muted-foreground">مجموعه‌ای از کارهای من، از برنامه‌های وب تا پروژه‌های متن‌باز.</p>
       </div>
 
-      <ProjectFilter allTags={allTags} />
+      <ProjectFilter allTags={allTags} lang="fa" />
 
       {filteredProjects.length > 0 ? (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
