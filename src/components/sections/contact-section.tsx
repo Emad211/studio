@@ -83,7 +83,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="contact" className="container">
-      <div className="text-center mb-12">
+      <div className="text-left mb-12">
         <h2 className="text-3xl font-bold font-headline text-primary">
           <span className="font-mono text-xl text-secondary">05.</span> {t.title}
         </h2>

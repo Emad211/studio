@@ -52,7 +52,7 @@ export function ServicesSection() {
 
   return (
     <section id="services" className="container">
-      <div className="text-center">
+      <div className="text-left">
         <h2 className="text-3xl font-bold font-headline text-primary">
           <span className="font-mono text-xl text-secondary">02.</span> What I Do
         </h2>

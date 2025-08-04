@@ -55,7 +55,7 @@ export function AboutSection() {
                         </div>
                     </div>
                 </div>
-                <div className="order-1 lg:order-2 text-center lg:text-left">
+                <div className="order-1 lg:order-2 text-left">
                     <h2 className="text-3xl font-bold font-headline text-primary">
                         <span className="font-mono text-xl text-secondary">01.</span> About Me
                     </h2>
@@ -72,9 +72,9 @@ export function AboutSection() {
 
             {/* Resume Timeline */}
             <div className="mt-16">
-                <h3 className="text-2xl font-bold font-headline text-center mb-12">My Journey</h3>
+                <h3 className="text-2xl font-bold font-headline mb-12">My Journey</h3>
                 <Tabs defaultValue="experience" className="w-full">
-                    <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+                    <TabsList className="grid w-full max-w-md grid-cols-2">
                         <TabsTrigger value="experience">
                             <Building className="mr-2 h-4 w-4" />
                             Experience

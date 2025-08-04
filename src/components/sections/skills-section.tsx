@@ -79,7 +79,7 @@ export function SkillsSection() {
 
   return (
     <section id="skills" className="container">
-      <div className="text-center">
+      <div className="text-left">
         <h2 className="text-3xl font-bold font-headline text-primary">
           <span className="font-mono text-xl text-secondary">03.</span> My Skills
         </h2>
