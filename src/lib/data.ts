@@ -221,9 +221,9 @@ export const experience = [
     },
     {
         role: "Python Programmer",
-        company: "Daraei Academy",
+        company: "استارت اپ مسو",
         duration: "2020 - 2023",
-        location: "Babolsar, Mazandaran"
+        location: "Remote"
     },
     {
         role: "Statistician",
