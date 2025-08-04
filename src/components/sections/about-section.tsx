@@ -7,15 +7,15 @@ import { cn } from '@/lib/utils'
 
 const TimelineCard = ({ item, side }: { item: typeof education[0] | typeof experience[0], side: 'top' | 'bottom' }) => {
     return (
-        <div className="relative flex flex-col items-center w-64">
+        <div className="relative flex flex-col items-center w-full md:w-64">
             <div className="absolute w-px h-8 bg-border hidden md:block" style={side === 'top' ? { bottom: '-2rem' } : { top: '-2rem' }}></div>
             <div className="absolute w-3 h-3 rounded-full bg-primary ring-4 ring-background hidden md:block" style={side === 'top' ? { bottom: '-0.375rem' } : { top: '-0.375rem' }}></div>
 
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-border md:hidden">
-                <div className="absolute w-3 h-3 rounded-full bg-primary ring-4 ring-background top-0 -translate-y-1/2"></div>
+             <div className="absolute top-0 left-0 -translate-x-1/2 w-px h-full bg-border md:hidden">
+                <div className="absolute w-3 h-3 rounded-full bg-primary ring-4 ring-background top-1/2 -translate-y-1/2 left-1/2"></div>
             </div>
 
-            <Card className="bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors duration-300 w-full">
+            <Card className="bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors duration-300 w-full ml-4 md:ml-0">
                 <CardHeader>
                     <CardTitle className="font-headline text-base leading-tight">
                         {'degree' in item ? item.degree : item.role}
@@ -55,7 +55,7 @@ export function AboutSection() {
                         </div>
                     </div>
                 </div>
-                <div className="order-1 lg:order-2">
+                <div className="order-1 lg:order-2 text-center lg:text-left">
                     <h2 className="text-3xl font-bold font-headline text-primary">
                         <span className="font-mono text-xl text-secondary">01.</span> About Me
                     </h2>
