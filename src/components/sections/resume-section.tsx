@@ -22,18 +22,20 @@ const TimelineIcon = ({ icon }: { icon: React.ElementType }) => {
 };
 
 const TimelineCard = ({ item }: { item: typeof education[0] | typeof experience[0] }) => (
-  <Card className="ml-6 h-full transition-all duration-300 border-2 border-transparent hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
-    <CardHeader>
-      <CardTitle className="font-headline text-lg">{'degree' in item ? item.degree : item.role}</CardTitle>
-      <p className="text-sm text-muted-foreground">{'university' in item ? item.university : item.company}</p>
-      {('specialization' in item && item.specialization) && <p className="text-sm text-primary">{item.specialization}</p>}
-    </CardHeader>
-    <CardContent>
-      <p className="text-sm text-muted-foreground">{item.duration}</p>
-      {('location' in item && item.location) && <p className="mt-1 text-xs text-muted-foreground">{item.location}</p>}
-    </CardContent>
-  </Card>
-);
+    <Card className="ml-6 h-full bg-secondary/10 backdrop-blur-lg border-secondary/20 hover:border-primary/50 transition-colors duration-300 shadow-lg hover:shadow-primary/20">
+      <CardHeader className="border-b border-secondary/20 pb-4">
+        <CardTitle className="font-headline text-lg">{'degree' in item ? item.degree : item.role}</CardTitle>
+        {('specialization' in item && item.specialization) && <p className="text-sm text-primary">{item.specialization}</p>}
+      </CardHeader>
+      <CardContent className="pt-4 flex justify-between items-center">
+        <p className="text-sm text-muted-foreground">{'university' in item ? item.university : item.company}</p>
+        <div className="text-sm text-muted-foreground text-right">
+          <p>{item.duration}</p>
+          {('location' in item && item.location) && <p className="mt-1 text-xs">{item.location}</p>}
+        </div>
+      </CardContent>
+    </Card>
+  );
 
 export function ResumeSection() {
   return (
