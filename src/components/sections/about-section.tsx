@@ -87,9 +87,9 @@ export function AboutSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             </div>
 
             <div className="mt-16">
-                <h3 className={cn("text-2xl font-bold font-headline mb-12", isFa ? "text-right" : "text-left")}>{t.journeyTitle}</h3>
+                <h3 className="text-2xl font-bold font-headline mb-12 text-center">{t.journeyTitle}</h3>
                 <Tabs defaultValue="experience" className="w-full">
-                    <TabsList className="grid w-full max-w-md grid-cols-2">
+                    <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
                         <TabsTrigger value="experience">
                             <Building className={cn(isFa ? "ml-2" : "mr-2", "h-4 w-4")} />
                             {t.experience}
