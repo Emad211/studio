@@ -1,8 +1,19 @@
 "use client"
 
+import { useState } from "react"
 import { skillCategories } from "@/lib/data"
 import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Progress } from "@/components/ui/progress"
+import type { LucideIcon } from "lucide-react"
+
+type SkillCategory = (typeof skillCategories)[0]
 
 const FADE_IN_VARIANTS = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
@@ -21,21 +32,24 @@ const FADE_IN_VARIANTS = {
 const SkillCategoryCard = ({
   category,
   index,
+  onClick,
 }: {
-  category: (typeof skillCategories)[0]
+  category: SkillCategory
   index: number
+  onClick: () => void
 }) => {
-  const Icon = category.icon
+  const Icon = category.icon as LucideIcon
 
   return (
-    <motion.div
+    <motion.button
+      onClick={onClick}
       variants={FADE_IN_VARIANTS}
       initial="hidden"
       whileInView="show"
       whileHover={{ y: -5, scale: 1.05, shadow: "0 25px 50px -12px rgba(var(--primary-rgb), 0.25)" }}
       custom={index}
       viewport={{ once: true }}
-      className="relative aspect-square w-full max-w-[150px] rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg"
+      className="relative aspect-square w-full max-w-[150px] rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg text-left"
     >
       <div className="absolute top-3 left-3 text-lg font-bold text-foreground/50">
         {category.skills.length.toString().padStart(2, "0")}
@@ -46,11 +60,23 @@ const SkillCategoryCard = ({
           {category.title}
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   )
 }
 
+const skillLevelToValue = (level: "Expert" | "Advanced" | "Intermediate" | "Beginner") => {
+  switch (level) {
+    case "Expert": return 100;
+    case "Advanced": return 80;
+    case "Intermediate": return 60;
+    case "Beginner": return 40;
+    default: return 0;
+  }
+}
+
 export function SkillsSection() {
+  const [selectedCategory, setSelectedCategory] = useState<SkillCategory | null>(null)
+
   return (
     <section id="skills" className="container">
       <div className="text-center">
@@ -58,14 +84,47 @@ export function SkillsSection() {
           <span className="font-mono text-xl text-secondary">03.</span> My Skills
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">
-          A collection of my technical capabilities.
+          A collection of my technical capabilities. Click on a category to see details.
         </p>
       </div>
-      <div className="mt-12 flex flex-wrap justify-center gap-4 md:gap-6">
-        {skillCategories.map((category, index) => (
-          <SkillCategoryCard key={category.title} category={category} index={index} />
-        ))}
-      </div>
+
+      <Dialog>
+        <div className="mt-12 flex flex-wrap justify-center gap-4 md:gap-6">
+          {skillCategories.map((category, index) => (
+            <DialogTrigger key={category.title} asChild>
+              <SkillCategoryCard
+                category={category}
+                index={index}
+                onClick={() => setSelectedCategory(category)}
+              />
+            </DialogTrigger>
+          ))}
+        </div>
+
+        <DialogContent className="bg-background/80 backdrop-blur-lg border-white/10">
+          {selectedCategory && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-3 font-headline text-2xl text-primary">
+                  <selectedCategory.icon className="h-8 w-8" />
+                  {selectedCategory.title}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="mt-4 space-y-6">
+                {selectedCategory.skills.map((skill) => (
+                  <div key={skill.name}>
+                    <div className="flex justify-between items-end mb-1">
+                       <h4 className="font-semibold">{skill.name}</h4>
+                       <p className="text-sm text-muted-foreground">{skill.level}</p>
+                    </div>
+                    <Progress value={skillLevelToValue(skill.level)} className="h-2" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
