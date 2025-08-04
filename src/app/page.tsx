@@ -11,7 +11,7 @@ export default function Home() {
       <HeroSection lang="en"/>
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection lang="en" />
-        <ServicesSection />
+        <ServicesSection lang="en" />
         <SkillsSection />
         <ProjectsSection />
         <ContactSection lang="en" />

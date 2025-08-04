@@ -11,7 +11,7 @@ export default function HomeFa() {
       <HeroSection lang="fa" />
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection lang="fa" />
-        <ServicesSection />
+        <ServicesSection lang="fa" />
         <SkillsSection />
         <ProjectsSection />
         <ContactSection lang="fa" />
