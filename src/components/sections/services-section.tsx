@@ -4,6 +4,7 @@ import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { services } from "@/lib/data"
 import { cn } from "@/lib/utils"
+import { ChevronDown } from "lucide-react"
 
 type Service = typeof services[0];
 
@@ -12,23 +13,34 @@ const ServiceCard = ({ service, isSelected, onSelect }: { service: Service, isSe
     <div
       onClick={onSelect}
       className={cn(
-        "p-6 rounded-lg cursor-pointer border-2 transition-all duration-300 text-center flex flex-col items-center justify-center gap-4 h-48",
+        "p-4 rounded-lg cursor-pointer border-2 transition-all duration-300",
+        "bg-card/50 backdrop-blur-sm",
         isSelected
-          ? "bg-primary/10 border-primary shadow-lg shadow-primary/20"
-          : "bg-card/50 backdrop-blur-sm border-transparent hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+          ? "border-primary shadow-lg shadow-primary/20"
+          : "border-transparent hover:border-primary/50 hover:shadow-md hover:shadow-primary/10"
       )}
     >
-      <motion.div
-        className={cn("p-4 rounded-full transition-colors", isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-primary")}
-      >
-        <service.icon className="w-8 h-8" />
-      </motion.div>
-      <motion.h3
-        className="text-lg font-headline text-foreground"
-        layout="position"
-      >
-        {service.title}
-      </motion.h3>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <motion.div
+            className={cn(
+                "p-3 rounded-full transition-colors duration-300", 
+                isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-primary"
+            )}
+          >
+            <service.icon className="w-6 h-6" />
+          </motion.div>
+          <motion.h3
+            className="text-lg font-headline text-foreground"
+            layout="position"
+          >
+            {service.title}
+          </motion.h3>
+        </div>
+        <motion.div animate={{ rotate: isSelected ? 180 : 0 }}>
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+        </motion.div>
+      </div>
     </div>
   )
 }
