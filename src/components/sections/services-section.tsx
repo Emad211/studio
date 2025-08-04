@@ -40,7 +40,7 @@ const ServiceCard = ({ service, isSelected, onSelect }: { service: Service, isSe
 }
 
 export function ServicesSection() {
-  const [selectedService, setSelectedService] = useState<Service | null>(services[0]);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
 
   const handleSelectService = (service: Service) => {
     if (selectedService?.title === service.title) {
