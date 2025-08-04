@@ -1,40 +1,39 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { services } from "@/lib/data"
-import { cn } from "@/lib/utils"
-
-function ServiceCard({ service, className }: { service: typeof services[0], className?: string }) {
-  return (
-    <Card className={cn(
-      "h-full bg-secondary/10 backdrop-blur-lg border-secondary/20 hover:border-primary/50 transition-colors duration-300",
-      "shadow-lg hover:shadow-primary/20",
-      className
-      )}>
-      <CardHeader className="flex flex-col items-center text-center">
-        <div className="mb-4 text-primary bg-primary/10 p-3 rounded-full">
-          <service.icon className="w-8 h-8" />
-        </div>
-        <CardTitle className="font-headline text-xl">{service.title}</CardTitle>
-      </CardHeader>
-      <CardContent className="text-center text-muted-foreground">
-        <p>{service.description}</p>
-      </CardContent>
-    </Card>
-  )
-}
+import { ChevronDown } from "lucide-react"
 
 export function ServicesSection() {
   return (
     <section id="services" className="container">
       <div className="text-center">
         <h2 className="text-3xl font-bold font-headline text-primary">
-          <span className="font-mono text-xl text-secondary">02.</span> What I Do
+          <span className="font-mono text-xl text-secondary">03.</span> What I Do
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">My services are tailored to bring your digital vision to life.</p>
       </div>
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {services.map((service) => (
-          <ServiceCard key={service.title} service={service} />
-        ))}
+      <div className="max-w-3xl mx-auto mt-12">
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          {services.map((service, index) => (
+            <AccordionItem key={index} value={`item-${index}`} className="bg-card/50 backdrop-blur-sm border rounded-lg transition-all hover:border-primary/50">
+              <AccordionTrigger className="p-6 text-left hover:no-underline group">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-muted rounded-full text-primary group-data-[state=open]:text-primary group-data-[state=open]:bg-primary/10 transition-colors">
+                     <service.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-headline text-foreground group-data-[state=open]:text-primary transition-colors">
+                    {service.title}
+                  </h3>
+                </div>
+                <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[state=open]:text-primary" />
+              </AccordionTrigger>
+              <AccordionContent className="p-6 pt-0">
+                <p className="text-muted-foreground">
+                  {service.description}
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </section>
   )

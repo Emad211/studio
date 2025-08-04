@@ -1,4 +1,4 @@
-import { BrainCircuit, Book, Database, Code, Activity } from 'lucide-react';
+import { BrainCircuit, Book, Database, Code, Activity, Bot } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface Project {
@@ -110,17 +110,22 @@ interface Service {
 export const services: Service[] = [
   {
     title: "AI Model Development",
-    description: "Developing custom machine learning and deep learning models to solve complex problems.",
+    description: "Developing custom machine learning and deep learning models to solve complex problems, from natural language processing to computer vision.",
     icon: BrainCircuit,
   },
   {
+    title: "AI Agent Development",
+    description: "Building intelligent, autonomous agents that can reason, plan, and execute complex tasks to automate workflows and enhance capabilities.",
+    icon: Bot,
+  },
+  {
     title: "Data Analysis & Statistics",
-    description: "In-depth data analysis, statistical modeling, and visualization to extract valuable insights.",
+    description: "In-depth data analysis, statistical modeling, and visualization to extract valuable insights and inform decision-making.",
     icon: Activity,
   },
   {
     title: "Research & Thesis Writing",
-    description: "Providing expertise in academic research, experimental design, and technical writing.",
+    description: "Providing expertise in academic research, experimental design, and writing high-quality technical papers and theses.",
     icon: Book,
   },
 ];
