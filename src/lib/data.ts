@@ -220,6 +220,12 @@ export const experience = [
         location: "Remote"
     },
     {
+        role: "Python Programmer",
+        company: "Freelance",
+        duration: "2020 - 2023",
+        location: "Remote"
+    },
+    {
         role: "Statistician",
         company: "Golbahar Oil Factory",
         location: "Tehran, Varamin",
