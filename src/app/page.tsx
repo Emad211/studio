@@ -10,7 +10,7 @@ export default function Home() {
     <div className="flex flex-col">
       <HeroSection lang="en"/>
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
-        <AboutSection />
+        <AboutSection lang="en" />
         <ServicesSection />
         <SkillsSection />
         <ProjectsSection />

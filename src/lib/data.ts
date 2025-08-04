@@ -284,6 +284,7 @@ export const education = [
 export const experience = [
     {
         role: "Freelance Programmer",
+        company: "Self-employed",
         duration: "April 2023 - Present",
         location: "Remote"
     },
@@ -299,4 +300,39 @@ export const experience = [
         location: "Tehran, Varamin",
         duration: "April 2019 - April 2020"
     }
-]
+];
+
+export const educationFa = [
+    {
+        degree: "کارشناسی ارشد مهندسی کامپیوتر",
+        specialization: "گرایش هوش مصنوعی",
+        university: "دانشگاه مازندران",
+        duration: "۱۴۰۳-اکنون",
+    },
+    {
+        degree: "کارشناسی مهندسی کامپیوتر",
+        university: "دانشگاه مازندران",
+        duration: "۱۳۹۹-۱۴۰۳",
+    }
+];
+
+export const experienceFa = [
+    {
+        role: "برنامه‌نویس فریلنسر",
+        company: "خویش‌فرما",
+        duration: "فروردین ۱۴۰۲ - اکنون",
+        location: "دورکاری"
+    },
+    {
+        role: "برنامه‌نویس پایتون",
+        company: "استارت اپ مسو",
+        duration: "۱۳۹۹ - ۱۴۰۲",
+        location: "دورکاری"
+    },
+    {
+        role: "کارشناس آمار",
+        company: "کارخانه روغن گلبهار",
+        location: "تهران، ورامین",
+        duration: "فروردین ۱۳۹۸ - فروردین ۱۳۹۹"
+    }
+];
