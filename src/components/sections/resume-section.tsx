@@ -4,8 +4,8 @@ import { Building, GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const TimelineItem = ({ children, isLast }: { children: React.ReactNode; isLast: boolean }) => (
-  <div className="relative flex items-start h-full">
-    <div className={cn("absolute left-[1.1875rem] top-[1.1875rem] h-full w-px bg-border", isLast && "h-0")} />
+  <div className="relative flex items-start">
+    <div className={cn("absolute left-[1.1875rem] top-0 h-full w-px bg-border", isLast ? "h-[1.1875rem]" : "")} />
     <div className="relative flex-shrink-0 w-full">
       {children}
     </div>
@@ -15,14 +15,14 @@ const TimelineItem = ({ children, isLast }: { children: React.ReactNode; isLast:
 const TimelineIcon = ({ icon }: { icon: React.ElementType }) => {
   const Icon = icon;
   return (
-    <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary bg-background text-primary">
+    <div className="absolute z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary bg-background text-primary">
       <Icon className="h-5 w-5" />
     </div>
   );
 };
 
 const TimelineCard = ({ item }: { item: typeof education[0] | typeof experience[0] }) => (
-    <Card className="ml-6 h-full bg-secondary/10 backdrop-blur-lg border-secondary/20 hover:border-primary/50 transition-colors duration-300 shadow-lg hover:shadow-primary/20">
+    <Card className="ml-16 mb-8 h-full bg-secondary/10 backdrop-blur-lg border-secondary/20 hover:border-primary/50 transition-colors duration-300 shadow-lg hover:shadow-primary/20">
       <CardHeader className="border-b border-secondary/20 pb-4">
         <CardTitle className="font-headline text-lg">{'degree' in item ? item.degree : item.role}</CardTitle>
         {('specialization' in item && item.specialization) && <p className="text-sm text-primary">{item.specialization}</p>}
@@ -46,13 +46,15 @@ export function ResumeSection() {
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">My academic and professional journey.</p>
       </div>
-      <div className="mt-12 grid md:grid-cols-2 gap-12 md:gap-8">
-        <div className="md:order-1">
+      <div className="mt-12 grid md:grid-cols-2 gap-x-12">
+        
+        {/* Education Column */}
+        <div>
           <h3 className="text-2xl font-bold font-headline mb-8 flex items-center justify-center md:justify-start gap-3">
             <GraduationCap className="w-8 h-8 text-secondary" />
             Education
           </h3>
-          <div className="space-y-8">
+          <div className="relative">
             {education.map((edu, index) => (
               <TimelineItem key={index} isLast={index === education.length - 1}>
                 <TimelineIcon icon={GraduationCap} />
@@ -61,12 +63,14 @@ export function ResumeSection() {
             ))}
           </div>
         </div>
-        <div className="md:order-2">
+        
+        {/* Experience Column */}
+        <div>
           <h3 className="text-2xl font-bold font-headline mb-8 flex items-center justify-center md:justify-start gap-3">
             <Building className="w-8 h-8 text-secondary" />
             Work Experience
           </h3>
-          <div className="space-y-8">
+          <div className="relative">
             {experience.map((exp, index) => (
               <TimelineItem key={index} isLast={index === experience.length - 1}>
                 <TimelineIcon icon={Building} />
@@ -75,6 +79,7 @@ export function ResumeSection() {
             ))}
           </div>
         </div>
+
       </div>
     </section>
   )
