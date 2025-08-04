@@ -160,6 +160,7 @@ export function SkillsSection() {
         }).filter(Boolean);
     }, [positions]);
 
+    const isGraphReady = Object.keys(positions).length > 0 && renderedNodes.every(n => n.x !== undefined && n.y !== undefined);
 
     return (
         <section id="skills" className="container">
@@ -172,7 +173,7 @@ export function SkillsSection() {
                 </p>
             </div>
             <div ref={containerRef} className="relative w-full h-[600px] mt-8 border rounded-lg bg-card/30">
-                {Object.keys(positions).length > 0 && (
+                {isGraphReady && (
                      <svg width="100%" height="100%">
                          {renderedLinks.map((link: any, i) => {
                              const isHighlighted = hoveredNode && (link.source.id === hoveredNode || link.target.id === hoveredNode);
