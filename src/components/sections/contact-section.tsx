@@ -89,12 +89,12 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         </h2>
       </div>
 
-       <div className="max-w-5xl mx-auto rounded-xl border border-white/10 bg-background/50 backdrop-blur-xl p-8 md:p-12 shadow-2xl shadow-primary/10">
+       <div className="max-w-5xl mx-auto rounded-xl border bg-card p-8 md:p-12 shadow-lg">
         <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-2xl font-bold font-headline mb-4">{t.subtitle}</h3>
-              <p className="text-foreground/80 mb-8">
-                Feel free to reach out through any of the platforms below. I'm excited to hear about your ideas and how we can work together to bring them to life.
+              <h3 className="text-2xl font-bold font-headline mb-4">Let's Connect</h3>
+              <p className="text-muted-foreground mb-8">
+                Have a project in mind or just want to say hello? I'd love to hear from you. Fill out the form or reach out through one of the platforms below.
               </p>
               <div className="space-y-6 text-muted-foreground">
                 <div className="flex items-start gap-4 hover:text-foreground transition-colors">
