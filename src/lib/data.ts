@@ -200,13 +200,11 @@ export const education = [
         specialization: "AI Specialization",
         university: "Mazandaran University",
         duration: "2024-Present",
-        gpa: "14.56"
     },
     {
         degree: "Bachelor's in Computer Engineering",
         university: "Mazandaran University",
         duration: "2020-2024",
-        gpa: "16.83"
     }
 ]
 
