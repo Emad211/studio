@@ -12,7 +12,7 @@ export default function HomeFa() {
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection lang="fa" />
         <ServicesSection lang="fa" />
-        <SkillsSection />
+        <SkillsSection lang="fa" />
         <ProjectsSection />
         <ContactSection lang="fa" />
       </div>

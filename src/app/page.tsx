@@ -12,7 +12,7 @@ export default function Home() {
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection lang="en" />
         <ServicesSection lang="en" />
-        <SkillsSection />
+        <SkillsSection lang="en" />
         <ProjectsSection />
         <ContactSection lang="en" />
       </div>

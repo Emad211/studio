@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { skillCategories } from "@/lib/data"
+import { skillCategories, skillCategoriesFa } from "@/lib/data"
 import { motion } from "framer-motion"
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import { Progress } from "@/components/ui/progress"
 import type { LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 type SkillCategory = (typeof skillCategories)[0]
 
@@ -64,33 +65,50 @@ const SkillCategoryCard = ({
   )
 }
 
-const skillLevelToValue = (level: "Expert" | "Advanced" | "Intermediate" | "Beginner") => {
+const skillLevelToValue = (level: "Expert" | "Advanced" | "Intermediate" | "Beginner" | "متخصص" | "پیشرفته" | "متوسط" | "مبتدی") => {
   switch (level) {
-    case "Expert": return 100;
-    case "Advanced": return 80;
-    case "Intermediate": return 60;
-    case "Beginner": return 40;
+    case "Expert":
+    case "متخصص":
+        return 100;
+    case "Advanced":
+    case "پیشرفته":
+        return 80;
+    case "Intermediate":
+    case "متوسط":
+        return 60;
+    case "Beginner":
+    case "مبتدی":
+        return 40;
     default: return 0;
   }
 }
 
-export function SkillsSection() {
+export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
   const [selectedCategory, setSelectedCategory] = useState<SkillCategory | null>(null)
+  const isFa = lang === 'fa';
+  
+  const currentSkillCategories = isFa ? skillCategoriesFa : skillCategories;
+
+  const t = {
+      title: isFa ? "مهارت‌های من" : "My Skills",
+      subtitle: isFa ? "مجموعه‌ای از توانایی‌های فنی من. برای دیدن جزئیات روی هر دسته کلیک کنید." : "A collection of my technical capabilities. Click on a category to see details.",
+      number: "03."
+  }
 
   return (
     <section id="skills" className="container">
-      <div className="text-left">
+      <div className={cn("mb-12", isFa ? "text-right" : "text-left")}>
         <h2 className="text-3xl font-bold font-headline text-primary">
-          <span className="font-mono text-xl text-secondary">03.</span> My Skills
+          <span className="font-mono text-xl text-secondary">{t.number}</span> {t.title}
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">
-          A collection of my technical capabilities. Click on a category to see details.
+          {t.subtitle}
         </p>
       </div>
 
       <Dialog>
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-          {skillCategories.map((category, index) => (
+          {currentSkillCategories.map((category, index) => (
             <DialogTrigger key={category.title} asChild>
               <SkillCategoryCard
                 category={category}
@@ -101,7 +119,7 @@ export function SkillsSection() {
           ))}
         </div>
 
-        <DialogContent className="bg-background/80 backdrop-blur-lg border-white/10">
+        <DialogContent className="bg-background/80 backdrop-blur-lg border-white/10" dir={isFa ? "rtl" : "ltr"}>
           {selectedCategory && (
             <>
               <DialogHeader>

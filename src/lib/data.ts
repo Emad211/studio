@@ -63,9 +63,12 @@ export const projects: Project[] = [
 export const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
 
 
+type SkillLevel = 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner';
+type SkillLevelFa = 'متخصص' | 'پیشرفته' | 'متوسط' | 'مبتدی';
+
 interface Skill {
     name: string;
-    level: 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner';
+    level: SkillLevel | SkillLevelFa;
 }
 
 interface SkillCategory {
@@ -160,6 +163,96 @@ export const skillCategories: SkillCategory[] = [
             { name: "GitHub", level: "Advanced" },
             { name: "Docker", level: "Intermediate" },
             { name: "Terminal", level: "Advanced" },
+        ],
+    },
+];
+
+export const skillCategoriesFa: SkillCategory[] = [
+    {
+        title: "هوش مصنوعی و یادگیری ماشین",
+        icon: BrainCircuit,
+        skills: [
+            { name: "یادگیری عمیق", level: "متخصص" },
+            { name: "هوش مصنوعی مولد", level: "متخصص" },
+            { name: "شبکه‌های عصبی", level: "متخصص" },
+            { name: "توسعه ایجنت", level: "پیشرفته" },
+            { name: "بینایی کامپیوتر", level: "پیشرفته" },
+            { name: "پردازش زبان طبیعی", level: "پیشرفته" },
+        ],
+    },
+    {
+        title: "فریم‌ورک‌های هوش مصنوعی",
+        icon: Server,
+        skills: [
+            { name: "TensorFlow", level: "متخصص" },
+            { name: "PyTorch", level: "متخصص" },
+            { name: "Scikit-learn", level: "پیشرفته" },
+            { name: "OpenCV", level: "پیشرفته" },
+            { name: "LangChain", level: "پیشرفته" },
+            { name: "AutoGen", level: "متوسط" },
+        ],
+    },
+    {
+        title: "علم داده",
+        icon: Activity,
+        skills: [
+            { name: "Pandas", level: "متخصص" },
+            { name: "NumPy", level: "متخصص" },
+            { name: "آمار", level: "متخصص" },
+            { name: "Matplotlib", level: "پیشرفته" },
+            { name: "Seaborn", level: "پیشرفته" },
+            { name: "Plotly", level: "متوسط" },
+        ],
+    },
+    {
+        title: "زبان‌های برنامه‌نویسی",
+        icon: Languages,
+        skills: [
+            { name: "Python", level: "متخصص" },
+            { name: "R", level: "پیشرفته" },
+            { name: "MATLAB", level: "پیشرفته" },
+        ],
+    },
+    {
+        title: "توسعه وب",
+        icon: Code,
+        skills: [
+            { name: "Flask", level: "پیشرفته" },
+            { name: "HTML5", level: "پیشرفته" },
+            { name: "CSS3", level: "پیشرفته" },
+            { name: "Bootstrap", level: "پیشرفته" },
+            { name: "React", level: "متوسط" },
+            { name: "Node.js", level: "متوسط" },
+        ],
+    },
+    {
+        title: "پایگاه داده",
+        icon: Database,
+        skills: [
+            { name: "SQL", level: "پیشرفته" },
+            { name: "PostgreSQL", level: "متوسط" },
+            { name: "MySQL", level: "متوسط" },
+            { name: "MongoDB", level: "مبتدی" },
+        ],
+    },
+    {
+        title: "تحقیق و نگارش",
+        icon: Book,
+        skills: [
+            { name: "روش تحقیق", level: "متخصص" },
+            { name: "LaTeX", level: "متخصص" },
+            { name: "نگارش آکادمیک", level: "پیشرفته" },
+            { name: "SPSS", level: "پیشرفته" },
+        ],
+    },
+    {
+        title: "ابزارها و تکنولوژی‌ها",
+        icon: Wrench,
+        skills: [
+            { name: "Git", level: "پیشرفته" },
+            { name: "GitHub", level: "پیشرفته" },
+            { name: "Docker", level: "متوسط" },
+            { name: "ترمینال", level: "پیشرفته" },
         ],
     },
 ];
