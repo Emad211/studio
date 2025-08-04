@@ -1,4 +1,4 @@
-import { Github, Linkedin, Twitter } from "lucide-react"
+import { Github, Send } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Button } from "../ui/button"
 import Link from "next/link"
@@ -19,13 +19,8 @@ export function Footer() {
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href="#" aria-label="Twitter">
-                <Twitter />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="#" aria-label="LinkedIn">
-                <Linkedin />
+              <Link href="https://t.me/Freelancer_programmerr" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+                <Send />
               </Link>
             </Button>
           </div>

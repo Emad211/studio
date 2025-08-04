@@ -15,11 +15,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { Github, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react"
+import { Github, Mail, MapPin, Phone, Send } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
-import { contactProfileImage } from "@/lib/data"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -35,8 +33,7 @@ const formSchema = z.object({
 
 const socialLinks = [
   { icon: Github, href: "https://github.com/Emad211", ariaLabel: "Github" },
-  { icon: Twitter, href: "#", ariaLabel: "Twitter" },
-  { icon: Linkedin, href: "#", ariaLabel: "LinkedIn" },
+  { icon: Send, href: "https://t.me/Freelancer_programmerr", ariaLabel: "Telegram" },
 ]
 
 export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
@@ -48,7 +45,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     emailLabel: "Email",
     messageLabel: "Message",
     submitButton: "Send Message",
-    email: "emad.karimi.80@gmail.com",
+    email: "emad.k50000@gmail.com",
     phone: "+98-939-990-8021",
     location: "Tehran, Iran",
     successTitle: "Message Sent!",
