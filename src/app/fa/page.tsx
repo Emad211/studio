@@ -13,7 +13,7 @@ export default function HomeFa() {
         <AboutSection lang="fa" />
         <ServicesSection lang="fa" />
         <SkillsSection lang="fa" />
-        <ProjectsSection />
+        <ProjectsSection lang="fa" />
         <ContactSection lang="fa" />
       </div>
     </div>

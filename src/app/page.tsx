@@ -13,7 +13,7 @@ export default function Home() {
         <AboutSection lang="en" />
         <ServicesSection lang="en" />
         <SkillsSection lang="en" />
-        <ProjectsSection />
+        <ProjectsSection lang="en" />
         <ContactSection lang="en" />
       </div>
     </div>
