@@ -1,85 +1,23 @@
 "use client"
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Github, Mail, MapPin, Phone, Send } from "lucide-react"
+import { Github, Mail, Send } from "lucide-react"
 import Link from "next/link"
-import { useToast } from "@/hooks/use-toast"
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  message: z.string().min(10, {
-    message: "Message must be at least 10 characters.",
-  }),
-})
 
 const socialLinks = [
-  { icon: Github, href: "https://github.com/Emad211", ariaLabel: "Github" },
-  { icon: Send, href: "https://t.me/Freelancer_programmerr", ariaLabel: "Telegram" },
+  { icon: Mail, href: "mailto:emad.k50000@gmail.com", ariaLabel: "Email", text: "emad.k50000@gmail.com" },
+  { icon: Github, href: "https://github.com/Emad211", ariaLabel: "Github", text: "GitHub" },
+  { icon: Send, href: "https://t.me/Freelancer_programmerr", ariaLabel: "Telegram", text: "Telegram" },
 ]
 
 export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
-  const { toast } = useToast();
   const t = {
     title: "Get In Touch",
-    subtitle: "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.",
-    nameLabel: "Name",
-    emailLabel: "Email",
-    messageLabel: "Message",
-    submitButton: "Send Message",
-    email: "emad.k50000@gmail.com",
-    phone: "+98-939-990-8021",
-    location: "Tehran, Iran",
-    successTitle: "Message Sent!",
-    successDescription: "Thank you for reaching out. I'll get back to you as soon as possible.",
-    errorTitle: "Uh oh! Something went wrong.",
-    errorDescription: "There was a problem with your request. Please try again.",
+    subtitle: "I'm always open to discussing new projects, creative ideas, or opportunities. Feel free to reach out.",
+    connectTitle: "Let's Connect",
   }
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      message: "",
-    },
-  })
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      // Here you would typically send the form data to a server
-      console.log("Form submitted:", values)
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      toast({
-        title: t.successTitle,
-        description: t.successDescription,
-      })
-      form.reset()
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: t.errorTitle,
-        description: t.errorDescription,
-      })
-    }
-  }
+  // Persian translations can be added here if needed for `lang === 'fa'`
 
   return (
     <section id="contact" className="container">
@@ -89,89 +27,20 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         </h2>
       </div>
 
-       <div className="max-w-5xl mx-auto rounded-xl border bg-card p-8 md:p-12 shadow-lg">
-        <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-2xl font-bold font-headline mb-4">Let's Connect</h3>
-              <p className="text-muted-foreground mb-8">
-                Have a project in mind or just want to say hello? I'd love to hear from you. Fill out the form or reach out through one of the platforms below.
-              </p>
-              <div className="space-y-6 text-muted-foreground">
-                <div className="flex items-start gap-4 hover:text-foreground transition-colors">
-                  <Mail className="h-6 w-6 text-primary mt-1 shrink-0" />
-                  <a href={`mailto:${t.email}`}>{t.email}</a>
-                </div>
-                <div className="flex items-start gap-4 hover:text-foreground transition-colors">
-                  <Phone className="h-6 w-6 text-primary mt-1 shrink-0" />
-                  <span>{t.phone}</span>
-                </div>
-                <div className="flex items-start gap-4 hover:text-foreground transition-colors">
-                  <MapPin className="h-6 w-6 text-primary mt-1 shrink-0" />
-                  <span>{t.location}</span>
-                </div>
-              </div>
-              <div className="mt-8 flex space-x-4">
-                {socialLinks.map(({ icon: Icon, href, ariaLabel }) => (
-                  <Button key={ariaLabel} variant="outline" size="icon" asChild>
-                    <Link href={href} target="_blank" rel="noopener noreferrer" aria-label={ariaLabel}>
-                      <Icon />
-                    </Link>
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t.nameLabel}</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t.emailLabel}</FormLabel>
-                        <FormControl>
-                          <Input placeholder="john.doe@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t.messageLabel}</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Your message here..."
-                            className="min-h-[120px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
-                    {form.formState.isSubmitting ? "Sending..." : t.submitButton}
-                  </Button>
-                </form>
-              </Form>
-            </div>
+       <div className="max-w-3xl mx-auto rounded-xl border bg-card/50 backdrop-blur-lg p-8 md:p-12 shadow-lg text-center">
+          <h3 className="text-2xl font-bold font-headline mb-4">{t.connectTitle}</h3>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            {t.subtitle}
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            {socialLinks.map(({ icon: Icon, href, ariaLabel, text }) => (
+              <Button key={ariaLabel} variant="outline" size="lg" asChild className="w-full sm:w-auto">
+                <Link href={href} target="_blank" rel="noopener noreferrer" aria-label={ariaLabel}>
+                  <Icon className="mr-2 h-5 w-5" />
+                  {text}
+                </Link>
+              </Button>
+            ))}
           </div>
        </div>
     </section>
