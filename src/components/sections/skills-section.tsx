@@ -49,7 +49,7 @@ const SkillCategoryCard = ({
       whileHover={{ y: -5, scale: 1.05, shadow: "0 25px 50px -12px rgba(var(--primary-rgb), 0.25)" }}
       custom={index}
       viewport={{ once: true }}
-      className="relative aspect-square w-full max-w-[150px] rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg text-left"
+      className="relative aspect-square w-full rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg text-left"
     >
       <div className="absolute top-3 left-3 text-lg font-bold text-foreground/50">
         {category.skills.length.toString().padStart(2, "0")}
@@ -89,7 +89,7 @@ export function SkillsSection() {
       </div>
 
       <Dialog>
-        <div className="mt-12 flex flex-wrap justify-center gap-4 md:gap-6">
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {skillCategories.map((category, index) => (
             <DialogTrigger key={category.title} asChild>
               <SkillCategoryCard
