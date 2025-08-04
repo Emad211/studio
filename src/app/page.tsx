@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       <HeroSection />
-      <div className="space-y-24 md:space-y-32 my-24 md:my-32">
+      <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection />
         <ServicesSection />
         <SkillsSection />
