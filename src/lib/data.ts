@@ -13,6 +13,8 @@ export interface Project {
   };
 }
 
+export const contactProfileImage = "/profile-pic.jpg";
+
 export const projects: Project[] = [
   {
     title: "AI-Powered E-commerce Platform",
@@ -120,6 +122,16 @@ export const skillCategories: SkillCategory[] = [
             { name: "Plotly", level: "Intermediate" },
         ],
     },
+     {
+        title: "Research & Writing",
+        icon: Book,
+        skills: [
+            { name: "Research Methods", level: "Expert" },
+            { name: "LaTeX", level: "Expert" },
+            { name: "Academic Writing", level: "Advanced" },
+            { name: "SPSS", level: "Advanced" },
+        ],
+    },
     {
         title: "Web Development",
         icon: Code,
@@ -143,23 +155,13 @@ export const skillCategories: SkillCategory[] = [
         ],
     },
     {
-        title: "Research & Writing",
-        icon: Book,
-        skills: [
-            { name: "Research Methods", level: "Expert" },
-            { name: "LaTeX", level: "Expert" },
-            { name: "Academic Writing", level: "Advanced" },
-            { name: "SPSS", level: "Advanced" },
-        ],
-    },
-    {
         title: "Tools & Technologies",
         icon: Wrench,
         skills: [
             { name: "Git", level: "Advanced" },
             { name: "GitHub", level: "Advanced" },
-            { name: "Terminal", level: "Advanced" },
             { name: "Docker", level: "Intermediate" },
+            { name: "Terminal", level: "Advanced" },
         ],
     },
 ];
