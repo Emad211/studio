@@ -54,7 +54,7 @@ export function ServicesSection() {
     <section id="services" className="container">
       <div className="text-center">
         <h2 className="text-3xl font-bold font-headline text-primary">
-          <span className="font-mono text-xl text-secondary">03.</span> What I Do
+          <span className="font-mono text-xl text-secondary">02.</span> What I Do
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">My services are tailored to bring your digital vision to life.</p>
       </div>
