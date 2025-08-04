@@ -100,15 +100,6 @@ export const skillCategories: SkillCategory[] = [
         ],
     },
     {
-        title: "Programming Languages",
-        icon: Languages,
-        skills: [
-            { name: "Python", level: "Expert" },
-            { name: "R", level: "Advanced" },
-            { name: "MATLAB", level: "Advanced" },
-        ],
-    },
-    {
         title: "Data Science",
         icon: Activity,
         skills: [
@@ -120,14 +111,13 @@ export const skillCategories: SkillCategory[] = [
             { name: "Plotly", level: "Intermediate" },
         ],
     },
-     {
-        title: "Research & Writing",
-        icon: Book,
+    {
+        title: "Programming Languages",
+        icon: Languages,
         skills: [
-            { name: "Research Methods", level: "Expert" },
-            { name: "LaTeX", level: "Expert" },
-            { name: "Academic Writing", level: "Advanced" },
-            { name: "SPSS", level: "Advanced" },
+            { name: "Python", level: "Expert" },
+            { name: "R", level: "Advanced" },
+            { name: "MATLAB", level: "Advanced" },
         ],
     },
     {
@@ -150,6 +140,16 @@ export const skillCategories: SkillCategory[] = [
             { name: "PostgreSQL", level: "Intermediate" },
             { name: "MySQL", level: "Intermediate" },
             { name: "MongoDB", level: "Beginner" },
+        ],
+    },
+        {
+        title: "Research & Writing",
+        icon: Book,
+        skills: [
+            { name: "Research Methods", level: "Expert" },
+            { name: "LaTeX", level: "Expert" },
+            { name: "Academic Writing", level: "Advanced" },
+            { name: "SPSS", level: "Advanced" },
         ],
     },
     {
