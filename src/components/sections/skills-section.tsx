@@ -139,29 +139,8 @@ export function SkillsSection() {
         return neighbors;
     }, [hoveredNode]);
 
-    const renderedNodes = useMemo(() => {
-        return skillGraph.nodes.map(node => ({
-            ...node,
-            x: positions[node.id]?.x,
-            y: positions[node.id]?.y,
-        }));
-    }, [positions]);
-
-    const renderedLinks = useMemo(() => {
-        return skillGraph.links.map(link => {
-            const sourcePos = positions[link.source];
-            const targetPos = positions[link.target];
-            if (!sourcePos || !targetPos) return null;
-            return {
-                ...link,
-                source: { ...skillGraph.nodes.find(n => n.id === link.source), ...sourcePos },
-                target: { ...skillGraph.nodes.find(n => n.id === link.target), ...targetPos },
-            };
-        }).filter(Boolean);
-    }, [positions]);
-
-    const isGraphReady = Object.keys(positions).length > 0 && renderedNodes.every(n => n.x !== undefined && n.y !== undefined);
-
+    const isGraphReady = Object.keys(positions).length === skillGraph.nodes.length;
+    
     return (
         <section id="skills" className="container">
             <div className="text-center">
@@ -175,23 +154,25 @@ export function SkillsSection() {
             <div ref={containerRef} className="relative w-full h-[600px] mt-8 border rounded-lg bg-card/30">
                 {isGraphReady && (
                      <svg width="100%" height="100%">
-                         {renderedLinks.map((link: any, i) => {
-                             const isHighlighted = hoveredNode && (link.source.id === hoveredNode || link.target.id === hoveredNode);
+                         {skillGraph.links.map((link: any, i) => {
+                             const sourcePos = positions[link.source];
+                             const targetPos = positions[link.target];
+                             const isHighlighted = hoveredNode && (link.source === hoveredNode || link.target === hoveredNode);
                              return (
                                  <Link 
                                      key={i} 
-                                     link={link} 
+                                     link={{ ...link, source: sourcePos, target: targetPos }} 
                                      isHighlighted={isHighlighted}
                                      isDimmed={hoveredNode && !isHighlighted}
                                  />
                              )
                          })}
-                         {renderedNodes.map(node => {
+                         {skillGraph.nodes.map(node => {
                             const isHighlighted = neighboringNodes.has(node.id);
                             return (
                                 <Node 
                                     key={node.id} 
-                                    node={node}
+                                    node={{...node, ...positions[node.id]}}
                                     onMouseEnter={n => setHoveredNode(n.id)}
                                     onMouseLeave={() => setHoveredNode(null)}
                                     isHighlighted={isHighlighted}
