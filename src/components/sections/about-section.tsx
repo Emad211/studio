@@ -3,7 +3,7 @@ import Image from 'next/image'
 export function AboutSection() {
   return (
     <section id="about" className="container">
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="grid lg:grid-cols-2 gap-8 items-center">
         <div className="order-2 lg:order-1 flex justify-center lg:justify-start">
           <div className="relative group w-full max-w-xs">
             <div className="relative rounded-lg overflow-hidden border-2 border-border p-2 group-hover:border-primary transition-colors duration-300">
