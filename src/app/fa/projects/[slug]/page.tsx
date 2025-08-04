@@ -32,7 +32,7 @@ function MyComponent() {
 }`
 
   return (
-    <div className="container py-12 md:py-20" dir="rtl">
+    <div className="container py-12 md:py-20">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{project.title}</h1>

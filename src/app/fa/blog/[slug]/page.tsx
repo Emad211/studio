@@ -67,15 +67,18 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     return (
         <>
             <ReadingProgress />
-            <div className="container py-12 md:py-20" dir="rtl">
+            <div className="container py-12 md:py-20">
                 <div className="grid lg:grid-cols-4 gap-12">
+                    <aside className="lg:col-span-1 relative order-last lg:order-first">
+                        <TableOfContents headings={headings} />
+                    </aside>
                     <article className="lg:col-span-3">
-                        <div className="mb-8">
+                        <div className="mb-8 text-right">
                             <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
                             <p className="mt-2 text-muted-foreground">
                                 منتشر شده در {new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
-                            <div className="mt-4 flex flex-wrap gap-2">
+                            <div className="mt-4 flex flex-wrap gap-2 justify-end">
                                 {post.tags.map((tag) => (
                                     <Badge key={tag} variant="secondary">{tag}</Badge>
                                 ))}
@@ -86,10 +89,6 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                             {content}
                         </div>
                     </article>
-
-                    <aside className="lg:col-span-1 relative">
-                        <TableOfContents headings={headings} />
-                    </aside>
                 </div>
             </div>
         </>

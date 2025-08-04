@@ -12,11 +12,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: { lang?: string };
 }>) {
+  const lang = params?.lang || 'en';
+  const dir = lang === 'fa' ? 'rtl' : 'ltr';
+
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang={lang} dir={dir} className="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

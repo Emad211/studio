@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils"
 import { ArrowUpRight } from "lucide-react"
 
 export function ProjectCard({ project, className, lang = 'en' }: { project: Project, className?: string, lang?: 'en' | 'fa' }) {
+  const isFa = lang === 'fa';
   return (
-    <Link href={lang === 'fa' ? `/fa/projects/${project.slug}` : `/projects/${project.slug}`} className="group block h-full">
+    <Link href={isFa ? `/fa/projects/${project.slug}` : `/projects/${project.slug}`} className="group block h-full">
       <Card className={cn(
         "h-full flex flex-col transition-all duration-300 border-2 border-transparent hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10",
         className)}>
@@ -27,8 +28,8 @@ export function ProjectCard({ project, className, lang = 'en' }: { project: Proj
           </div>
         </CardHeader>
         <CardContent className="flex-grow">
-          <CardTitle className="font-headline text-lg mb-2">{project.title}</CardTitle>
-          <p className="text-muted-foreground text-sm line-clamp-2">{project.description}</p>
+          <CardTitle className={cn("font-headline text-lg mb-2", isFa && "text-right")}>{project.title}</CardTitle>
+          <p className={cn("text-muted-foreground text-sm line-clamp-2", isFa && "text-right")}>{project.description}</p>
         </CardContent>
         <CardFooter>
           <div className="flex flex-wrap gap-2">

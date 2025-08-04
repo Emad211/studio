@@ -7,7 +7,7 @@ import { ContactSection } from '@/components/sections/contact-section';
 
 export default function HomeFa() {
   return (
-    <div className="flex flex-col" dir="rtl">
+    <div className="flex flex-col">
       <HeroSection />
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
         <AboutSection />

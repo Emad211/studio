@@ -12,7 +12,7 @@ export default function ProjectsPage({ searchParams }: {
     : projects;
 
   return (
-    <div className="container py-12" dir="rtl">
+    <div className="container py-12">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold font-headline text-primary">پروژه‌های من</h1>
         <p className="mt-2 text-lg text-muted-foreground">مجموعه‌ای از کارهای من، از برنامه‌های وب تا پروژه‌های متن‌باز.</p>
