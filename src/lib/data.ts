@@ -63,6 +63,43 @@ export const projects: Project[] = [
 export const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
 
 
+export const skillTree = [
+  // Root
+  { id: 'cs', name: 'Computer Science', parent: null, level: 95 },
+
+  // Layer 1: Core Pillars
+  { id: 'ai', name: 'Artificial Intelligence', parent: 'cs', level: 95 },
+  { id: 'web', name: 'Web Development', parent: 'cs', level: 85 },
+  { id: 'langs', name: 'Programming Languages', parent: 'cs', level: 95 },
+
+  // Layer 2: AI Specializations
+  { id: 'dl', name: 'Deep Learning', parent: 'ai', level: 95 },
+  { id: 'gen-ai', name: 'Generative AI', parent: 'ai', level: 95 },
+  { id: 'cv', name: 'Computer Vision', parent: 'ai', level: 92 },
+  { id: 'nlp', name: 'NLP', parent: 'ai', level: 88 },
+
+  // Layer 2: Web Specializations
+  { id: 'frontend', name: 'Front-End', parent: 'web', level: 90 },
+  { id: 'backend', name: 'Back-End', parent: 'web', level: 80 },
+
+  // Layer 2: Languages
+  { id: 'python', name: 'Python', parent: 'langs', level: 95 },
+  { id: 'r', name: 'R', parent: 'langs', level: 90 },
+  { id: 'js-ts', name: 'JavaScript / TypeScript', parent: 'langs', level: 85 },
+  { id: 'sql', name: 'SQL', parent: 'langs', level: 90 },
+
+  // Layer 3: AI Frameworks & Libraries
+  { id: 'tf', name: 'TensorFlow', parent: 'dl', level: 95 },
+  { id: 'pytorch', name: 'PyTorch', parent: 'dl', level: 95 },
+  { id: 'sklearn', name: 'Scikit-learn', parent: 'dl', level: 90 },
+  { id: 'langchain', name: 'LangChain', parent: 'gen-ai', level: 90 },
+  
+  // Layer 3: Frontend Frameworks
+  { id: 'react', name: 'React', parent: 'frontend', level: 85 },
+  { id: 'nextjs', name: 'Next.js', parent: 'frontend', level: 88 },
+  { id: 'tailwind', name: 'Tailwind CSS', parent: 'frontend', level: 92 },
+];
+
 export const skills = [
   // Layer 1: Foundation (Languages & Core Concepts)
   { name: "Python", level: 95, layer: 1, position: 1 },
