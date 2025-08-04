@@ -62,44 +62,32 @@ export const projects: Project[] = [
 
 export const allTags = [...new Set(projects.flatMap(p => p.tags))].sort();
 
+
 export const skills = [
-    { name: "Python", level: 95 },
-    { name: "R", level: 90 },
-    { name: "MATLAB", level: 90 },
-    { name: "Deep Learning", level: 95 },
-    { name: "Generative AI", level: 95 },
-    { name: "Computer Vision", level: 92 },
-    { name: "Agent Development", level: 92 },
-    { name: "NLP", level: 88 },
-    { name: "Neural Networks", level: 95 },
-    { name: "TensorFlow", level: 95 },
-    { name: "PyTorch", level: 95 },
-    { name: "Scikit-learn", level: 90 },
-    { name: "OpenCV", level: 90 },
-    { name: "LangChain", level: 90 },
-    { name: "AutoGen", level: 80 },
-    { name: "Pandas", level: 95 },
-    { name: "NumPy", level: 95 },
-    { name: "Statistics", level: 95 },
-    { name: "Matplotlib", level: 90 },
-    { name: "Seaborn", level: 90 },
-    { name: "Plotly", level: 80 },
-    { name: "HTML5", level: 90 },
-    { name: "CSS3", level: 90 },
-    { name: "React", level: 80 },
-    { name: "Node.js", level: 80 },
-    { name: "Flask", level: 90 },
-    { name: "Bootstrap", level: 90 },
-    { name: "SQL", level: 90 },
-    { name: "PostgreSQL", level: 80 },
-    { name: "MySQL", level: 80 },
-    { name: "MongoDB", level: 70 },
-    { name: "Git", level: 90 },
-    { name: "GitHub", level: 90 },
-    { name: "Docker", level: 80 },
-    { name: "Terminal", level: 90 },
-    { name: "SPSS", level: 90 },
+  // Layer 1: Foundation (Languages & Core Concepts)
+  { name: "Python", level: 95, layer: 1, position: 1 },
+  { name: "R", level: 90, layer: 1, position: 2 },
+  { name: "SQL", level: 90, layer: 1, position: 3 },
+  { name: "Statistics", level: 95, layer: 1, position: 4 },
+  { name: "React", level: 80, layer: 1, position: 5 },
+  
+  // Layer 2: Specialization (Frameworks & Libraries)
+  { name: "Deep Learning", level: 95, layer: 2, position: 1 },
+  { name: "Generative AI", level: 95, layer: 2, position: 2 },
+  { name: "Computer Vision", level: 92, layer: 2, position: 3 },
+  { name: "NLP", level: 88, layer: 2, position: 4 },
+  { name: "TensorFlow", level: 95, layer: 2, position: 5 },
+  { name: "PyTorch", level: 95, layer: 2, position: 6 },
+  { name: "Scikit-learn", level: 90, layer: 2, position: 7 },
+  { name: "LangChain", level: 90, layer: 2, position: 8 },
+
+  // Layer 3: Application (Outputs & Tools)
+  { name: "Agent Development", level: 92, layer: 3, position: 1 },
+  { name: "Data Analysis", level: 95, layer: 3, position: 2 },
+  { name: "Web Development", level: 85, layer: 3, position: 3 },
+  { name: "Research", level: 90, layer: 3, position: 4 },
 ];
+
 
 interface Service {
   title: string;
