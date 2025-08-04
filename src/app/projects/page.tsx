@@ -5,7 +5,7 @@ import { projects, allTags } from "@/lib/data";
 export default function ProjectsPage({ searchParams }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
-  const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : searchParams?.tags || [];
+  const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : (Array.isArray(searchParams?.tags) ? searchParams.tags : []);
 
   const filteredProjects = selectedTags.length > 0
     ? projects.filter(project => selectedTags.every(tag => project.tags.includes(tag)))
@@ -23,7 +23,7 @@ export default function ProjectsPage({ searchParams }: {
       {filteredProjects.length > 0 ? (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+            <ProjectCard key={project.slug} project={project} lang="en"/>
           ))}
         </div>
       ) : (

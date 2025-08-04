@@ -5,7 +5,7 @@ import { projects, allTags } from "@/lib/data";
 export default function ProjectsPage({ searchParams }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
-  const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : searchParams?.tags || [];
+  const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : (Array.isArray(searchParams?.tags) ? searchParams.tags : []);
 
   const filteredProjects = selectedTags.length > 0
     ? projects.filter(project => selectedTags.every(tag => project.tags.includes(tag)))

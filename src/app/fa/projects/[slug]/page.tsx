@@ -25,7 +25,7 @@ export default function ProjectDetailsPage({ params }: { params: { slug: string 
 function MyComponent() {
   return (
     <div>
-      <h1>به ${project.title} خوش آمدید</h1>
+      <h1>به ${project.title_fa} خوش آمدید</h1>
       <Button>شروع کنید</Button>
     </div>
   )
@@ -35,8 +35,8 @@ function MyComponent() {
     <div className="container py-12 md:py-20">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{project.title}</h1>
-          <p className="mt-4 text-lg text-muted-foreground">{project.description}</p>
+          <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{project.title_fa}</h1>
+          <p className="mt-4 text-lg text-muted-foreground">{project.description_fa}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             {project.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="font-normal">{tag}</Badge>
@@ -47,7 +47,7 @@ function MyComponent() {
         <div className="relative aspect-video mb-12 rounded-lg overflow-hidden border">
           <Image
             src={project.image}
-            alt={project.title}
+            alt={project.title_fa}
             fill
             className="object-cover"
             data-ai-hint="project screenshot"
