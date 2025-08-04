@@ -1,108 +1,165 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { skillGraphData } from "@/lib/data"
-import { useState, useEffect } from "react"
+import { skillGraph } from "@/lib/data"
+import React, { useState, useEffect, useMemo, useRef } from "react"
 import { cn } from "@/lib/utils"
 
-const levelToSize: { [key: string]: number } = {
-  Expert: 24,
-  Advanced: 20,
-  Intermediate: 16,
-  Beginner: 12,
+const categoryColors: { [key: string]: string } = {
+  'Language': 'text-chart-1',
+  'AI/ML': 'text-chart-2',
+  'AI Framework': 'text-chart-3',
+  'Data Science': 'text-chart-4',
+  'Research': 'text-chart-5',
+  'Web Dev': 'text-chart-1',
+  'Database': 'text-chart-2',
+  'Tools': 'text-chart-3',
 };
 
-const SkillNode = ({ x, y, level, name, categoryColor }: { x: number, y: number, level: string, name: string, categoryColor: string }) => {
-  const size = levelToSize[level] || 16;
-  return (
-    <g transform={`translate(${x}, ${y})`}>
-      <motion.circle
-        r={size / 2}
-        className={cn("stroke-1", categoryColor)}
-        fill="hsl(var(--background))"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20, delay: Math.random() * 1.5 }}
-      />
-      <text
-        className="text-xs fill-muted-foreground transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-        y={size / 2 + 15}
-        textAnchor="middle"
-      >
-        {name}
-      </text>
-    </g>
-  );
-};
+const SIMULATION_STRENGTH = -30;
 
-const Constellation = ({ category, skills, index }: { category: string, skills: any[], index: number }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [nodes, setNodes] = useState<{x: number, y: number, [key: string]: any}[]>([]);
-  const categoryColor = `stroke-chart-${(index % 5) + 1}`;
-  
-  useEffect(() => {
-    setNodes(skills.map((skill) => {
-      const angle = (Math.random() * 2 * Math.PI); // Random angle for more variation
-      const radius = Math.random() * 40 + 80;
-      return {
-        ...skill,
-        x: Math.cos(angle) * radius,
-        y: Math.sin(angle) * radius,
-      };
-    }));
-  }, [skills]);
-
-  if (nodes.length === 0) {
-    return null; // Don't render anything on the server or before client-side calculation
-  }
-
-  return (
-    <motion.div
-      className="relative group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.2 }}
+const Node = React.memo(({ node, onMouseEnter, onMouseLeave, isHighlighted, isDimmed }: any) => (
+  <g
+    onMouseEnter={() => onMouseEnter(node)}
+    onMouseLeave={onMouseLeave}
+    className="cursor-pointer group"
+  >
+    <motion.circle
+      cx={node.x}
+      cy={node.y}
+      r={8}
+      className={cn(
+        "transition-all duration-300",
+        isHighlighted ? 'stroke-2' : 'stroke-1',
+        isDimmed ? "opacity-20" : "opacity-100",
+        categoryColors[node.category]?.replace('text-', 'stroke-') || 'stroke-foreground'
+      )}
+      fill="hsl(var(--background))"
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20, delay: Math.random() * 0.5 }}
+    />
+    <text
+      x={node.x}
+      y={node.y - 12}
+      className={cn(
+        "text-xs fill-muted-foreground transition-opacity duration-300",
+        isHighlighted ? "opacity-100 font-semibold fill-foreground" : "opacity-0 group-hover:opacity-100"
+      )}
+      textAnchor="middle"
     >
-      <h3 className={cn(
-        "text-center font-headline text-lg mb-4 transition-colors duration-300",
-        isHovered ? `text-chart-${(index % 5) + 1}`.replace('stroke-', 'text-') : "text-muted-foreground"
-      )}>
-        {category}
-      </h3>
-      <svg viewBox="-150 -150 300 300" className="w-64 h-64 md:w-72 md:h-72 transition-transform duration-300 group-hover:scale-110">
-        <motion.g
-          initial="hidden"
-          animate={isHovered ? "visible" : "hidden"}
-          variants={{
-            visible: { opacity: 0.3 },
-            hidden: { opacity: 0.1 },
-          }}
-          transition={{ duration: 0.3 }}
-        >
-          {nodes.map((node, i) => (
-            <line
-              key={i}
-              x1={node.x}
-              y1={node.y}
-              x2={nodes[(i + 1) % nodes.length].x}
-              y2={nodes[(i + 1) % nodes.length].y}
-              className={cn("stroke-muted-foreground", categoryColor)}
-              strokeWidth="0.5"
-            />
-          ))}
-        </motion.g>
-        {nodes.map((node, i) => (
-          <SkillNode key={i} {...node} categoryColor={categoryColor} />
-        ))}
-      </svg>
-    </motion.div>
-  );
-};
+      {node.name}
+    </text>
+  </g>
+));
+Node.displayName = 'Node';
+
+const Link = React.memo(({ link, isHighlighted, isDimmed }: any) => (
+  <motion.line
+    x1={link.source.x}
+    y1={link.source.y}
+    x2={link.target.x}
+    y2={link.target.y}
+    className={cn(
+      "stroke-muted-foreground/30 transition-all duration-300",
+      isHighlighted && "stroke-primary/80",
+      isDimmed && "opacity-10"
+    )}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 1, delay: 0.5 }}
+  />
+));
+Link.displayName = 'Link';
+
 
 export function SkillsSection() {
-    const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+    const [positions, setPositions] = useState<any>({});
+    const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        
+        let newPositions = Object.fromEntries(skillGraph.nodes.map(node => [node.id, { x: width / 2 + (Math.random() - 0.5) * 500, y: height / 2 + (Math.random() - 0.5) * 500 }]));
+
+        const simulationSteps = 120;
+        for (let i = 0; i < simulationSteps; i++) {
+            const forces: any = {};
+
+            // Repulsion force
+            for (const node1 of skillGraph.nodes) {
+                forces[node1.id] = { fx: 0, fy: 0 };
+                for (const node2 of skillGraph.nodes) {
+                    if (node1.id === node2.id) continue;
+                    const dx = newPositions[node1.id].x - newPositions[node2.id].x;
+                    const dy = newPositions[node1.id].y - newPositions[node2.id].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const force = SIMULATION_STRENGTH / (distance * distance);
+                    forces[node1.id].fx += (dx / distance) * force;
+                    forces[node1.id].fy += (dy / distance) * force;
+                }
+            }
+
+            // Attraction force
+            for (const link of skillGraph.links) {
+                const sourceNode = newPositions[link.source];
+                const targetNode = newPositions[link.target];
+                const dx = targetNode.x - sourceNode.x;
+                const dy = targetNode.y - sourceNode.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const force = 0.03 * distance;
+                forces[link.source].fx += (dx / distance) * force;
+                forces[link.source].fy += (dy / distance) * force;
+                forces[link.target].fx -= (dx / distance) * force;
+                forces[link.target].fy -= (dy / distance) * force;
+            }
+
+            // Update positions
+            for (const node of skillGraph.nodes) {
+                newPositions[node.id].x -= forces[node.id].fx;
+                newPositions[node.id].y -= forces[node.id].fy;
+                
+                // Contain within bounds
+                newPositions[node.id].x = Math.max(10, Math.min(width - 10, newPositions[node.id].x));
+                newPositions[node.id].y = Math.max(10, Math.min(height - 10, newPositions[node.id].y));
+            }
+        }
+        setPositions(newPositions);
+    }, []);
+
+    const neighboringNodes = useMemo(() => {
+        if (!hoveredNode) return new Set();
+        const neighbors = new Set<string>([hoveredNode]);
+        skillGraph.links.forEach(link => {
+            if (link.source === hoveredNode) neighbors.add(link.target);
+            if (link.target === hoveredNode) neighbors.add(link.source);
+        });
+        return neighbors;
+    }, [hoveredNode]);
+
+    const renderedNodes = useMemo(() => {
+        return skillGraph.nodes.map(node => ({
+            ...node,
+            x: positions[node.id]?.x,
+            y: positions[node.id]?.y,
+        }));
+    }, [positions]);
+
+    const renderedLinks = useMemo(() => {
+        return skillGraph.links.map(link => {
+            const sourcePos = positions[link.source];
+            const targetPos = positions[link.target];
+            if (!sourcePos || !targetPos) return null;
+            return {
+                ...link,
+                source: { ...skillGraph.nodes.find(n => n.id === link.source), ...sourcePos },
+                target: { ...skillGraph.nodes.find(n => n.id === link.target), ...targetPos },
+            };
+        }).filter(Boolean);
+    }, [positions]);
+
 
     return (
         <section id="skills" className="container">
@@ -111,28 +168,44 @@ export function SkillsSection() {
                     <span className="font-mono text-xl text-secondary">03.</span> My Skills Galaxy
                 </h2>
                 <p className="mt-2 text-lg text-muted-foreground">
-                    A constellation of my technical capabilities.
+                    An interconnected graph of my technical capabilities.
                 </p>
             </div>
-
-            <div 
-              className="mt-12 flex flex-wrap justify-center items-center gap-x-8 gap-y-12 md:gap-x-16"
-              onMouseLeave={() => setHoveredCategory(null)}
-            >
-                {skillGraphData.map((group, index) => (
-                     <div 
-                        key={group.category} 
-                        onMouseEnter={() => setHoveredCategory(group.category)} 
-                        className={cn(
-                            "transition-opacity duration-300",
-                            hoveredCategory && hoveredCategory !== group.category ? "opacity-30" : "opacity-100"
-                        )}
-                     >
-                        <Constellation 
-                            category={group.category} 
-                            skills={group.skills} 
-                            index={index} 
-                        />
+            <div ref={containerRef} className="relative w-full h-[600px] mt-8 border rounded-lg bg-card/30">
+                {Object.keys(positions).length > 0 && (
+                     <svg width="100%" height="100%">
+                         {renderedLinks.map((link: any, i) => {
+                             const isHighlighted = hoveredNode && (link.source.id === hoveredNode || link.target.id === hoveredNode);
+                             return (
+                                 <Link 
+                                     key={i} 
+                                     link={link} 
+                                     isHighlighted={isHighlighted}
+                                     isDimmed={hoveredNode && !isHighlighted}
+                                 />
+                             )
+                         })}
+                         {renderedNodes.map(node => {
+                            const isHighlighted = neighboringNodes.has(node.id);
+                            return (
+                                <Node 
+                                    key={node.id} 
+                                    node={node}
+                                    onMouseEnter={n => setHoveredNode(n.id)}
+                                    onMouseLeave={() => setHoveredNode(null)}
+                                    isHighlighted={isHighlighted}
+                                    isDimmed={hoveredNode && !isHighlighted}
+                                />
+                            )
+                        })}
+                     </svg>
+                )}
+            </div>
+             <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2">
+                {Object.entries(categoryColors).map(([category, colorClass]) => (
+                    <div key={category} className="flex items-center gap-2 text-xs">
+                        <span className={cn("h-3 w-3 rounded-full", colorClass.replace('text-','bg-'))} />
+                        <span className="text-muted-foreground">{category}</span>
                     </div>
                 ))}
             </div>
