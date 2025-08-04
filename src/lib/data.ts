@@ -13,8 +13,6 @@ export interface Project {
   };
 }
 
-export const contactProfileImage = "/profile-pic.jpg";
-
 export const projects: Project[] = [
   {
     title: "AI-Powered E-commerce Platform",
