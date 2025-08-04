@@ -89,7 +89,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         </h2>
       </div>
 
-       <div className="max-w-5xl mx-auto rounded-xl border border-white/10 bg-card/30 backdrop-blur-lg p-8 md:p-12 shadow-2xl shadow-primary/10">
+       <div className="max-w-5xl mx-auto rounded-xl border border-white/10 bg-background/50 backdrop-blur-xl p-8 md:p-12 shadow-2xl shadow-primary/10">
         <div className="grid md:grid-cols-2 gap-12">
             <div>
               <h3 className="text-2xl font-bold font-headline mb-4">{t.subtitle}</h3>
