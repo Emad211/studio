@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { skillGraphData } from "@/lib/data"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 
 const levelToSize: { [key: string]: number } = {
@@ -37,17 +37,24 @@ const SkillNode = ({ x, y, level, name, categoryColor }: { x: number, y: number,
 
 const Constellation = ({ category, skills, index }: { category: string, skills: any[], index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [nodes, setNodes] = useState<{x: number, y: number, [key: string]: any}[]>([]);
   const categoryColor = `stroke-chart-${(index % 5) + 1}`;
   
-  const nodes = skills.map((skill, i) => {
-    const angle = (i / skills.length) * 2 * Math.PI;
-    const radius = Math.random() * 40 + 80;
-    return {
-      ...skill,
-      x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius,
-    };
-  });
+  useEffect(() => {
+    setNodes(skills.map((skill) => {
+      const angle = (Math.random() * 2 * Math.PI); // Random angle for more variation
+      const radius = Math.random() * 40 + 80;
+      return {
+        ...skill,
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+      };
+    }));
+  }, [skills]);
+
+  if (nodes.length === 0) {
+    return null; // Don't render anything on the server or before client-side calculation
+  }
 
   return (
     <motion.div
