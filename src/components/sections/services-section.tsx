@@ -82,7 +82,7 @@ export function ServicesSection() {
                     className="overflow-hidden"
                   >
                     <div className="p-6 pt-8 rounded-b-lg bg-card/50 backdrop-blur-sm border border-t-0">
-                        <p className="text-muted-foreground text-center">
+                        <p className="text-muted-foreground text-left">
                         {service.description}
                         </p>
                     </div>
