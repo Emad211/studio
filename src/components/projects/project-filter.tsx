@@ -15,18 +15,21 @@ export function ProjectFilter({ allTags, lang = 'en' }: { allTags: string[], lan
   const selectedTags = new Set(searchParams.getAll('tags'))
   const currentSearch = searchParams.get('search') || ''
   const [searchTerm, setSearchTerm] = useState(currentSearch)
+  
+  const isFa = lang === 'fa'
 
   const t = {
-    searchPlaceholder: lang === 'fa' ? "جستجو در پروژه‌ها..." : "Search projects..."
+    searchPlaceholder: isFa ? "جستجو در پروژه‌ها..." : "Search projects..."
   }
 
   const createQueryString = useCallback(
-    (params: Record<string, string | number | null>) => {
+    (params: Record<string, string | number | null | string[]>) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString())
       for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key)
-        } else {
+        newSearchParams.delete(key); // Clear existing values for this key
+        if (Array.isArray(value)) {
+          value.forEach(v => newSearchParams.append(key, v));
+        } else if (value) {
           newSearchParams.set(key, String(value))
         }
       }
@@ -72,13 +75,13 @@ export function ProjectFilter({ allTags, lang = 'en' }: { allTags: string[], lan
   return (
     <div className="flex flex-col items-center gap-6">
         <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className={cn("absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground", isFa ? "right-3" : "left-3")} />
             <Input 
                 type="text"
                 placeholder={t.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-11"
+                className={cn("h-11", isFa ? "pr-10" : "pl-10")}
             />
         </div>
         <div className="flex flex-wrap justify-center gap-2">
