@@ -22,7 +22,7 @@ export function ContactSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="contact" className="container">
-      <div className={cn("mb-12", isFa ? "text-right" : "text-left")}>
+      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
         <h2 className="text-3xl font-bold font-headline text-primary">
           <span className="font-mono text-xl text-secondary">{t.number}</span> {t.title}
         </h2>

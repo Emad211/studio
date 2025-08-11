@@ -55,6 +55,11 @@ export function AboutSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
     return (
         <section id="about" className="container">
+            <div className={cn("text-center mb-12", isFa ? "md:text-right" : "md:text-left")}>
+                <h2 className="text-3xl font-bold font-headline text-primary">
+                    <span className="font-mono text-xl text-secondary">01.</span> {t.title}
+                </h2>
+            </div>
             <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <div className="order-2 lg:order-1 flex justify-center lg:justify-start">
                     <div className="relative group w-full max-w-sm">
@@ -72,9 +77,6 @@ export function AboutSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                     </div>
                 </div>
                 <div className={cn("order-1 lg:order-2", isFa ? "text-right lg:text-right" : "text-left")}>
-                    <h2 className="text-3xl font-bold font-headline text-primary">
-                        <span className="font-mono text-xl text-secondary">01.</span> {t.title}
-                    </h2>
                     <div className="mt-6 text-lg text-muted-foreground space-y-4">
                         <p>
                            {t.p1}
