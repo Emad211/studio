@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { skillCategories, skillCategoriesFa } from "@/lib/data"
 import { motion } from "framer-motion"
 import {
@@ -83,11 +83,45 @@ const skillLevelToValue = (level: "Expert" | "Advanced" | "Intermediate" | "Begi
   }
 }
 
+const SkillsDialogContent = ({ category, lang, isMounted }: { category: SkillCategory | null, lang: 'en' | 'fa', isMounted: boolean }) => {
+    if (!isMounted || !category) {
+        return null;
+    }
+    const isFa = lang === 'fa';
+
+    return (
+        <DialogContent className="bg-background/80 backdrop-blur-lg border-white/10" dir={isFa ? "rtl" : "ltr"}>
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-3 font-headline text-2xl text-primary">
+                    <category.icon className="h-8 w-8" />
+                    {category.title}
+                </DialogTitle>
+            </DialogHeader>
+            <div className="mt-4 space-y-6">
+                {category.skills.map((skill) => (
+                    <div key={skill.name}>
+                        <div className="flex justify-between items-end mb-1">
+                            <h4 className="font-semibold">{skill.name}</h4>
+                            <p className="text-sm text-muted-foreground">{skill.level}</p>
+                        </div>
+                        <Progress value={skillLevelToValue(skill.level)} className="h-2" />
+                    </div>
+                ))}
+            </div>
+        </DialogContent>
+    );
+};
+
 export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
   const [selectedCategory, setSelectedCategory] = useState<SkillCategory | null>(null)
+  const [isMounted, setIsMounted] = useState(false);
   const isFa = lang === 'fa';
   
   const currentSkillCategories = isFa ? skillCategoriesFa : skillCategories;
+
+  useEffect(() => {
+      setIsMounted(true);
+  }, []);
 
   const t = {
       title: isFa ? "مهارت‌های من" : "My Skills",
@@ -97,7 +131,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
+      <div className={cn("mb-12", isFa ? "text-right md:text-center" : "text-left md:text-center")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
@@ -118,30 +152,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             </DialogTrigger>
           ))}
         </div>
-
-        <DialogContent className="bg-background/80 backdrop-blur-lg border-white/10" dir={isFa ? "rtl" : "ltr"}>
-          {selectedCategory && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-3 font-headline text-2xl text-primary">
-                  <selectedCategory.icon className="h-8 w-8" />
-                  {selectedCategory.title}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="mt-4 space-y-6">
-                {selectedCategory.skills.map((skill) => (
-                  <div key={skill.name}>
-                    <div className="flex justify-between items-end mb-1">
-                       <h4 className="font-semibold">{skill.name}</h4>
-                       <p className="text-sm text-muted-foreground">{skill.level}</p>
-                    </div>
-                    <Progress value={skillLevelToValue(skill.level)} className="h-2" />
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </DialogContent>
+        <SkillsDialogContent category={selectedCategory} lang={lang} isMounted={isMounted} />
       </Dialog>
     </section>
   )
