@@ -20,11 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import AdminPageLayout from "@/components/layout/admin-page-layout"
 
 export default function AdminProjectsPage() {
   return (
-    <AdminPageLayout>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -95,6 +93,5 @@ export default function AdminProjectsPage() {
           </Table>
         </CardContent>
       </Card>
-    </AdminPageLayout>
   )
 }

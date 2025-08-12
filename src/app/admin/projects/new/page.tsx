@@ -4,11 +4,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Upload } from "lucide-react"
-import AdminPageLayout from "@/components/layout/admin-page-layout"
 
 export default function NewProjectPage() {
   return (
-    <AdminPageLayout>
       <div className="grid flex-1 items-start gap-4 md:gap-8">
           <form className="grid gap-6">
               <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-2 lg:gap-8">
@@ -120,6 +118,5 @@ export default function NewProjectPage() {
               </div>
           </form>
       </div>
-    </AdminPageLayout>
   )
 }

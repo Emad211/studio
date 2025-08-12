@@ -3,11 +3,9 @@ import { projects, blogPosts } from "@/lib/data"
 import { FolderKanban, FileText, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import AdminPageLayout from "@/components/layout/admin-page-layout"
 
 export default function AdminDashboardPage() {
   return (
-    <AdminPageLayout>
       <div className="space-y-6">
         <div className="grid gap-6 sm:grid-cols-2">
           <Card>
@@ -76,6 +74,5 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
-    </AdminPageLayout>
   )
 }
