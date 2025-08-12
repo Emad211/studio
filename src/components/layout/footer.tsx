@@ -23,11 +23,6 @@ export function Footer() {
                 <Send />
               </Link>
             </Button>
-             <Button variant="ghost" size="icon" asChild>
-              <Link href="/login" aria-label="Admin Login">
-                <User />
-              </Link>
-            </Button>
           </div>
         </div>
         <div className="mt-8 text-center text-sm text-muted-foreground">
