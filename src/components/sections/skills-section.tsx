@@ -138,7 +138,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12 md:text-center", isFa ? "text-right" : "text-left")}>
+      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
