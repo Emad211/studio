@@ -25,7 +25,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased transition-colors duration-300 bg-background text-foreground">
+      <body className="font-body antialiased transition-colors duration-300 bg-background">
         {children}
       </body>
     </html>

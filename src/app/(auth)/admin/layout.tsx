@@ -48,48 +48,50 @@ export default function AdminLayout({
   )
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <aside className="fixed inset-y-0 right-0 z-10 hidden w-60 flex-col border-l bg-background sm:flex">
-          <div className="flex h-16 items-center border-b px-6">
-          <Link href="/admin" className="flex items-center gap-2 font-semibold">
-              <LayoutDashboard className="h-6 w-6" />
-              <span>پنل مدیریت</span>
-          </Link>
-          </div>
-          <div className="flex-1 overflow-auto py-2">
-              {navContent}
-          </div>
-      </aside>
-      <div className="flex flex-col sm:pr-60">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-          <Sheet>
-              <SheetTrigger asChild>
-              <Button size="icon" variant="outline" className="sm:hidden">
-                  <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
-              </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="sm:max-w-xs">
-              <div className="flex h-[60px] items-center px-6">
-                  <Link href="/admin" className="flex items-center gap-2 font-semibold">
-                      <LayoutDashboard className="h-6 w-6" />
-                      <span>پنل مدیریت</span>
-                  </Link>
-              </div>
-              <div className="mt-2">
-                  {navContent}
-              </div>
-              </SheetContent>
-          </Sheet>
-          <div className="flex-1"></div>
-          <Button asChild variant="outline" size="icon">
-              <Link href="/">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="sr-only">بازگشت به سایت</span>
-              </Link>
-          </Button>
-          </header>
-          <main className="flex-1 p-4 sm:p-6">{children}</main>
+    <div className="text-foreground">
+      <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <aside className="fixed inset-y-0 right-0 z-10 hidden w-60 flex-col border-l bg-background sm:flex">
+            <div className="flex h-16 items-center border-b px-6">
+            <Link href="/admin" className="flex items-center gap-2 font-semibold">
+                <LayoutDashboard className="h-6 w-6" />
+                <span>پنل مدیریت</span>
+            </Link>
+            </div>
+            <div className="flex-1 overflow-auto py-2">
+                {navContent}
+            </div>
+        </aside>
+        <div className="flex flex-col sm:pr-60">
+            <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <Sheet>
+                <SheetTrigger asChild>
+                <Button size="icon" variant="outline" className="sm:hidden">
+                    <PanelLeft className="h-5 w-5" />
+                    <span className="sr-only">Toggle Menu</span>
+                </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="sm:max-w-xs">
+                <div className="flex h-[60px] items-center px-6">
+                    <Link href="/admin" className="flex items-center gap-2 font-semibold">
+                        <LayoutDashboard className="h-6 w-6" />
+                        <span>پنل مدیریت</span>
+                    </Link>
+                </div>
+                <div className="mt-2">
+                    {navContent}
+                </div>
+                </SheetContent>
+            </Sheet>
+            <div className="flex-1"></div>
+            <Button asChild variant="outline" size="icon">
+                <Link href="/">
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">بازگشت به سایت</span>
+                </Link>
+            </Button>
+            </header>
+            <main className="flex-1 p-4 sm:p-6">{children}</main>
+        </div>
       </div>
     </div>
   )
