@@ -1,4 +1,4 @@
-import { Github, Send } from "lucide-react"
+import { Github, Send, User } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { Button } from "../ui/button"
 import Link from "next/link"
@@ -21,6 +21,11 @@ export function Footer() {
             <Button variant="ghost" size="icon" asChild>
               <Link href="https://t.me/Freelancer_programmerr" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
                 <Send />
+              </Link>
+            </Button>
+             <Button variant="ghost" size="icon" asChild>
+              <Link href="/login" aria-label="Admin Login">
+                <User />
               </Link>
             </Button>
           </div>
