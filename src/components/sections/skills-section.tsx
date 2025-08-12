@@ -107,7 +107,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
       </div>
 
       <Dialog>
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {currentSkillCategories.map((category, index) => (
             <DialogTrigger key={category.title} asChild>
               <SkillCategoryCard
