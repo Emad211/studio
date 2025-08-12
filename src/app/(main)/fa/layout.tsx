@@ -1,7 +1,3 @@
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
-import { Toaster } from '@/components/ui/toaster';
-import { HeroBackground } from '@/components/sections/hero-background';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
