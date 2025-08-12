@@ -56,8 +56,8 @@ export function AboutSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
     return (
         <section id="about" className="container">
             <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
-                <h2 className="text-3xl font-bold font-headline text-primary">
-                    <span className="font-mono text-xl text-secondary">01.</span> {t.title}
+                <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
+                    <span className="font-mono text-xl md:text-2xl text-secondary">01.</span> {t.title}
                 </h2>
             </div>
             <div className="grid lg:grid-cols-2 gap-12 items-center">
