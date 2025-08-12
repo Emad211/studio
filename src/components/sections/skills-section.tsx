@@ -40,53 +40,37 @@ const SkillCategoryCard = ({
   index: number
   onClick?: () => void
 }) => {
-  const Icon = category.icon as LucideIcon
-
-  const cardContent = (
-    <div
-      className="relative aspect-square w-full rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg text-left"
-    >
-      <div className="absolute top-3 left-3 text-lg font-bold text-foreground/50">
-        {category.skills.length.toString().padStart(2, "0")}
-      </div>
-      <div className="flex h-full flex-col items-center justify-center text-center">
-        <Icon className="h-12 w-12 text-primary" />
-        <div className="mt-3 text-sm font-semibold text-foreground">
-          {category.title}
-        </div>
-      </div>
-    </div>
-  )
-
-  if(onClick) {
-    return (
-       <motion.button
-        onClick={onClick}
-        variants={FADE_IN_VARIANTS}
-        initial="hidden"
-        whileInView="show"
-        whileHover={{ y: -5, scale: 1.05, shadow: "0 25px 50px -12px rgba(var(--primary-rgb), 0.25)" }}
-        custom={index}
-        viewport={{ once: true }}
-        className="w-full"
-      >
-        {cardContent}
-      </motion.button>
-    )
-  }
+  const Icon = category.icon as LucideIcon;
 
   return (
-     <motion.div
+    <motion.button
+      onClick={onClick}
+      disabled={!onClick}
       variants={FADE_IN_VARIANTS}
       initial="hidden"
       whileInView="show"
+      whileHover={onClick ? { y: -5, scale: 1.05, shadow: "0 25px 50px -12px rgba(var(--primary-rgb), 0.25)" } : {}}
       custom={index}
       viewport={{ once: true }}
+      className="w-full disabled:cursor-default"
     >
-      {cardContent}
-    </motion.div>
-  )
-}
+      <div
+        className="relative aspect-square w-full rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg text-left"
+      >
+        <div className="absolute top-3 left-3 text-lg font-bold text-foreground/50">
+          {category.skills.length.toString().padStart(2, "0")}
+        </div>
+        <div className="flex h-full flex-col items-center justify-center text-center">
+          <Icon className="h-12 w-12 text-primary" />
+          <div className="mt-3 text-sm font-semibold text-foreground">
+            {category.title}
+          </div>
+        </div>
+      </div>
+    </motion.button>
+  );
+};
+
 
 const skillLevelToValue = (level: "Expert" | "Advanced" | "Intermediate" | "Beginner" | "متخصص" | "پیشرفته" | "متوسط" | "مبتدی") => {
   switch (level) {
@@ -154,7 +138,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
+      <div className={cn("mb-12 md:text-center", isFa ? "text-right" : "text-left")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
