@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -131,7 +132,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12 text-left md:text-center", isFa && "text-right")}>
+      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
@@ -141,7 +142,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
       </div>
         {isMounted ? (
             <Dialog>
-                <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
                 {currentSkillCategories.map((category, index) => (
                     <DialogTrigger key={category.title} asChild>
                     <SkillCategoryCard
@@ -155,7 +156,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                 <SkillsDialogContent category={selectedCategory} lang={lang} />
             </Dialog>
         ) : (
-            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
                 {currentSkillCategories.map((category, index) => (
                      <SkillCategoryCard
                         key={category.title}
