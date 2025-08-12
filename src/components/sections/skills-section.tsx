@@ -132,7 +132,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
+      <div className={cn("mb-12 md:text-center", isFa ? "text-right" : "text-left")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
@@ -141,7 +141,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
         </p>
       </div>
         {isMounted ? (
-            <Dialog>
+            <Dialog onOpenChange={(open) => !open && setSelectedCategory(null)}>
                 <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
                 {currentSkillCategories.map((category, index) => (
                     <DialogTrigger key={category.title} asChild>
