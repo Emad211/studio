@@ -12,19 +12,27 @@ import {
   SidebarTrigger,
   SidebarFooter,
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, Mail, BarChart, Settings, UserCircle, LogOut } from "lucide-react"
+import { LayoutDashboard, LogOut, UserCircle, FolderKanban, FileText, Settings } from "lucide-react"
 import { Logo } from "@/components/logo"
 import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
 const adminNavLinks = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart },
-  { href: "/admin/messages", label: "Messages", icon: Mail },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin", label: "داشبورد", icon: LayoutDashboard },
+  { href: "/admin/projects", label: "پروژه‌ها", icon: FolderKanban },
+  { href: "/admin/blog", label: "وبلاگ", icon: FileText },
+  { href: "/admin/settings", label: "تنظیمات", icon: Settings },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const pageTitle = adminNavLinks.find(link => pathname.startsWith(link.href) && (link.href.length > 5 || link.href === pathname))?.label || "داشبورد"
+
+  const getHeaderTitle = () => {
+    if (pathname === '/admin/projects/new') return 'افزودن پروژه جدید';
+    if (pathname === '/admin/blog/new') return 'افزودن پست جدید';
+    return pageTitle;
+  }
 
   return (
     <SidebarProvider>
@@ -32,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <SidebarHeader>
           <div className="flex items-center gap-2">
             <Logo />
-            <span className="font-semibold font-headline text-lg">Admin Panel</span>
+            <span className="font-semibold font-headline text-lg">پنل ادمین</span>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -40,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {adminNavLinks.map((link) => (
               <SidebarMenuItem key={link.href}>
                 <Link href={link.href} className="w-full">
-                  <SidebarMenuButton isActive={pathname === link.href} tooltip={link.label}>
+                  <SidebarMenuButton isActive={pathname.startsWith(link.href) && (link.href.length > 5 || link.href === pathname)} tooltip={link.label}>
                     <link.icon />
                     <span>{link.label}</span>
                   </SidebarMenuButton>
@@ -52,24 +60,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <SidebarFooter>
           <SidebarMenu>
              <SidebarMenuItem>
-               <SidebarMenuButton tooltip="Profile">
+               <SidebarMenuButton tooltip="پروفایل">
                 <UserCircle />
-                <span>Emad Karimi</span>
+                <span>عماد کریمی</span>
                </SidebarMenuButton>
              </SidebarMenuItem>
              <SidebarMenuItem>
-               <SidebarMenuButton tooltip="Logout">
+               <SidebarMenuButton tooltip="خروج">
                 <LogOut />
-                <span>Logout</span>
+                <span>خروج</span>
                </SidebarMenuButton>
              </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-           <SidebarTrigger className="md:hidden"/>
-           <h1 className="text-lg font-semibold font-headline">Dashboard</h1>
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
+           <div className="flex items-center gap-4">
+            <SidebarTrigger className="md:hidden"/>
+            <h1 className="text-lg font-semibold font-headline">{getHeaderTitle()}</h1>
+           </div>
         </header>
         <main className="flex-1 p-4 md:p-6">
             {children}
