@@ -83,8 +83,8 @@ const skillLevelToValue = (level: "Expert" | "Advanced" | "Intermediate" | "Begi
   }
 }
 
-const SkillsDialogContent = ({ category, lang, isMounted }: { category: SkillCategory | null, lang: 'en' | 'fa', isMounted: boolean }) => {
-    if (!isMounted || !category) {
+const SkillsDialogContent = ({ category, lang }: { category: SkillCategory | null, lang: 'en' | 'fa' }) => {
+    if (!category) {
         return null;
     }
     const isFa = lang === 'fa';
@@ -131,7 +131,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12", isFa ? "text-right md:text-center" : "text-left md:text-center")}>
+      <div className={cn("mb-12 text-left md:text-center", isFa ? "md:text-center text-right" : "text-left md:text-center")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
@@ -139,21 +139,33 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
           {t.subtitle}
         </p>
       </div>
-
-      <Dialog>
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {currentSkillCategories.map((category, index) => (
-            <DialogTrigger key={category.title} asChild>
-              <SkillCategoryCard
-                category={category}
-                index={index}
-                onClick={() => setSelectedCategory(category)}
-              />
-            </DialogTrigger>
-          ))}
-        </div>
-        <SkillsDialogContent category={selectedCategory} lang={lang} isMounted={isMounted} />
-      </Dialog>
+        {isMounted ? (
+            <Dialog>
+                <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {currentSkillCategories.map((category, index) => (
+                    <DialogTrigger key={category.title} asChild>
+                    <SkillCategoryCard
+                        category={category}
+                        index={index}
+                        onClick={() => setSelectedCategory(category)}
+                    />
+                    </DialogTrigger>
+                ))}
+                </div>
+                <SkillsDialogContent category={selectedCategory} lang={lang} />
+            </Dialog>
+        ) : (
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {currentSkillCategories.map((category, index) => (
+                     <SkillCategoryCard
+                        key={category.title}
+                        category={category}
+                        index={index}
+                        onClick={() => {}}
+                    />
+                ))}
+            </div>
+        )}
     </section>
   )
 }
