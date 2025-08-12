@@ -38,19 +38,12 @@ const SkillCategoryCard = ({
 }: {
   category: SkillCategory
   index: number
-  onClick: () => void
+  onClick?: () => void
 }) => {
   const Icon = category.icon as LucideIcon
 
-  return (
-    <motion.button
-      onClick={onClick}
-      variants={FADE_IN_VARIANTS}
-      initial="hidden"
-      whileInView="show"
-      whileHover={{ y: -5, scale: 1.05, shadow: "0 25px 50px -12px rgba(var(--primary-rgb), 0.25)" }}
-      custom={index}
-      viewport={{ once: true }}
+  const cardContent = (
+    <div
       className="relative aspect-square w-full rounded-xl border border-white/10 bg-background/50 p-4 backdrop-blur-lg shadow-lg text-left"
     >
       <div className="absolute top-3 left-3 text-lg font-bold text-foreground/50">
@@ -62,7 +55,36 @@ const SkillCategoryCard = ({
           {category.title}
         </div>
       </div>
-    </motion.button>
+    </div>
+  )
+
+  if(onClick) {
+    return (
+       <motion.button
+        onClick={onClick}
+        variants={FADE_IN_VARIANTS}
+        initial="hidden"
+        whileInView="show"
+        whileHover={{ y: -5, scale: 1.05, shadow: "0 25px 50px -12px rgba(var(--primary-rgb), 0.25)" }}
+        custom={index}
+        viewport={{ once: true }}
+        className="w-full"
+      >
+        {cardContent}
+      </motion.button>
+    )
+  }
+
+  return (
+     <motion.div
+      variants={FADE_IN_VARIANTS}
+      initial="hidden"
+      whileInView="show"
+      custom={index}
+      viewport={{ once: true }}
+    >
+      {cardContent}
+    </motion.div>
   )
 }
 
@@ -132,7 +154,7 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
 
   return (
     <section id="skills" className="container">
-      <div className={cn("mb-12 md:text-center", isFa ? "text-right" : "text-left")}>
+      <div className={cn("mb-12", isFa ? "text-right" : "text-left", "md:text-center")}>
         <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary">
           <span className="font-mono text-xl md:text-2xl text-secondary">{t.number}</span> {t.title}
         </h2>
@@ -162,7 +184,6 @@ export function SkillsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
                         key={category.title}
                         category={category}
                         index={index}
-                        onClick={() => {}}
                     />
                 ))}
             </div>
