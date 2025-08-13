@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveProject } from "@/lib/actions";
 import { services } from "@/lib/data";
+import { Separator } from "../ui/separator";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -34,6 +35,16 @@ const projectSchema = z.object({
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
   categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
+  about: z.string().min(1, "About content is required."),
+  about_fa: z.string().min(1, "محتوای درباره پروژه الزامی است."),
+  technical_details: z.string().min(1, "Technical details are required."),
+  technical_details_fa: z.string().min(1, "جزئیات فنی الزامی است."),
+  challenges: z.string().min(1, "Challenges content is required."),
+  challenges_fa: z.string().min(1, "محتوای چالش‌ها الزامی است."),
+  solution: z.string().min(1, "Solution content is required."),
+  solution_fa: z.string().min(1, "محتوای راه‌حل الزامی است."),
+  code_snippet: z.string().min(1, "Code snippet is required."),
+  code_snippet_fa: z.string().min(1, "قطعه کد الزامی است."),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -68,6 +79,16 @@ export function ProjectForm({ project }: ProjectFormProps) {
           github: "",
           live: "",
           categories: [],
+          about: "",
+          about_fa: "",
+          technical_details: "",
+          technical_details_fa: "",
+          challenges: "",
+          challenges_fa: "",
+          solution: "",
+          solution_fa: "",
+          code_snippet: "",
+          code_snippet_fa: "",
         },
   });
 
@@ -167,9 +188,9 @@ export function ProjectForm({ project }: ProjectFormProps) {
                                     checked={field.value?.includes(item.title)}
                                     onCheckedChange={(checked) => {
                                     return checked
-                                        ? field.onChange([...field.value, item.title])
+                                        ? field.onChange([...(field.value || []), item.title])
                                         : field.onChange(
-                                            field.value?.filter(
+                                            (field.value || [])?.filter(
                                             (value) => value !== item.title
                                             )
                                         )
@@ -272,6 +293,142 @@ export function ProjectForm({ project }: ProjectFormProps) {
             )}
             />
         </div>
+
+        <Separator />
+        <h3 className="text-xl font-semibold">محتوای صفحه پروژه</h3>
+        
+        <FormField
+          control={form.control}
+          name="about_fa"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>درباره پروژه (فارسی)</FormLabel>
+              <FormControl>
+                <Textarea className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="about"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>About Project (English)</FormLabel>
+              <FormControl>
+                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="technical_details_fa"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>جزئیات فنی (فارسی)</FormLabel>
+              <FormControl>
+                <Textarea className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="technical_details"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Technical Details (English)</FormLabel>
+              <FormControl>
+                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="challenges_fa"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>چالش‌ها (فارسی)</FormLabel>
+              <FormControl>
+                <Textarea className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="challenges"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Challenges (English)</FormLabel>
+              <FormControl>
+                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="solution_fa"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>راه‌حل (فارسی)</FormLabel>
+              <FormControl>
+                <Textarea className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="solution"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Solution (English)</FormLabel>
+              <FormControl>
+                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="code_snippet_fa"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>قطعه کد (فارسی/نمایشی)</FormLabel>
+              <FormControl>
+                <Textarea className="min-h-[120px] font-code" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="code_snippet"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Code Snippet (English)</FormLabel>
+              <FormControl>
+                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" disabled={isPending}>
           {isPending ? "در حال ذخیره..." : "ذخیره پروژه"}

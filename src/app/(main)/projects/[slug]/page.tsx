@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 }
 
 const Showcase = ({ project }: { project: Project }) => {
-  if (project.showcaseType === 'simulator' && project.gallery) {
+  if (project.showcaseType === 'simulator' && project.gallery && project.gallery.length > 0) {
     return <ProjectSimulator images={project.gallery} />;
   }
 
@@ -56,16 +56,7 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
     notFound()
   }
 
-  const exampleCode = `import { Button } from "@/components/ui/button"
-
-function MyComponent() {
-  return (
-    <div>
-      <h1>Welcome to ${project.title}</h1>
-      <Button>Get Started</Button>
-    </div>
-  )
-}`
+  const exampleCode = project.code_snippet.replace("{project.title}", project.title);
 
   return (
     <div className="container py-12 md:py-20">
@@ -92,21 +83,16 @@ function MyComponent() {
 
         <div className="prose prose-invert prose-lg mx-auto max-w-none">
           <h2 className="font-headline text-3xl text-foreground">About the Project</h2>
-          <p>
-            This project was developed to solve a specific problem in the industry. Leveraging modern technologies like React and Next.js, we built a scalable and efficient application. The primary goal was to create a user-friendly interface that simplifies complex workflows.
-          </p>
+          <p>{project.about}</p>
 
           <h3 className="font-headline text-2xl text-foreground">Technical Details</h3>
-          <p>
-            The front-end is built with Next.js and styled using Tailwind CSS for a responsive and modern look. For state management, we used React's Context API. The back-end is powered by Node.js with an Express server, connecting to a PostgreSQL database.
-          </p>
+          <p>{project.technical_details}</p>
 
           <CodeBlock code={exampleCode} language="jsx" />
 
           <h3 className="font-headline text-2xl text-foreground">Challenges and Solutions</h3>
-          <p>
-            One of the main challenges was optimizing performance for large datasets. We implemented pagination, lazy loading for components and images, and server-side rendering to ensure fast load times. Another challenge was ensuring cross-browser compatibility, which we addressed through rigorous testing and polyfills.
-          </p>
+          <p>{project.challenges}</p>
+          <p>{project.solution}</p>
         </div>
         
         <Separator className="my-16" />

@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 }
 
 const Showcase = ({ project }: { project: Project }) => {
-  if (project.showcaseType === 'simulator' && project.gallery) {
+  if (project.showcaseType === 'simulator' && project.gallery && project.gallery.length > 0) {
     return <ProjectSimulator images={project.gallery} />;
   }
 
@@ -56,16 +56,7 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
     notFound()
   }
 
-  const exampleCode = `import { Button } from "@/components/ui/button"
-
-function MyComponent() {
-  return (
-    <div>
-      <h1>به ${project.title_fa} خوش آمدید</h1>
-      <Button>شروع کنید</Button>
-    </div>
-  )
-}`
+  const exampleCode = project.code_snippet_fa.replace("{project.title_fa}", project.title_fa);
 
   return (
     <div className="container py-12 md:py-20">
@@ -92,23 +83,18 @@ function MyComponent() {
 
         <div className="prose prose-invert prose-lg mx-auto max-w-none text-right">
           <h2 className="font-headline text-3xl text-foreground">درباره پروژه</h2>
-          <p>
-            این پروژه برای حل یک مشکل خاص در صنعت توسعه داده شد. با بهره‌گیری از فناوری‌های مدرن مانند React و Next.js، ما یک برنامه مقیاس‌پذیر و کارآمد ساختیم. هدف اصلی ایجاد یک رابط کاربری کاربرپسند بود که گردش کارهای پیچیده را ساده کند.
-          </p>
+          <p>{project.about_fa}</p>
 
           <h3 className="font-headline text-2xl text-foreground">جزئیات فنی</h3>
-          <p>
-            فرانت‌اند با Next.js ساخته شده و با استفاده از Tailwind CSS برای ظاهری مدرن و واکنش‌گرا استایل‌دهی شده است. برای مدیریت وضعیت، ما از Context API ری‌اکت استفاده کردیم. بک‌اند توسط Node.js با یک سرور Express قدرت گرفته و به یک پایگاه داده PostgreSQL متصل است.
-          </p>
+          <p>{project.technical_details_fa}</p>
 
           <div dir="ltr">
             <CodeBlock code={exampleCode} language="jsx" />
           </div>
 
           <h3 className="font-headline text-2xl text-foreground">چالش‌ها و راه‌حل‌ها</h3>
-          <p>
-            یکی از چالش‌های اصلی بهینه‌سازی عملکرد برای مجموعه داده‌های بزرگ بود. ما صفحه‌بندی، بارگذاری تنبل برای کامپوننت‌ها و تصاویر، و رندر سمت سرور را برای اطمینان از زمان بارگذاری سریع پیاده‌سازی کردیم. چالش دیگر اطمینان از سازگاری بین مرورگرها بود که از طریق تست‌های دقیق و پالی‌فیل‌ها به آن پرداختیم.
-          </p>
+          <p>{project.challenges_fa}</p>
+          <p>{project.solution_fa}</p>
         </div>
 
         <Separator className="my-16" />

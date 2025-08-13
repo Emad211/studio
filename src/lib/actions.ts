@@ -76,6 +76,16 @@ const projectSchema = z.object({
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
   categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
+  about: z.string().min(1, "About content is required."),
+  about_fa: z.string().min(1, "محتوای درباره پروژه الزامی است."),
+  technical_details: z.string().min(1, "Technical details are required."),
+  technical_details_fa: z.string().min(1, "جزئیات فنی الزامی است."),
+  challenges: z.string().min(1, "Challenges content is required."),
+  challenges_fa: z.string().min(1, "محتوای چالش‌ها الزامی است."),
+  solution: z.string().min(1, "Solution content is required."),
+  solution_fa: z.string().min(1, "محتوای راه‌حل الزامی است."),
+  code_snippet: z.string().min(1, "Code snippet is required."),
+  code_snippet_fa: z.string().min(1, "قطعه کد الزامی است."),
 });
 
 export async function saveProject(
@@ -117,7 +127,7 @@ export async function saveProject(
     }
     const newProject: Project = {
         ...projectData,
-        showcaseType: 'links',
+        showcaseType: 'links', // Default showcase type
         gallery: [],
         aiPromptContext: ''
     }

@@ -18,6 +18,16 @@ export interface Project {
   showcaseType?: 'links' | 'simulator' | 'ai_chatbot';
   gallery?: string[];
   aiPromptContext?: string;
+  about: string;
+  about_fa: string;
+  technical_details: string;
+  technical_details_fa: string;
+  challenges: string;
+  challenges_fa: string;
+  solution: string;
+  solution_fa: string;
+  code_snippet: string;
+  code_snippet_fa: string;
 }
 
 export interface BlogPost {
@@ -78,6 +88,16 @@ export function getInitialData() {
         showcaseType: "links",
         gallery: [],
         aiPromptContext: "",
+        about: "This project is an advanced e-commerce platform that leverages AI to create a personalized shopping experience. The system analyzes user behavior to provide tailored product recommendations, increasing engagement and sales. It includes a comprehensive admin dashboard for managing products, users, and orders.",
+        about_fa: "این پروژه یک پلتفرم فروشگاهی پیشرفته است که از هوش مصنوعی برای ایجاد تجربه خرید شخصی‌سازی شده بهره می‌برد. سیستم با تحلیل رفتار کاربر، پیشنهادهای محصول متناسب ارائه می‌دهد که منجر به افزایش تعامل و فروش می‌شود. این پلتفرم شامل یک داشبورد مدیریت جامع برای مدیریت محصولات، کاربران و سفارشات است.",
+        technical_details: "The frontend is built with Next.js and React, utilizing server-side rendering for optimal performance. The backend is a Node.js server with a PostgreSQL database to handle complex queries. The recommendation engine is a custom model developed with TensorFlow, served via a Flask API.",
+        technical_details_fa: "فرانت‌اند با Next.js و React ساخته شده و از رندر سمت سرور برای عملکرد بهینه استفاده می‌کند. بک‌اند یک سرور Node.js با پایگاه داده PostgreSQL برای مدیریت کوئری‌های پیچیده است. موتور پیشنهاددهنده یک مدل سفارشی توسعه‌داده‌شده با TensorFlow است که از طریق یک Flask API سرویس‌دهی می‌شود.",
+        challenges: "One of the main challenges was integrating the AI model with the real-time user data stream without affecting site performance. We implemented a message queue system with RabbitMQ to process data asynchronously.",
+        challenges_fa: "یکی از چالش‌های اصلی، یکپارچه‌سازی مدل هوش مصنوعی با جریان داده آنی کاربران بدون تأثیر منفی بر عملکرد سایت بود. ما یک سیستم صف پیام با RabbitMQ برای پردازش غیرهمزمان داده‌ها پیاده‌سازی کردیم.",
+        solution: "The asynchronous architecture allowed us to decouple the recommendation engine from the main application, ensuring scalability and responsiveness. The AI model updates personalized recommendations in near real-time without blocking user interactions.",
+        solution_fa: "معماری غیرهمزمان به ما اجازه داد تا موتور پیشنهاددهنده را از برنامه اصلی جدا کنیم و مقیاس‌پذیری و واکنش‌گرایی را تضمین کنیم. مدل هوش مصنوعی پیشنهادهای شخصی‌سازی‌شده را تقریباً در لحظه و بدون مسدود کردن تعاملات کاربر به‌روز می‌کند.",
+        code_snippet: "import { RecommendationEngine } from '@/lib/ai/ecommerce';",
+        code_snippet_fa: "import { RecommendationEngine } from '@/lib/ai/ecommerce';"
       },
       {
         title: "Intelligent Task Management App",
@@ -94,9 +114,19 @@ export function getInitialData() {
         gallery: [
           "https://placehold.co/1280x720.png",
           "https://placehold.co/1280x720.png",
-          "https://placehold.co/1280x720.png",
+          "https://placehold.co/1280x720.png"
         ],
         aiPromptContext: "",
+        about: "This app helps teams manage their tasks intelligently. An AI agent analyzes task descriptions, deadlines, and dependencies to suggest priorities and optimal workflows. It features real-time collaboration, notifications, and progress tracking.",
+        about_fa: "این برنامه به تیم‌ها کمک می‌کند تا وظایف خود را هوشمندانه مدیریت کنند. یک ایجنت هوش مصنوعی توضیحات، مهلت‌ها و وابستگی‌های وظایف را تحلیل کرده و اولویت‌ها و گردش کارهای بهینه را پیشنهاد می‌دهد. این برنامه دارای قابلیت همکاری آنی، اعلان‌ها و پیگیری پیشرفت است.",
+        technical_details: "The application is built using React for the frontend and Firebase (Firestore and Realtime Database) for the backend and real-time data synchronization. The AI agent for task prioritization is a custom model built with Scikit-learn, deployed as a cloud function.",
+        technical_details_fa: "اپلیکیشن با استفاده از React برای فرانت‌اند و Firebase (Firestore و Realtime Database) برای بک‌اند و همگام‌سازی آنی داده‌ها ساخته شده است. ایجنت هوش مصنوعی برای اولویت‌بندی وظایف، یک مدل سفارشی ساخته‌شده با Scikit-learn است که به عنوان یک Cloud Function مستقر شده است.",
+        challenges: "Ensuring real-time updates across all clients without performance degradation was a key challenge. We optimized our Firestore queries and data structures extensively and used the Realtime Database for presence indicators.",
+        challenges_fa: "اطمینان از به‌روزرسانی‌های آنی در تمام کلاینت‌ها بدون کاهش عملکرد، یک چالش کلیدی بود. ما کوئری‌های Firestore و ساختارهای داده خود را به طور گسترده بهینه‌سازی کردیم و از Realtime Database برای نشانگرهای حضور آنلاین استفاده کردیم.",
+        solution: "By leveraging Firebase's strengths, we achieved a highly responsive and scalable real-time system. The AI agent operates independently in the background, pushing priority updates to clients without interrupting their workflow.",
+        solution_fa: "با بهره‌گیری از نقاط قوت Firebase، ما به یک سیستم آنی بسیار واکنش‌گرا و مقیاس‌پذیر دست یافتیم. ایجنت هوش مصنوعی به طور مستقل در پس‌زمینه عمل می‌کند و به‌روزرسانی‌های اولویت را بدون ایجاد وقفه در گردش کار کاربران به آن‌ها ارسال می‌کند.",
+        code_snippet: "import { TaskPrioritizerAgent } from '@/lib/ai/tasks';",
+        code_snippet_fa: "import { TaskPrioritizerAgent } from '@/lib/ai/tasks';"
       },
       {
         title: "AI Portfolio Website",
@@ -115,6 +145,16 @@ export function getInitialData() {
         showcaseType: "links",
         gallery: [],
         aiPromptContext: "",
+        about: "This is the very portfolio website you are looking at. It's designed to be a clean, modern, and performant platform to showcase my work in the field of AI and software development. It features a bilingual interface (English/Persian) and a content management system for projects and blog posts.",
+        about_fa: "این همان وب‌سایت پورتفولیویی است که در حال مشاهده آن هستید. این سایت به عنوان یک پلتفرم تمیز، مدرن و با کارایی بالا برای نمایش کارهای من در زمینه هوش مصنوعی و توسعه نرم‌افزار طراحی شده است. این سایت دارای یک رابط کاربری دوزبانه (انگلیسی/فارسی) و یک سیستم مدیریت محتوا برای پروژه‌ها و پست‌های وبلاگ است.",
+        technical_details: "Built with Next.js App Router for optimal performance and SEO. Styled with Tailwind CSS and ShadCN UI components for a consistent and modern look. Interactive elements are enhanced with Framer Motion. The entire application is statically generated where possible and deployed on Vercel.",
+        technical_details_fa: "با Next.js App Router برای عملکرد و سئوی بهینه ساخته شده است. با Tailwind CSS و کامپوننت‌های ShadCN UI برای ظاهری یکپارچه و مدرن استایل‌دهی شده است. عناصر تعاملی با Framer Motion بهبود یافته‌اند. کل برنامه تا حد امکان به صورت استاتیک تولید و بر روی Vercel مستقر شده است.",
+        challenges: "A major challenge was creating a fully functional admin panel from scratch that could manage the bilingual content of the portfolio without a traditional database, relying instead on updating a JSON file on the server.",
+        challenges_fa: "یک چالش بزرگ، ایجاد یک پنل مدیریت کاملاً کاربردی از ابتدا بود که بتواند محتوای دوزبانه پورتفولیو را بدون یک پایگاه داده سنتی مدیریت کند و در عوض به به‌روزرسانی یک فایل JSON روی سرور متکی باشد.",
+        solution: "I implemented a system using Next.js Server Actions that read from and write to a local JSON file. This acts as a simple, file-based CMS, allowing for easy content updates through the admin dashboard, which then triggers revalidation of static paths to reflect changes instantly.",
+        solution_fa: "من یک سیستم با استفاده از Next.js Server Actions پیاده‌سازی کردم که از یک فایل JSON محلی می‌خواند و در آن می‌نویسد. این سیستم به عنوان یک CMS ساده و مبتنی بر فایل عمل می‌کند و امکان به‌روزرسانی آسان محتوا از طریق داشبورد مدیریت را فراهم می‌کند، که سپس باعث اعتبارسنجی مجدد مسیرهای استاتیک برای انعکاس فوری تغییرات می‌شود.",
+        code_snippet: "import { getProjects } from '@/lib/actions';",
+        code_snippet_fa: "import { getProjects } from '@/lib/actions';"
       },
       {
         title: "Deep Learning Weather Forecaster",
@@ -130,7 +170,17 @@ export function getInitialData() {
         showcaseType: "ai_chatbot",
         gallery: [],
         aiPromptContext: "This project is a sophisticated weather forecasting application that leverages a Long Short-Term Memory (LSTM) deep learning model, implemented with TensorFlow and Keras. The primary goal was to achieve higher accuracy in long-range weather predictions compared to traditional models. The model was trained on a massive historical weather dataset spanning over 20 years, including variables like temperature, humidity, wind speed, and pressure. A Flask API was developed to serve the model's predictions, which can be integrated into various front-end applications. One of the main challenges was handling the time-series nature of the data and preventing model overfitting, which was addressed using techniques like dropout and early stopping. The final model demonstrated a 15% improvement in accuracy for 7-day forecasts over the baseline model.",
-      },
+        about: "This project aims to provide more accurate weather forecasts using a deep learning approach. Traditional models often struggle with long-term predictions, but by using an LSTM (Long Short-Term Memory) network, this model can capture complex temporal dependencies in historical weather data.",
+        about_fa: "هدف این پروژه ارائه پیش‌بینی‌های دقیق‌تر آب و هوا با استفاده از یک رویکرد یادگیری عمیق است. مدل‌های سنتی اغلب با پیش‌بینی‌های بلندمدت مشکل دارند، اما با استفاده از یک شبکه LSTM (حافظه طولانی کوتاه‌مدت)، این مدل می‌تواند وابستگی‌های زمانی پیچیده در داده‌های تاریخی آب و هوا را ثبت کند.",
+        technical_details: "The core of the project is an LSTM model built with TensorFlow and Keras. It was trained on over 20 years of hourly weather data. The model is exposed via a REST API created with Flask. This allows any frontend application to easily fetch prediction data.",
+        technical_details_fa: "هسته اصلی پروژه یک مدل LSTM است که با TensorFlow و Keras ساخته شده. این مدل بر روی داده‌های ساعتی آب و هوای بیش از ۲۰ سال آموزش دیده است. مدل از طریق یک REST API که با Flask ایجاد شده، در دسترس قرار گرفته است. این به هر برنامه فرانت‌اند اجازه می‌دهد تا به راحتی داده‌های پیش‌بینی را دریافت کند.",
+        challenges: "The biggest challenge was data preprocessing and feature engineering for the time-series data. Normalizing the data and creating the correct input sequences for the LSTM model was crucial. Preventing overfitting on such a large dataset was also a major concern.",
+        challenges_fa: "بزرگترین چالش، پیش‌پردازش داده‌ها و مهندسی ویژگی برای داده‌های سری زمانی بود. نرمال‌سازی داده‌ها و ایجاد توالی‌های ورودی صحیح برای مدل LSTM حیاتی بود. جلوگیری از بیش‌برازش بر روی چنین مجموعه داده بزرگی نیز یک نگرانی عمده بود.",
+        solution: "We implemented a sliding window technique to generate sequences for training. We also used dropout layers and an early stopping mechanism during training to combat overfitting. The final model showed a significant 15% improvement in accuracy for 7-day forecasts compared to a baseline ARIMA model.",
+        solution_fa: "ما یک تکنیک پنجره لغزان برای تولید توالی‌ها برای آموزش پیاده‌سازی کردیم. همچنین از لایه‌های dropout و مکانیزم توقف زودهنگام در حین آموزش برای مقابله با بیش‌برازش استفاده کردیم. مدل نهایی بهبود قابل توجه ۱۵ درصدی در دقت برای پیش‌بینی‌های ۷ روزه در مقایسه با مدل پایه ARIMA نشان داد.",
+        code_snippet: "from tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import LSTM, Dense, Dropout",
+        code_snippet_fa: "from tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import LSTM, Dense, Dropout"
+      }
     ];
 
     const initialBlogPosts: BlogPost[] = [
