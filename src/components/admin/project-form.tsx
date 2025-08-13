@@ -8,6 +8,7 @@ import { useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Project } from "@/lib/data";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -20,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveProject } from "@/lib/actions";
+import { services } from "@/lib/data";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -31,6 +33,7 @@ const projectSchema = z.object({
   tags: z.string().min(1, "حداقل یک تگ الزامی است."),
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
+  categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -47,7 +50,13 @@ export function ProjectForm({ project }: ProjectFormProps) {
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: project
-      ? { ...project, tags: project.tags.join(", "), github: project.links.github, live: project.links.live }
+      ? { 
+          ...project, 
+          tags: project.tags.join(", "), 
+          github: project.links.github, 
+          live: project.links.live,
+          categories: project.categories,
+        }
       : {
           title: "",
           title_fa: "",
@@ -58,6 +67,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
           tags: "",
           github: "",
           live: "",
+          categories: [],
         },
   });
 
@@ -128,6 +138,58 @@ export function ProjectForm({ project }: ProjectFormProps) {
               </FormItem>
             )}
           />
+        
+        <FormField
+            control={form.control}
+            name="categories"
+            render={() => (
+                <FormItem>
+                    <div className="mb-4">
+                        <FormLabel className="text-base">دسته‌بندی‌ها</FormLabel>
+                        <FormDescription>
+                           یک یا چند دسته‌بندی مرتبط با پروژه را انتخاب کنید.
+                        </FormDescription>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {services.map((item) => (
+                        <FormField
+                        key={item.title}
+                        control={form.control}
+                        name="categories"
+                        render={({ field }) => {
+                            return (
+                            <FormItem
+                                key={item.title}
+                                className="flex flex-row items-start space-x-0 space-x-reverse space-y-0"
+                            >
+                                <FormControl>
+                                <Checkbox
+                                    checked={field.value?.includes(item.title)}
+                                    onCheckedChange={(checked) => {
+                                    return checked
+                                        ? field.onChange([...field.value, item.title])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                            (value) => value !== item.title
+                                            )
+                                        )
+                                    }}
+                                />
+                                </FormControl>
+                                <FormLabel className="font-normal mr-2">
+                                {item.title}
+                                </FormLabel>
+                            </FormItem>
+                            )
+                        }}
+                        />
+                    ))}
+                    </div>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+        
         <FormField
           control={form.control}
           name="description_fa"

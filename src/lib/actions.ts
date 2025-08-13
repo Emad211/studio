@@ -43,11 +43,11 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     return data.blogPosts;
 }
 
-export async function getAllCategories(lang: 'en' | 'fa'): Promise<string[]> {
-    if (lang === 'fa') {
-        return servicesFa.map(c => c.title);
-    }
-    return services.map(c => c.title);
+export async function getAllCategories(lang: 'en' | 'fa') {
+  if (lang === 'fa') {
+    return servicesFa.map(s => ({id: s.title, name: s.title}));
+  }
+  return services.map(s => ({id: s.title, name: s.title}));
 }
 
 
@@ -63,6 +63,7 @@ const projectSchema = z.object({
   tags: z.string().min(1, "حداقل یک تگ الزامی است."),
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
+  categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
 });
 
 export async function saveProject(
@@ -72,10 +73,19 @@ export async function saveProject(
   const validatedData = projectSchema.parse(formData);
   const data = await readData();
 
+  const categories_fa = validatedData.categories.map(categoryName => {
+    const service = services.find(s => s.title === categoryName);
+    if (service) {
+      const faService = servicesFa.find(s => s.icon === service.icon);
+      return faService ? faService.title : categoryName;
+    }
+    return categoryName;
+  });
+
   const projectData: Project = {
     ...validatedData,
-    category: "Web Development", // Placeholder
-    category_fa: "توسعه وب", // Placeholder
+    categories: validatedData.categories,
+    categories_fa: categories_fa,
     tags: validatedData.tags.split(",").map((t) => t.trim()),
     links: {
       github: validatedData.github,

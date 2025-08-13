@@ -5,8 +5,8 @@ export interface Project {
   title: string;
   title_fa: string;
   slug: string;
-  category: string;
-  category_fa: string;
+  categories: string[];
+  categories_fa: string[];
   description: string;
   description_fa: string;
   image: string;
@@ -41,8 +41,8 @@ export function getInitialData() {
         title: "AI-Powered E-commerce Platform",
         title_fa: "پلتفرم فروشگاهی مجهز به هوش مصنوعی",
         slug: "ai-ecommerce-platform",
-        category: "Web Development",
-        category_fa: "توسعه وب",
+        categories: ["Web Development & Design", "AI Model Development"],
+        categories_fa: ["توسعه و طراحی وب", "توسعه مدل‌های هوش مصنوعی"],
         description: "A full-featured e-commerce platform using AI for personalized recommendations and a complete admin dashboard.",
         description_fa: "یک پلتفرم فروشگاهی کامل با استفاده از هوش مصنوعی برای پیشنهادهای شخصی‌سازی شده و یک داشبورد مدیریت جامع.",
         image: "https://placehold.co/600x400.png",
@@ -56,8 +56,8 @@ export function getInitialData() {
         title: "Intelligent Task Management App",
         title_fa: "اپلیکیشن هوشمند مدیریت وظایف",
         slug: "intelligent-task-app",
-        category: "AI & Machine Learning",
-        category_fa: "هوش مصنوعی و یادگیری ماشین",
+        categories: ["AI Agent Development"],
+        categories_fa: ["توسعه ایجنت‌های هوشمند"],
         description: "A collaborative task management tool with AI-driven task prioritization and real-time updates.",
         description_fa: "یک ابزار مدیریت وظایف تیمی با اولویت‌بندی هوشمند وظایف توسط هوش مصنوعی و به‌روزرسانی‌های آنی.",
         image: "https://placehold.co/600x400.png",
@@ -71,8 +71,8 @@ export function getInitialData() {
         title: "AI Portfolio Website",
         title_fa: "وب‌سایت پورتفولیو با هوش مصنوعی",
         slug: "ai-portfolio-website",
-        category: "Web Development",
-        category_fa: "توسعه وب",
+        categories: ["Web Development & Design"],
+        categories_fa: ["توسعه و طراحی وب"],
         description: "A personal portfolio to showcase AI projects and skills, built with a focus on performance and aesthetics.",
         description_fa: "یک پورتفolio شخصی برای نمایش پروژه‌ها و مهارت‌های مرتبط با هوش مصنوعی، ساخته شده با تمرکز بر عملکرد و زیبایی.",
         image: "https://placehold.co/600x400.png",
@@ -86,8 +86,8 @@ export function getInitialData() {
         title: "Deep Learning Weather Forecaster",
         title_fa: "پیش‌بینی وضع هوا با یادگیری عمیق",
         slug: "dl-weather-app",
-        category: "AI & Machine Learning",
-        category_fa: "هوش مصنوعی و یادگیری ماشین",
+        categories: ["AI Model Development", "Data Analysis & Statistics"],
+        categories_fa: ["توسعه مدل‌های هوش مصنوعی", "تحلیل داده و آمار"],
         description: "A weather application that uses deep learning models to provide highly accurate, long-term weather forecasts.",
         description_fa: "یک اپلیکیشن هواشناسی که از مدل‌های یادگیری عمیق برای ارائه پیش‌بینی‌های بلندمدت و بسیار دقیق استفاده می‌کند.",
         image: "https://placehold.co/600x400.png",
@@ -364,7 +364,7 @@ export const skillCategoriesFa: SkillCategory[] = [
     },
 ];
 
-interface Service {
+export interface Service {
   title: string;
   description: string;
   icon: LucideIcon;

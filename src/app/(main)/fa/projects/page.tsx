@@ -12,7 +12,9 @@ export default async function ProjectsPage({ searchParams }: {
   const allCategories = await getAllCategories('fa');
 
   const filteredProjects = projects.filter(project => {
-    const categoryMatch = selectedCategories.length > 0 ? selectedCategories.includes(project.category_fa) : true;
+    const categoryMatch = selectedCategories.length > 0 
+      ? selectedCategories.some(sc => project.categories_fa.includes(sc)) 
+      : true;
     const searchMatch = searchTerm
       ? project.title_fa.toLowerCase().includes(searchTerm) || project.description_fa.toLowerCase().includes(searchTerm)
       : true;

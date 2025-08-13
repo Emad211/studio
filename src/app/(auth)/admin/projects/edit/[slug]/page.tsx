@@ -15,7 +15,7 @@ export default async function EditProjectPage({ params }: { params: { slug: stri
     <Card>
       <CardHeader>
         <CardTitle>ویرایش پروژه</CardTitle>
-        <CardDescription>فرم زیر را برای ویرایش پروژه خود پر کنید.</CardDescription>
+        <CardDescription>فرم زیر را برای ویرایش پروژه «{project.title_fa}» پر کنید.</CardDescription>
       </CardHeader>
       <CardContent>
         <ProjectForm project={project} />
