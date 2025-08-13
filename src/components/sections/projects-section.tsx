@@ -2,12 +2,12 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { projects } from "@/lib/data"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { ProjectCard } from "@/components/projects/project-card"
 import { cn } from "@/lib/utils"
+import type { Project } from "@/lib/data"
 
-export function ProjectsSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
+export function ProjectsSection({ projects, lang = 'en' }: { projects: Project[], lang?: 'en' | 'fa' }) {
   const recentProjects = projects.slice(0, 3)
   const isFa = lang === 'fa'
 

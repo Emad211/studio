@@ -1,0 +1,94 @@
+{
+  "projects": [
+    {
+      "title": "AI-Powered E-commerce Platform",
+      "title_fa": "پلتفرم فروشگاهی مجهز به هوش مصنوعی",
+      "slug": "ai-ecommerce-platform",
+      "description": "A full-featured e-commerce platform using AI for personalized recommendations and a complete admin dashboard.",
+      "description_fa": "یک پلتفرم فروشگاهی کامل با استفاده از هوش مصنوعی برای پیشنهادهای شخصی‌سازی شده و یک داشبورد مدیریت جامع.",
+      "image": "https://placehold.co/600x400.png",
+      "tags": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Generative AI",
+        "PostgreSQL",
+        "Admin Panel"
+      ],
+      "links": {
+        "github": "https://github.com/Emad211",
+        "live": "#"
+      }
+    },
+    {
+      "title": "Intelligent Task Management App",
+      "title_fa": "اپلیکیشن هوشمند مدیریت وظایف",
+      "slug": "intelligent-task-app",
+      "description": "A collaborative task management tool with AI-driven task prioritization and real-time updates.",
+      "description_fa": "یک ابزار مدیریت وظایف تیمی با اولویت‌بندی هوشمند وظایف توسط هوش مصنوعی و به‌روزرسانی‌های آنی.",
+      "image": "https://placehold.co/600x400.png",
+      "tags": [
+        "React",
+        "Firebase",
+        "AI Agents",
+        "Scikit-learn",
+        "Real-time"
+      ],
+      "links": {
+        "github": "https://github.com/Emad211",
+        "live": "#"
+      }
+    },
+    {
+      "title": "AI Portfolio Website",
+      "title_fa": "وب‌سایت پورتفولیو با هوش مصنوعی",
+      "slug": "ai-portfolio-website",
+      "description": "A personal portfolio to showcase AI projects and skills, built with a focus on performance and aesthetics.",
+      "description_fa": "یک پورتفolio شخصی برای نمایش پروژه‌ها و مهارت‌های مرتبط با هوش مصنوعی، ساخته شده با تمرکز بر عملکرد و زیبایی.",
+      "image": "https://placehold.co/600x400.png",
+      "tags": [
+        "Next.js",
+        "Tailwind CSS",
+        "Framer Motion",
+        "Vercel"
+      ],
+      "links": {
+        "github": "https://github.com/Emad211",
+        "live": "#"
+      }
+    },
+    {
+      "title": "Deep Learning Weather Forecaster",
+      "title_fa": "پیش‌بینی وضع هوا با یادگیری عمیق",
+      "slug": "dl-weather-app",
+      "description": "A weather application that uses deep learning models to provide highly accurate, long-term weather forecasts.",
+      "description_fa": "یک اپلیکیشن هواشناسی که از مدل‌های یادگیری عمیق برای ارائه پیش‌بینی‌های بلندمدت و بسیار دقیق استفاده می‌کند.",
+      "image": "https://placehold.co/600x400.png",
+      "tags": [
+        "Python",
+        "TensorFlow",
+        "Keras",
+        "Flask",
+        "API"
+      ],
+      "links": {
+        "github": "https://github.com/Emad211",
+        "live": "#"
+      }
+    }
+  ],
+  "blogPosts": [
+    {
+      "slug": "mastering-deep-learning",
+      "title": "Mastering Deep Learning: A Deep Dive",
+      "description": "An in-depth guide to understanding and mastering Deep Learning for more efficient and powerful models.",
+      "date": "2024-05-15",
+      "tags": [
+        "Deep Learning",
+        "Python",
+        "AI"
+      ],
+      "content": "\n## Understanding the Power of Deep Learning\n\nDeep Learning, a subset of machine learning, is based on artificial neural networks. It has revolutionized industries by enabling breakthroughs in areas like computer vision, natural language processing, and generative AI.\n\n### The Perceptron\n\nThe most fundamental unit is the Perceptron, a single neuron model.\n\n```python\nimport numpy as np\n\nclass Perceptron:\n    def __init__(self, learning_rate=0.01, n_iters=1000):\n        self.lr = learning_rate\n        self.n_iters = n_iters\n        self.activation_func = self._unit_step_func\n        self.weights = None\n        self.bias = None\n\n    def fit(self, X, y):\n        n_samples, n_features = X.shape\n        self.weights = np.zeros(n_features)\n        self.bias = 0\n        y_ = np.array([1 if i > 0 else 0 for i in y])\n\n        for _ in range(self.n_iters):\n            for idx, x_i in enumerate(X):\n                linear_output = np.dot(x_i, self.weights) + self.bias\n                y_predicted = self.activation_func(linear_output)\n                update = self.lr * (y_[idx] - y_predicted)\n                self.weights += update * x_i\n                self.bias += update\n\n    def predict(self, X):\n        linear_output = np.dot(X, self.weights) + self.bias\n        y_predicted = self.activation_func(linear_output)\n        return y_predicted\n\n    def _unit_step_func(self, x):\n        return np.where(x>=0, 1, 0)\n```\n\n### The useEffect Hook in React\n\nThe `useEffect` hook lets you perform side effects in functional components. It's a close replacement for `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount`.\n\n- **Fetching data**: You can fetch data from an API when the component mounts.\n- **Subscribing to events**: Set up event listeners and clean them up when the component unmounts.\n- **Manually changing the DOM**: Directly interact with the DOM when needed.\n\n## Custom Solutions for Reusability\n\nOne of the most powerful features of Deep Learning is transfer learning. Pre-trained models can be used as a starting point to solve new problems. For example, a model trained on ImageNet can be fine-tuned for a specific image classification task.\n\n## Conclusion\n\nDeep Learning is a powerful tool. By understanding and using it effectively, you can build very powerful models. It is the core of modern AI.\n"
+    }
+  ]
+}

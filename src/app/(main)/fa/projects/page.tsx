@@ -1,12 +1,15 @@
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectFilter } from "@/components/projects/project-filter";
-import { projects, allTags } from "@/lib/data";
+import { getProjects, getAllTags } from "@/lib/actions";
 
-export default function ProjectsPage({ searchParams }: {
+export default async function ProjectsPage({ searchParams }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
   const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : (Array.isArray(searchParams?.tags) ? searchParams.tags : []);
   const searchTerm = typeof searchParams?.search === 'string' ? searchParams.search.toLowerCase() : '';
+
+  const projects = await getProjects();
+  const allTags = await getAllTags();
 
   const filteredProjects = projects.filter(project => {
     const tagsMatch = selectedTags.length > 0 ? selectedTags.every(tag => project.tags.includes(tag)) : true;

@@ -1,12 +1,13 @@
 import { notFound } from 'next/navigation';
-import { blogPosts } from '@/lib/data';
+import { getBlogPosts } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+    const blogPosts = await getBlogPosts();
     return blogPosts.map((post) => ({
         slug: post.slug,
     }));
@@ -55,7 +56,8 @@ const parseMarkdown = (markdown: string) => {
     return { headings, content: <>{content}</> };
 };
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+    const blogPosts = await getBlogPosts();
     const post = blogPosts.find((p) => p.slug === params.slug);
 
     if (!post) {

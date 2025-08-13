@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { projects } from "@/lib/data"
+import { getProjects } from "@/lib/actions"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -7,13 +7,15 @@ import Link from "next/link"
 import { Github, ExternalLink } from "lucide-react"
 import { CodeBlock } from "@/components/ui/code-block"
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((project) => ({
     slug: project.slug,
   }))
 }
 
-export default function ProjectDetailsPage({ params }: { params: { slug: string } }) {
+export default async function ProjectDetailsPage({ params }: { params: { slug: string } }) {
+  const projects = await getProjects();
   const project = projects.find((p) => p.slug === params.slug)
 
   if (!project) {

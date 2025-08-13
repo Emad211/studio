@@ -1,10 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { projects, blogPosts } from "@/lib/data"
+import { getProjects, getBlogPosts } from "@/lib/actions"
 import { FolderKanban, FileText, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const projects = await getProjects();
+  const blogPosts = await getBlogPosts();
+
   return (
       <div className="space-y-6">
         <div className="grid gap-6 sm:grid-cols-2">

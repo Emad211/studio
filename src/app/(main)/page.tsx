@@ -4,8 +4,11 @@ import { ServicesSection } from '@/components/sections/services-section';
 import { SkillsSection } from '@/components/sections/skills-section';
 import { ProjectsSection } from '@/components/sections/projects-section';
 import { ContactSection } from '@/components/sections/contact-section';
+import { getProjects } from '@/lib/actions';
 
-export default function Home() {
+export default async function Home() {
+  const projects = await getProjects();
+  
   return (
     <div className="flex flex-col">
       <HeroSection lang="en"/>
@@ -13,7 +16,7 @@ export default function Home() {
         <AboutSection lang="en" />
         <ServicesSection lang="en" />
         <SkillsSection lang="en" />
-        <ProjectsSection lang="en" />
+        <ProjectsSection projects={projects} lang="en" />
         <ContactSection lang="en" />
       </div>
     </div>
