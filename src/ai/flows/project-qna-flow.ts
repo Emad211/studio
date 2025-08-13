@@ -10,13 +10,13 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const ProjectQnAInputSchema = z.object({
+const ProjectQnAInputSchema = z.object({
   context: z.string().describe('Detailed, non-confidential information about the project.'),
   question: z.string().describe('The user\'s question about the project.'),
 });
 export type ProjectQnAInput = z.infer<typeof ProjectQnAInputSchema>;
 
-export const ProjectQnAOutputSchema = z.object({
+const ProjectQnAOutputSchema = z.object({
   answer: z.string().describe('The AI\'s answer to the user\'s question.'),
 });
 export type ProjectQnAOutput = z.infer<typeof ProjectQnAOutputSchema>;
