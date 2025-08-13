@@ -10,7 +10,7 @@ import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
 import { Search, Plus, X, Check } from "lucide-react"
 
-export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags: string[], allCategories: string[], lang?: 'en' | 'fa' }) {
+export function ProjectFilter({ allCategories, lang = 'en' }: { allCategories: string[], lang?: 'en' | 'fa' }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -19,15 +19,12 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
 
   const t = {
     searchPlaceholder: isFa ? "جستجو در پروژه‌ها..." : "Search projects...",
-    filterBy: isFa ? "فیلتر بر اساس..." : "Filter by...",
     category: isFa ? "دسته‌بندی" : "Category",
-    tags: isFa ? "تگ‌ها" : "Tags",
     noResults: isFa ? "نتیجه‌ای یافت نشد." : "No results found.",
     clearFilters: isFa ? "پاک کردن همه فیلترها" : "Clear all filters"
   }
 
   const selectedCategories = useMemo(() => new Set(searchParams.getAll('categories')), [searchParams]);
-  const selectedTags = useMemo(() => new Set(searchParams.getAll('tags')), [searchParams]);
   const currentSearch = searchParams.get('search') || ''
   
   const [searchTerm, setSearchTerm] = useState(currentSearch)
@@ -60,14 +57,13 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
     return () => clearTimeout(handler)
   }, [searchTerm, pathname, router, searchParams])
 
-  const handleSelect = (type: 'categories' | 'tags', value: string) => {
+  const handleSelect = (type: 'categories', value: string) => {
     const currentParams = {
         categories: Array.from(selectedCategories),
-        tags: Array.from(selectedTags),
         search: searchTerm,
     };
     
-    const currentSet = type === 'categories' ? selectedCategories : selectedTags;
+    const currentSet = selectedCategories;
 
     if (currentSet.has(value)) {
       currentSet.delete(value);
@@ -85,14 +81,13 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
     router.push(pathname, { scroll: false });
   }
   
-  const hasActiveFilters = selectedCategories.size > 0 || selectedTags.size > 0 || searchTerm;
+  const hasActiveFilters = selectedCategories.size > 0 || searchTerm;
 
   return (
     <div className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center border-b pb-4">
             <div className="flex items-center gap-2">
               <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
-              <FilterPopover title={t.tags} options={allTags} selected={selectedTags} onSelect={(value) => handleSelect('tags', value)} />
             </div>
             <div className="relative w-full md:w-auto">
                 <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isFa ? "right-3" : "left-3")} />
@@ -104,17 +99,17 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
                 />
             </div>
         </div>
-        <div className={cn("flex flex-wrap gap-2 pt-2 transition-all", (selectedCategories.size === 0 && selectedTags.size === 0) ? "h-0 opacity-0" : "h-auto opacity-100")}>
-            {[...selectedCategories, ...selectedTags].map(value => (
+        <div className={cn("flex flex-wrap items-center gap-2 pt-2 min-h-[2.5rem] transition-all", (selectedCategories.size === 0 && !searchTerm) ? "h-0 opacity-0" : "h-auto opacity-100")}>
+            {[...selectedCategories].map(value => (
                 <Badge key={value} variant="secondary" className="px-2 py-1 flex items-center gap-1">
                     {value}
-                    <button onClick={() => handleSelect(allCategories.includes(value) ? 'categories' : 'tags', value)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
+                    <button onClick={() => handleSelect('categories', value)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
                        <X className="h-3 w-3" />
                     </button>
                 </Badge>
             ))}
              {hasActiveFilters && (
-                  <Button variant="ghost" onClick={clearAllFilters} className="h-auto px-2 py-1 text-xs">
+                  <Button variant="ghost" onClick={clearAllFilters} className="h-auto px-2 py-1 text-xs flex-shrink-0">
                       {t.clearFilters}
                   </Button>
               )}
@@ -155,9 +150,6 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
                         <Check className="h-4 w-4" />
                     </div>
                     <span>{option}</span>
-                    {isSelected && (
-                      <Check className="ml-auto h-4 w-4 text-primary" />
-                    )}
                   </CommandItem>
                 );
               })}
