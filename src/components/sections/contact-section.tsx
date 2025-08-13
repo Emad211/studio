@@ -6,7 +6,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const socialLinks = [
-  { icon: Mail, href: "mailto:emad.k50000@gmail.com", ariaLabel: "Email", text: "emad.k50000@gmail.com", faText: "ایمیل" },
+  { icon: Mail, href: "mailto:emad.k50000@gmail.com", ariaLabel: "Email", text: "Email", faText: "ایمیل" },
   { icon: Github, href: "https://github.com/Emad211", ariaLabel: "Github", text: "GitHub", faText: "گیت‌هاب" },
   { icon: Send, href: "https://t.me/Freelancer_programmerr", ariaLabel: "Telegram", text: "Telegram", faText: "تلگرام" },
 ]

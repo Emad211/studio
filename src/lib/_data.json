@@ -1,4 +1,3 @@
-
 {
   "projects": [
     {
@@ -134,13 +133,13 @@
   ],
   "settings": {
     "en": {
-      "siteName": "CodeCanvas Portfolio",
+      "siteName": "Emad Karimi",
       "authorName": "Emad Karimi",
       "metaTitle": "CodeCanvas | A modern portfolio for developers",
       "metaDescription": "Showcase your projects and skills with this modern, AI-powered portfolio website."
     },
     "fa": {
-      "siteName": "پورتفولیو کدکانواس",
+      "siteName": "عماد کریمی",
       "authorName": "عماد کریمی",
       "metaTitle": "کدکانواس | یک پورتفولیو مدرن برای توسعه‌دهندگان",
       "metaDescription": "پروژه‌ها و مهارت‌های خود را با این وب‌سایت پورتفولیو مدرن و مجهز به هوش مصنوعی به نمایش بگذارید."
