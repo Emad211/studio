@@ -73,9 +73,16 @@ const projectSchema = z.object({
   description_fa: z.string().min(1, "توضیحات فارسی الزامی است."),
   image: z.string().url("باید یک URL معتبر باشد."),
   tags: z.string().min(1, "حداقل یک تگ الزامی است."),
+  categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
+  
+  // Showcase fields
+  showcaseType: z.enum(['links', 'simulator', 'ai_chatbot']),
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
-  categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
+  gallery: z.string().optional(),
+  aiPromptContext: z.string().optional(),
+
+  // Page Content fields
   about: z.string().min(1, "About content is required."),
   about_fa: z.string().min(1, "محتوای درباره پروژه الزامی است."),
   technical_details: z.string().min(1, "Technical details are required."),
@@ -104,15 +111,16 @@ export async function saveProject(
     return categoryName;
   });
 
-  const projectData: Omit<Project, 'showcaseType' | 'gallery' | 'aiPromptContext'> & { links: { github?: string, live?: string } } = {
+  const projectData: Project = {
     ...validatedData,
-    categories: validatedData.categories,
     categories_fa: categories_fa,
     tags: validatedData.tags.split(",").map((t) => t.trim()),
     links: {
       github: validatedData.github,
       live: validatedData.live,
     },
+    gallery: validatedData.gallery ? validatedData.gallery.split("\n").map(url => url.trim()).filter(url => url) : [],
+    aiPromptContext: validatedData.aiPromptContext,
   };
 
   if (existingSlug) {
@@ -125,13 +133,7 @@ export async function saveProject(
     if (data.projects.some(p => p.slug === projectData.slug)) {
         throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
     }
-    const newProject: Project = {
-        ...projectData,
-        showcaseType: 'links', // Default showcase type
-        gallery: [],
-        aiPromptContext: ''
-    }
-    data.projects.unshift(newProject);
+    data.projects.unshift(projectData);
   }
 
   await writeData(data);

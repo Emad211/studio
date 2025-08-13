@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
@@ -23,6 +23,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { saveProject } from "@/lib/actions";
 import { services } from "@/lib/data";
 import { Separator } from "../ui/separator";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Bot, Image as ImageIcon, Link } from "lucide-react";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -32,9 +34,16 @@ const projectSchema = z.object({
   description_fa: z.string().min(1, "توضیحات فارسی الزامی است."),
   image: z.string().url("باید یک URL معتبر باشد."),
   tags: z.string().min(1, "حداقل یک تگ الزامی است."),
+  categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
+  
+  // Showcase fields
+  showcaseType: z.enum(['links', 'simulator', 'ai_chatbot']),
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
-  categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
+  gallery: z.string().optional(),
+  aiPromptContext: z.string().optional(),
+
+  // Page Content fields
   about: z.string().min(1, "About content is required."),
   about_fa: z.string().min(1, "محتوای درباره پروژه الزامی است."),
   technical_details: z.string().min(1, "Technical details are required."),
@@ -53,6 +62,85 @@ interface ProjectFormProps {
   project?: Project;
 }
 
+const ShowcaseFields = ({ control }: { control: any }) => {
+    const showcaseType = useWatch({
+      control,
+      name: "showcaseType",
+    });
+  
+    return (
+      <div className="space-y-8">
+        {showcaseType === 'links' && (
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <FormField
+                control={control}
+                name="github"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>لینک گیت‌هاب</FormLabel>
+                    <FormControl>
+                        <Input dir="ltr" placeholder="https://github.com/..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={control}
+                name="live"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>لینک پیش‌نمایش زنده</FormLabel>
+                    <FormControl>
+                        <Input dir="ltr" placeholder="https://..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+        )}
+        {showcaseType === 'simulator' && (
+            <FormField
+            control={control}
+            name="gallery"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>گالری تصاویر شبیه‌ساز</FormLabel>
+                <FormDescription>
+                    لیستی از URL های تصاویر، که هر کدام با یک خط جدید از هم جدا شده‌اند.
+                </FormDescription>
+                <FormControl>
+                    <Textarea dir="ltr" className="min-h-[150px]" placeholder="https://.../image1.png&#10;https://.../image2.png" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        )}
+        {showcaseType === 'ai_chatbot' && (
+            <FormField
+            control={control}
+            name="aiPromptContext"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>متن زمینه برای چت‌بات هوش مصنوعی</FormLabel>
+                <FormDescription>
+                    این متنی است که به عنوان دانش پایه به ربات داده می‌شود تا به سوالات کاربران پاسخ دهد.
+                </FormDescription>
+                <FormControl>
+                    <Textarea className="min-h-[150px]" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        )}
+      </div>
+    );
+};
+
+
 export function ProjectForm({ project }: ProjectFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -66,7 +154,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
           tags: project.tags.join(", "), 
           github: project.links.github, 
           live: project.links.live,
-          categories: project.categories,
+          gallery: project.gallery?.join("\n"),
         }
       : {
           title: "",
@@ -76,9 +164,12 @@ export function ProjectForm({ project }: ProjectFormProps) {
           description_fa: "",
           image: "https://placehold.co/600x400.png",
           tags: "",
+          categories: [],
+          showcaseType: 'links',
           github: "",
           live: "",
-          categories: [],
+          gallery: "",
+          aiPromptContext: "",
           about: "",
           about_fa: "",
           technical_details: "",
@@ -102,11 +193,11 @@ export function ProjectForm({ project }: ProjectFormProps) {
             });
             router.push("/admin/projects");
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 variant: "destructive",
                 title: "خطا",
-                description: `خطا در ذخیره پروژه. لطفا دوباره تلاش کنید.`,
+                description: error.message || `خطا در ذخیره پروژه. لطفا دوباره تلاش کنید.`,
             });
         }
     });
@@ -243,7 +334,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             name="image"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>URL تصویر</FormLabel>
+                <FormLabel>URL تصویر اصلی</FormLabel>
                 <FormControl>
                     <Input dir="ltr" {...field} />
                 </FormControl>
@@ -265,34 +356,56 @@ export function ProjectForm({ project }: ProjectFormProps) {
             )}
             />
         </div>
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <FormField
-            control={form.control}
-            name="github"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>لینک گیت‌هاب</FormLabel>
-                <FormControl>
-                    <Input dir="ltr" placeholder="https://github.com/..." {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="live"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>لینک پیش‌نمایش زنده</FormLabel>
-                <FormControl>
-                    <Input dir="ltr" placeholder="https://..." {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-        </div>
+
+        <Separator />
+        <h3 className="text-xl font-semibold">ویترین پروژه</h3>
+        <FormField
+          control={form.control}
+          name="showcaseType"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>نوع ویترین را انتخاب کنید</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                >
+                  <FormItem>
+                    <FormControl>
+                        <RadioGroupItem value="links" id="links" className="sr-only" />
+                    </FormControl>
+                    <Label htmlFor="links" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                        <Link className="mb-2 h-6 w-6" />
+                        لینک‌ها
+                    </Label>
+                  </FormItem>
+                  <FormItem>
+                    <FormControl>
+                        <RadioGroupItem value="simulator" id="simulator" className="sr-only" />
+                    </FormControl>
+                     <Label htmlFor="simulator" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                        <ImageIcon className="mb-2 h-6 w-6" />
+                        شبیه‌ساز (گالری)
+                    </Label>
+                  </FormItem>
+                  <FormItem>
+                    <FormControl>
+                        <RadioGroupItem value="ai_chatbot" id="ai_chatbot" className="sr-only" />
+                    </FormControl>
+                    <Label htmlFor="ai_chatbot" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                        <Bot className="mb-2 h-6 w-6" />
+                        چت‌بات AI
+                    </Label>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <ShowcaseFields control={form.control} />
+
 
         <Separator />
         <h3 className="text-xl font-semibold">محتوای صفحه پروژه</h3>

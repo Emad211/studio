@@ -15,7 +15,7 @@ export interface Project {
     github?: string;
     live?: string;
   };
-  showcaseType?: 'links' | 'simulator' | 'ai_chatbot';
+  showcaseType: 'links' | 'simulator' | 'ai_chatbot';
   gallery?: string[];
   aiPromptContext?: string;
   about: string;
@@ -109,7 +109,10 @@ export function getInitialData() {
         description_fa: "یک ابزار مدیریت وظایف تیمی با اولویت‌بندی هوشمند وظایف توسط هوش مصنوعی و به‌روزرسانی‌های آنی.",
         image: "https://placehold.co/600x400.png",
         tags: ["React", "Firebase", "AI Agents", "Scikit-learn", "Real-time"],
-        links: {},
+        links: {
+            github: "",
+            live: ""
+        },
         showcaseType: "simulator",
         gallery: [
           "https://placehold.co/1280x720.png",
@@ -166,7 +169,10 @@ export function getInitialData() {
         description_fa: "یک اپلیکیشن هواشناسی که از مدل‌های یادگیری عمیق برای ارائه پیش‌بینی‌های بلندمدت و بسیار دقیق استفاده می‌کند.",
         image: "https://placehold.co/600x400.png",
         tags: ["Python", "TensorFlow", "Keras", "Flask", "API"],
-        links: {},
+        links: {
+            github: "",
+            live: ""
+        },
         showcaseType: "ai_chatbot",
         gallery: [],
         aiPromptContext: "This project is a sophisticated weather forecasting application that leverages a Long Short-Term Memory (LSTM) deep learning model, implemented with TensorFlow and Keras. The primary goal was to achieve higher accuracy in long-range weather predictions compared to traditional models. The model was trained on a massive historical weather dataset spanning over 20 years, including variables like temperature, humidity, wind speed, and pressure. A Flask API was developed to serve the model's predictions, which can be integrated into various front-end applications. One of the main challenges was handling the time-series nature of the data and preventing model overfitting, which was addressed using techniques like dropout and early stopping. The final model demonstrated a 15% improvement in accuracy for 7-day forecasts over the baseline model.",
@@ -254,13 +260,13 @@ Deep Learning is a powerful tool. By understanding and using it effectively, you
 
     const initialSettings: SiteSettings = {
         en: {
-            siteName: "CodeCanvas Portfolio",
+            siteName: "Emad Karimi",
             authorName: "Emad Karimi",
             metaTitle: "CodeCanvas | A modern portfolio for developers",
             metaDescription: "Showcase your projects and skills with this modern, AI-powered portfolio website."
         },
         fa: {
-            siteName: "پورتفولیو کدکانواس",
+            siteName: "عماد کریمی",
             authorName: "عماد کریمی",
             metaTitle: "کدکانواس | یک پورتفولیو مدرن برای توسعه‌دهندگان",
             metaDescription: "پروژه‌ها و مهارت‌های خود را با این وب‌سایت پورتفولیو مدرن و مجهز به هوش مصنوعی به نمایش بگذارید."

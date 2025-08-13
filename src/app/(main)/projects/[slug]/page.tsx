@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 
 const Showcase = ({ project }: { project: Project }) => {
   if (project.showcaseType === 'simulator' && project.gallery && project.gallery.length > 0) {
-    return <ProjectSimulator images={project.gallery} />;
+    return <ProjectSimulator images={project.gallery} lang="en" />;
   }
 
   if (project.showcaseType === 'ai_chatbot' && project.aiPromptContext) {
