@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
 import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
-import { Search, Plus, X, Check } from "lucide-react"
+import { Search, Plus, X, Check, ChevronDown } from "lucide-react"
 
 export function ProjectFilter({ allCategories, lang = 'en' }: { allCategories: string[], lang?: 'en' | 'fa' }) {
   const router = useRouter()
@@ -29,51 +29,38 @@ export function ProjectFilter({ allCategories, lang = 'en' }: { allCategories: s
   
   const [searchTerm, setSearchTerm] = useState(currentSearch)
 
-  const createQueryString = useCallback((params: Record<string, string[] | string>) => {
+  const createQueryString = useCallback(() => {
     const newSearchParams = new URLSearchParams()
     if(searchTerm.trim()){
       newSearchParams.set('search', searchTerm.trim());
     }
-    for (const [key, value] of Object.entries(params)) {
-      if(key === 'search') continue;
-      if (Array.isArray(value) && value.length > 0) {
-        value.forEach(v => newSearchParams.append(key, v))
-      }
+    if (selectedCategories.size > 0) {
+      selectedCategories.forEach(c => newSearchParams.append('categories', c))
     }
     return newSearchParams.toString()
-  }, [searchParams, searchTerm])
+  }, [searchTerm, selectedCategories])
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString())
-      if (searchTerm.trim()) {
-        params.set('search', searchTerm)
-      } else {
-        params.delete('search')
-      }
-      router.push(`${pathname}?${params.toString()}`, { scroll: false })
+      router.push(`${pathname}?${createQueryString()}`, { scroll: false })
     }, 300)
 
     return () => clearTimeout(handler)
-  }, [searchTerm, pathname, router, searchParams])
+  }, [searchTerm, selectedCategories, pathname, router, createQueryString])
 
-  const handleSelect = (type: 'categories', value: string) => {
-    const currentParams = {
-        categories: Array.from(selectedCategories),
-        search: searchTerm,
-    };
-    
-    const currentSet = selectedCategories;
-
-    if (currentSet.has(value)) {
-      currentSet.delete(value);
+  const handleSelectCategory = (category: string) => {
+    const newSelectedCategories = new Set(selectedCategories);
+    if (newSelectedCategories.has(category)) {
+      newSelectedCategories.delete(category);
     } else {
-      currentSet.add(value);
+      newSelectedCategories.add(category);
     }
     
-    currentParams[type] = Array.from(currentSet);
+    const params = new URLSearchParams()
+    if(searchTerm.trim()) params.set('search', searchTerm.trim())
+    newSelectedCategories.forEach(c => params.append('categories', c))
     
-    router.push(`${pathname}?${createQueryString(currentParams)}`, { scroll: false })
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
   const clearAllFilters = () => {
@@ -81,39 +68,45 @@ export function ProjectFilter({ allCategories, lang = 'en' }: { allCategories: s
     router.push(pathname, { scroll: false });
   }
   
-  const hasActiveFilters = selectedCategories.size > 0 || searchTerm;
+  const hasActiveFilters = selectedCategories.size > 0 || !!searchTerm;
 
   return (
     <div className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center border-b pb-4">
-            <div className="flex items-center gap-2">
-              <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
-            </div>
-            <div className="relative w-full md:w-auto">
+        <div className="flex justify-center">
+            <div className="relative w-full max-w-lg">
                 <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isFa ? "right-3" : "left-3")} />
                 <Input
                     placeholder={t.searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={cn("h-10 w-full md:w-64", isFa ? "pr-10" : "pl-10")}
+                    className={cn("h-12 w-full", isFa ? "pr-10 pl-32" : "pl-10 pr-32")}
                 />
+                <div className={cn("absolute top-1/2 -translate-y-1/2 flex items-center", isFa ? "left-2" : "right-2")}>
+                    <FilterPopover 
+                      title={t.category} 
+                      options={allCategories} 
+                      selected={selectedCategories} 
+                      onSelect={handleSelectCategory} 
+                    />
+                </div>
             </div>
         </div>
-        <div className={cn("flex flex-wrap items-center gap-2 pt-2 min-h-[2.5rem] transition-all", (selectedCategories.size === 0 && !searchTerm) ? "h-0 opacity-0" : "h-auto opacity-100")}>
-            {[...selectedCategories].map(value => (
-                <Badge key={value} variant="secondary" className="px-2 py-1 flex items-center gap-1">
-                    {value}
-                    <button onClick={() => handleSelect('categories', value)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
-                       <X className="h-3 w-3" />
-                    </button>
-                </Badge>
-            ))}
-             {hasActiveFilters && (
-                  <Button variant="ghost" onClick={clearAllFilters} className="h-auto px-2 py-1 text-xs flex-shrink-0">
-                      {t.clearFilters}
-                  </Button>
-              )}
-        </div>
+
+        {hasActiveFilters && (
+            <div className={cn("flex flex-wrap items-center justify-center gap-2 pt-2 min-h-[2.5rem] transition-all")}>
+                {[...selectedCategories].map(value => (
+                    <Badge key={value} variant="secondary" className="px-2 py-1 flex items-center gap-1">
+                        {value}
+                        <button onClick={() => handleSelectCategory(value)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
+                        <X className="h-3 w-3" />
+                        </button>
+                    </Badge>
+                ))}
+                <Button variant="ghost" onClick={clearAllFilters} className="h-auto px-2 py-1 text-xs flex-shrink-0">
+                    {t.clearFilters}
+                </Button>
+            </div>
+        )}
     </div>
   )
 }
@@ -122,18 +115,15 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-10 border-dashed w-full sm:w-auto justify-start text-left font-normal">
-          <Plus className="mr-2 h-4 w-4" />
-          <span className="flex-grow">{title}</span>
+        <Button variant="ghost" className="h-auto px-3 py-1.5 text-sm">
+          {title}
           {selected.size > 0 && (
-            <>
-              <div className="mx-2 h-4 w-px bg-border" />
-              <Badge variant="secondary" className="rounded-sm px-1 font-normal">{selected.size}</Badge>
-            </>
+            <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">{selected.size}</span>
           )}
+          <ChevronDown className="ml-2 h-4 w-4 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[220px] p-0" align="start">
+      <PopoverContent className="w-[250px] p-0" align="end">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
