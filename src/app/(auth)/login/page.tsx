@@ -19,44 +19,42 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle authentication
-    // For now, we'll just redirect to the admin page
     router.push('/admin');
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen py-12">
+    <div className="flex items-center justify-center min-h-screen py-12 bg-background">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">ورود به پنل مدیریت</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            برای ورود به حساب کاربری خود ایمیل و رمز عبور را وارد کنید
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">ایمیل</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
                   required
-                  defaultValue="emad@gmail.com"
+                  defaultValue="admin@example.com"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link href="#" className="ml-auto inline-block text-sm underline">
-                    Forgot your password?
+                  <Label htmlFor="password">رمز عبور</Label>
+                  <Link href="#" className="mr-auto inline-block text-sm underline">
+                    رمز عبور خود را فراموش کرده‌اید؟
                   </Link>
                 </div>
-                <Input id="password" type="password" required defaultValue="2110530979@Emad" />
+                <Input id="password" type="password" required defaultValue="password" />
               </div>
               <Button type="submit" className="w-full">
-                Login
+                ورود
               </Button>
             </div>
           </form>

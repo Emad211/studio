@@ -5,7 +5,8 @@ import {
   LayoutDashboard,
   PanelLeft,
   Settings,
-  ArrowLeft
+  ArrowLeft,
+  Home
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -36,8 +37,6 @@ export default function AdminLayout({
           href={link.href}
           className={cn(
             'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-            // Simple active state for now
-            // isActive(link.href) && 'bg-muted text-primary'
           )}
         >
           <link.icon className="h-4 w-4" />
@@ -85,7 +84,7 @@ export default function AdminLayout({
             <div className="flex-1"></div>
             <Button asChild variant="outline" size="icon">
                 <Link href="/">
-                    <ArrowLeft className="h-4 w-4" />
+                    <Home className="h-4 w-4" />
                     <span className="sr-only">بازگشت به سایت</span>
                 </Link>
             </Button>
