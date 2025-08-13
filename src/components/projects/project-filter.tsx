@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState, useMemo } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
 import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
-import { Search, Plus, X } from "lucide-react"
+import { Search, Plus, X, Check } from "lucide-react"
 
 export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags: string[], allCategories: string[], lang?: 'en' | 'fa' }) {
   const router = useRouter()
@@ -32,11 +32,14 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
   
   const [searchTerm, setSearchTerm] = useState(currentSearch)
 
-  const createQueryString = useCallback((params: Record<string, string[]>) => {
+  const createQueryString = useCallback((params: Record<string, string[] | string>) => {
     const newSearchParams = new URLSearchParams()
-    newSearchParams.set('search', searchTerm);
+    if(searchTerm.trim()){
+      newSearchParams.set('search', searchTerm.trim());
+    }
     for (const [key, value] of Object.entries(params)) {
-      if (value.length > 0) {
+      if(key === 'search') continue;
+      if (Array.isArray(value) && value.length > 0) {
         value.forEach(v => newSearchParams.append(key, v))
       }
     }
@@ -58,9 +61,10 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
   }, [searchTerm, pathname, router, searchParams])
 
   const handleSelect = (type: 'categories' | 'tags', value: string) => {
-    const newParams = {
+    const currentParams = {
         categories: Array.from(selectedCategories),
-        tags: Array.from(selectedTags)
+        tags: Array.from(selectedTags),
+        search: searchTerm,
     };
     
     const currentSet = type === 'categories' ? selectedCategories : selectedTags;
@@ -71,16 +75,16 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
       currentSet.add(value);
     }
     
-    newParams[type] = Array.from(currentSet);
+    currentParams[type] = Array.from(currentSet);
     
-    router.push(`${pathname}?${createQueryString(newParams)}`, { scroll: false })
+    router.push(`${pathname}?${createQueryString(currentParams)}`, { scroll: false })
   }
 
   const clearAllFilters = () => {
     setSearchTerm('');
     router.push(pathname, { scroll: false });
   }
-
+  
   const hasActiveFilters = selectedCategories.size > 0 || selectedTags.size > 0 || searchTerm;
 
   return (
