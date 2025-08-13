@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { Project, BlogPost } from "./data";
-import { getInitialData, skillCategories, skillCategoriesFa } from "./data";
+import { getInitialData, services, servicesFa } from "./data";
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
@@ -43,17 +43,11 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     return data.blogPosts;
 }
 
-export async function getAllTags(): Promise<string[]> {
-    const data = await readData();
-    const allTags = [...new Set(data.projects.flatMap(p => p.tags))].sort();
-    return allTags;
-}
-
 export async function getAllCategories(lang: 'en' | 'fa'): Promise<string[]> {
     if (lang === 'fa') {
-        return skillCategoriesFa.map(c => c.title);
+        return servicesFa.map(c => c.title);
     }
-    return skillCategories.map(c => c.title);
+    return services.map(c => c.title);
 }
 
 
