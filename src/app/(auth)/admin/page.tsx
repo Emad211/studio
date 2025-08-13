@@ -1,47 +1,48 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { OverviewChart } from "@/components/admin/overview-chart"
-import { RecentMessages } from "@/components/admin/recent-messages"
+import { RecentProjects } from "@/components/admin/recent-projects"
 import { StatsCard } from "@/components/admin/stats-card"
-import { DollarSign, Users, CreditCard, Activity, ArrowUp, ArrowDown } from "lucide-react"
+import { FolderKanban, FileText, Wrench, BarChart4 } from "lucide-react"
+import { getProjects, getBlogPosts, getSiteSettings, getAllCategories } from "@/lib/actions"
+import { skillCategories } from "@/lib/data"
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const projects = await getProjects();
+  const blogPosts = await getBlogPosts();
+  const totalSkills = skillCategories.reduce((acc, category) => acc + category.skills.length, 0);
+
   return (
       <div className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <StatsCard 
-                title="درآمد کل" 
-                value="۴۵,۲۳۱,۸۹۰ تومان" 
-                change="+۲۰.۱٪ از ماه گذشته"
-                icon={DollarSign}
-                changeIcon={ArrowUp}
+                title="تعداد پروژه‌ها" 
+                value={projects.length.toString()}
+                change="پروژه فعال"
+                icon={FolderKanban}
               />
               <StatsCard 
-                title="دنبال‌کنندگان" 
-                value="+۲۳۵۰" 
-                change="+۱۸۰.۱٪ از ماه گذشته"
-                icon={Users}
-                changeIcon={ArrowUp}
+                title="تعداد پست‌ها" 
+                value={blogPosts.length.toString()}
+                change="پست منتشر شده"
+                icon={FileText}
               />
               <StatsCard 
-                title="فروش" 
-                value="+۱۲,۲۳۴" 
-                change="+۱۹٪ از ماه گذشته"
-                icon={CreditCard}
-                changeIcon={ArrowUp}
+                title="تعداد مهارت‌ها" 
+                value={totalSkills.toString()}
+                change="مهارت ثبت شده"
+                icon={Wrench}
               />
                <StatsCard 
-                title="فعالیت کاربران" 
-                value="+۵۷۳" 
-                change="+۲٪ از ماه گذشته"
-                icon={Activity}
-                changeIcon={ArrowUp}
-                isDecrease={true}
+                title="بازدید کل (نمایشی)" 
+                value="۱۲,۵۷۳" 
+                change="در ۳۰ روز گذشته"
+                icon={BarChart4}
               />
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
               <Card className="lg:col-span-4">
                   <CardHeader>
-                      <CardTitle>بررسی اجمالی</CardTitle>
+                      <CardTitle>نمای کلی فعالیت</CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
                       <OverviewChart />
@@ -49,13 +50,13 @@ export default function AdminDashboardPage() {
               </Card>
               <Card className="lg:col-span-3">
                   <CardHeader>
-                      <CardTitle>پیام‌های اخیر</CardTitle>
+                      <CardTitle>پروژه‌های اخیر</CardTitle>
                       <CardDescription>
-                          شما ۲۶۵ پیام خوانده نشده دارید.
+                          ۵ پروژه اخیری که به سایت اضافه کرده‌اید.
                       </CardDescription>
                   </CardHeader>
                   <CardContent>
-                      <RecentMessages />
+                      <RecentProjects projects={projects.slice(0, 5)} />
                   </CardContent>
               </Card>
           </div>

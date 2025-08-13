@@ -7,11 +7,9 @@ interface StatsCardProps {
   value: string;
   change: string;
   icon: LucideIcon;
-  changeIcon: LucideIcon;
-  isDecrease?: boolean;
 }
 
-export function StatsCard({ title, value, change, icon: Icon, changeIcon: ChangeIcon, isDecrease = false }: StatsCardProps) {
+export function StatsCard({ title, value, change, icon: Icon }: StatsCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -20,12 +18,8 @@ export function StatsCard({ title, value, change, icon: Icon, changeIcon: Change
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground flex items-center">
-          <ChangeIcon className={cn("h-3 w-3 mr-1", isDecrease ? "text-red-500 transform rotate-180" : "text-green-500")} />
-          <span className={cn(isDecrease ? "text-red-500" : "text-green-500", "mr-1")}>
-            {change.split(' ')[0]}
-          </span>
-          {change.substring(change.indexOf(' '))}
+        <p className="text-xs text-muted-foreground">
+          {change}
         </p>
       </CardContent>
     </Card>
