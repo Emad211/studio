@@ -72,24 +72,22 @@ export function ProjectFilter({ allCategories, lang = 'en' }: { allCategories: s
 
   return (
     <div className="space-y-4">
-        <div className="flex justify-center">
-            <div className="relative w-full max-w-lg">
+        <div className="flex flex-col md:flex-row gap-2 justify-center">
+            <div className="relative flex-grow">
                 <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isFa ? "right-3" : "left-3")} />
                 <Input
                     placeholder={t.searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={cn("h-12 w-full", isFa ? "pr-10 pl-32" : "pl-10 pr-32")}
+                    className={cn("h-11 w-full", isFa ? "pr-10" : "pl-10")}
                 />
-                <div className={cn("absolute top-1/2 -translate-y-1/2 flex items-center", isFa ? "left-2" : "right-2")}>
-                    <FilterPopover 
-                      title={t.category} 
-                      options={allCategories} 
-                      selected={selectedCategories} 
-                      onSelect={handleSelectCategory} 
-                    />
-                </div>
             </div>
+             <FilterPopover 
+                title={t.category} 
+                options={allCategories} 
+                selected={selectedCategories} 
+                onSelect={handleSelectCategory} 
+            />
         </div>
 
         {hasActiveFilters && (
@@ -115,11 +113,13 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" className="h-auto px-3 py-1.5 text-sm">
-          {title}
-          {selected.size > 0 && (
-            <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">{selected.size}</span>
-          )}
+        <Button variant="outline" className="h-11 w-full md:w-auto justify-between">
+          <div className="flex items-center">
+             {title}
+            {selected.size > 0 && (
+                <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">{selected.size}</span>
+            )}
+          </div>
           <ChevronDown className="ml-2 h-4 w-4 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
