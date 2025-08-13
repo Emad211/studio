@@ -9,6 +9,7 @@ import { CodeBlock } from "@/components/ui/code-block"
 import { ProjectSimulator } from "@/components/projects/project-simulator"
 import { ProjectAIChat } from "@/components/projects/project-ai-chat"
 import type { Project } from "@/lib/data"
+import { Separator } from "@/components/ui/separator"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -28,7 +29,7 @@ const Showcase = ({ project }: { project: Project }) => {
 
   // Default to links
   return (
-      <div className="mt-12 flex justify-center gap-4">
+      <div className="flex justify-center gap-4">
         {project.links.github && (
           <Button asChild variant="outline">
             <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
@@ -107,8 +108,14 @@ function MyComponent() {
             One of the main challenges was optimizing performance for large datasets. We implemented pagination, lazy loading for components and images, and server-side rendering to ensure fast load times. Another challenge was ensuring cross-browser compatibility, which we addressed through rigorous testing and polyfills.
           </p>
         </div>
+        
+        <Separator className="my-16" />
 
-        <Showcase project={project} />
+        <div className="space-y-8">
+            <h2 className="text-3xl font-bold font-headline text-center text-primary">Project Showcase</h2>
+            <Showcase project={project} />
+        </div>
+
       </div>
     </div>
   )

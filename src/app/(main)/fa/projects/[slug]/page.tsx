@@ -9,6 +9,7 @@ import { CodeBlock } from "@/components/ui/code-block"
 import { ProjectSimulator } from "@/components/projects/project-simulator"
 import { ProjectAIChat } from "@/components/projects/project-ai-chat"
 import type { Project } from "@/lib/data"
+import { Separator } from "@/components/ui/separator"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -28,7 +29,7 @@ const Showcase = ({ project }: { project: Project }) => {
 
   // Default to links
   return (
-      <div className="mt-12 flex justify-center gap-4">
+      <div className="flex justify-center gap-4">
         {project.links.github && (
           <Button asChild variant="outline">
             <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
@@ -110,7 +111,13 @@ function MyComponent() {
           </p>
         </div>
 
-        <Showcase project={project} />
+        <Separator className="my-16" />
+
+        <div className="space-y-8">
+            <h2 className="text-3xl font-bold font-headline text-center text-primary">ویترین پروژه</h2>
+            <Showcase project={project} />
+        </div>
+        
       </div>
     </div>
   )
