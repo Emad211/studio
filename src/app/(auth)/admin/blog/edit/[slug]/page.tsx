@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
-import { blogPosts } from '@/lib/data';
+import { getBlogPosts } from '@/lib/actions';
 import { BlogForm } from '@/components/admin/blog-form';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
-export default function EditBlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find(p => p.slug === params.slug);
+export default async function EditBlogPostPage({ params }: { params: { slug: string } }) {
+  const posts = await getBlogPosts();
+  const post = posts.find(p => p.slug === params.slug);
 
   if (!post) {
     notFound();
