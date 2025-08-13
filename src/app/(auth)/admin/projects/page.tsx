@@ -72,9 +72,9 @@ export default async function AdminProjectsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{project.title_fa}</TableCell>
                    <TableCell className="hidden md:table-cell">
-                    <div className="flex gap-1">
+                    <div className="flex flex-wrap gap-1">
                       {project.tags.map((tag) => (
-                        <Badge key={tag} variant="outline">{tag}</Badge>
+                        <Badge key={tag} variant="outline" className="whitespace-nowrap">{tag}</Badge>
                       ))}
                     </div>
                   </TableCell>

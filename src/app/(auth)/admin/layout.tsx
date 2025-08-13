@@ -6,6 +6,7 @@ import {
   PanelLeft,
   Settings,
   Home,
+  ArrowLeft
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -48,7 +49,7 @@ export default function AdminLayout({
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <aside className="fixed inset-y-0 right-0 z-10 hidden w-60 flex-col border-l bg-background sm:flex">
-            <div className="flex h-16 items-center border-b px-6">
+            <div className="flex h-14 items-center border-b px-6">
             <Link href="/admin" className="flex items-center gap-2 font-semibold">
                 <LayoutDashboard className="h-6 w-6" />
                 <span>پنل مدیریت</span>
@@ -59,7 +60,7 @@ export default function AdminLayout({
             </div>
         </aside>
         <div className="flex flex-col sm:pr-60">
-            <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Sheet>
                 <SheetTrigger asChild>
                 <Button size="icon" variant="outline" className="sm:hidden">
