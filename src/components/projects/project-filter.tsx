@@ -1,107 +1,174 @@
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useMemo } from "react"
+import { Button } from "../ui/button"
+import { Input } from "../ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command"
 import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
-import { Input } from "../ui/input"
-import { Search } from "lucide-react"
+import { Search, Plus, X } from "lucide-react"
 
-export function ProjectFilter({ allTags, lang = 'en' }: { allTags: string[], lang?: 'en' | 'fa' }) {
+export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags: string[], allCategories: string[], lang?: 'en' | 'fa' }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const selectedTags = new Set(searchParams.getAll('tags'))
-  const currentSearch = searchParams.get('search') || ''
-  const [searchTerm, setSearchTerm] = useState(currentSearch)
-  
   const isFa = lang === 'fa'
 
   const t = {
-    searchPlaceholder: isFa ? "جستجو در پروژه‌ها..." : "Search projects..."
+    searchPlaceholder: isFa ? "جستجو در پروژه‌ها..." : "Search projects...",
+    filterBy: isFa ? "فیلتر بر اساس..." : "Filter by...",
+    category: isFa ? "دسته‌بندی" : "Category",
+    tags: isFa ? "تگ‌ها" : "Tags",
+    noResults: isFa ? "نتیجه‌ای یافت نشد." : "No results found.",
+    clearFilters: isFa ? "پاک کردن همه فیلترها" : "Clear all filters"
   }
 
-  const createQueryString = useCallback(
-    (params: Record<string, string | number | null | string[]>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
-      for (const [key, value] of Object.entries(params)) {
-        newSearchParams.delete(key); // Clear existing values for this key
-        if (Array.isArray(value)) {
-          value.forEach(v => newSearchParams.append(key, v));
-        } else if (value) {
-          newSearchParams.set(key, String(value))
-        }
+  const selectedCategories = useMemo(() => new Set(searchParams.getAll('categories')), [searchParams]);
+  const selectedTags = useMemo(() => new Set(searchParams.getAll('tags')), [searchParams]);
+  const currentSearch = searchParams.get('search') || ''
+  
+  const [searchTerm, setSearchTerm] = useState(currentSearch)
+
+  const createQueryString = useCallback((params: Record<string, string[]>) => {
+    const newSearchParams = new URLSearchParams()
+    newSearchParams.set('search', searchTerm);
+    for (const [key, value] of Object.entries(params)) {
+      if (value.length > 0) {
+        value.forEach(v => newSearchParams.append(key, v))
       }
-      return newSearchParams.toString()
-    },
-    [searchParams]
-  )
+    }
+    return newSearchParams.toString()
+  }, [searchParams, searchTerm])
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (searchTerm !== currentSearch) {
-        const params = new URLSearchParams(searchParams.toString())
-        if (searchTerm) {
-          params.set('search', searchTerm)
-        } else {
-          params.delete('search')
-        }
-        router.push(`${pathname}?${params.toString()}`, { scroll: false })
+      const params = new URLSearchParams(searchParams.toString())
+      if (searchTerm.trim()) {
+        params.set('search', searchTerm)
+      } else {
+        params.delete('search')
       }
+      router.push(`${pathname}?${params.toString()}`, { scroll: false })
     }, 300)
 
     return () => clearTimeout(handler)
-  }, [searchTerm, currentSearch, pathname, router, searchParams])
+  }, [searchTerm, pathname, router, searchParams])
 
-  const handleTagClick = useCallback(
-    (tag: string) => {
-      const newTags = new Set(selectedTags)
-      if (newTags.has(tag)) {
-        newTags.delete(tag)
-      } else {
-        newTags.add(tag)
-      }
+  const handleSelect = (type: 'categories' | 'tags', value: string) => {
+    const newParams = {
+        categories: Array.from(selectedCategories),
+        tags: Array.from(selectedTags)
+    };
+    
+    const currentSet = type === 'categories' ? selectedCategories : selectedTags;
 
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete('tags')
-      newTags.forEach(t => params.append('tags', t))
-      
-      router.push(`${pathname}?${params.toString()}`, { scroll: false })
-    },
-    [pathname, router, searchParams, selectedTags]
-  )
+    if (currentSet.has(value)) {
+      currentSet.delete(value);
+    } else {
+      currentSet.add(value);
+    }
+    
+    newParams[type] = Array.from(currentSet);
+    
+    router.push(`${pathname}?${createQueryString(newParams)}`, { scroll: false })
+  }
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    router.push(pathname, { scroll: false });
+  }
+
+  const hasActiveFilters = selectedCategories.size > 0 || selectedTags.size > 0 || searchTerm;
 
   return (
-    <div className="flex flex-col items-center gap-6">
-        <div className="relative w-full max-w-md">
-            <Search className={cn("absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground", isFa ? "right-3" : "left-3")} />
-            <Input 
-                type="text"
-                placeholder={t.searchPlaceholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={cn("h-11", isFa ? "pr-10" : "pl-10")}
-            />
+    <div className="border rounded-lg p-4 bg-card/30 backdrop-blur-sm sticky top-20 z-40">
+        <div className="flex flex-col md:flex-row gap-2">
+            <div className="relative flex-grow">
+                <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isFa ? "right-3" : "left-3")} />
+                <Input
+                    placeholder={t.searchPlaceholder}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={cn("h-10 w-full", isFa ? "pr-10" : "pl-10")}
+                />
+            </div>
+
+            <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
+            <FilterPopover title={t.tags} options={allTags} selected={selectedTags} onSelect={(value) => handleSelect('tags', value)} />
+           
+            {hasActiveFilters && (
+                <Button variant="ghost" onClick={clearAllFilters} className="h-10">
+                    <X className={cn("h-4 w-4", isFa ? "ml-2" : "mr-2")}/>
+                    {t.clearFilters}
+                </Button>
+            )}
         </div>
-        <div className="flex flex-wrap justify-center gap-2">
-            {allTags.map((tag) => {
-                const isSelected = selectedTags.has(tag)
-                return (
-                <button key={tag} onClick={() => handleTagClick(tag)}>
-                    <Badge
-                    variant={isSelected ? "default" : "outline"}
-                    className={cn(
-                        "cursor-pointer transition-colors text-sm px-3 py-1",
-                        isSelected ? "bg-primary text-primary-foreground" : "bg-transparent text-foreground hover:bg-accent"
-                    )}
-                    >
-                    {tag}
-                    </Badge>
-                </button>
-                )
-            })}
+        <div className={cn("flex flex-wrap gap-2 mt-4", (selectedCategories.size === 0 && selectedTags.size === 0) && "hidden")}>
+            {[...selectedCategories, ...selectedTags].map(value => (
+                <Badge key={value} variant="secondary" className="px-2 py-1 flex items-center gap-1">
+                    {value}
+                    <button onClick={() => handleSelect(allCategories.includes(value) ? 'categories' : 'tags', value)} className="rounded-full hover:bg-muted-foreground/20 p-0.5">
+                       <X className="h-3 w-3" />
+                    </button>
+                </Badge>
+            ))}
         </div>
     </div>
+  )
+}
+
+function FilterPopover({ title, options, selected, onSelect }: { title: string, options: string[], selected: Set<string>, onSelect: (value: string) => void }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className="h-10 border-dashed flex-shrink-0">
+          <Plus className="mr-2 h-4 w-4" />
+          {title}
+          {selected.size > 0 && (
+            <>
+              <div className="mx-2 h-4 w-px bg-border" />
+              <Badge variant="secondary" className="rounded-sm px-1 font-normal">{selected.size}</Badge>
+            </>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder={title} />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => {
+                const isSelected = selected.has(option);
+                return (
+                  <CommandItem
+                    key={option}
+                    onSelect={() => onSelect(option)}
+                  >
+                    <div className={cn("mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary", isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible")}>
+                        <Check className="h-4 w-4" />
+                    </div>
+                    <span>{option}</span>
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+            {selected.size > 0 && (
+                 <>
+                    <CommandSeparator />
+                    <CommandGroup>
+                        <CommandItem onSelect={() => selected.forEach(s => onSelect(s))} className="justify-center text-center">
+                            Clear filters
+                        </CommandItem>
+                    </CommandGroup>
+                 </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }

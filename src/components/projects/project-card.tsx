@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Project } from "@/lib/data"
 import { cn } from "@/lib/utils"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Folder } from "lucide-react"
 
 export function ProjectCard({ project, className, lang = 'en' }: { project: Project, className?: string, lang?: 'en' | 'fa' }) {
   const isFa = lang === 'fa';
   const title = isFa ? project.title_fa : project.title;
   const description = isFa ? project.description_fa : project.description;
+  const category = isFa ? project.category_fa : project.category;
   const href = isFa ? `/fa/projects/${project.slug}` : `/projects/${project.slug}`;
 
   return (
@@ -32,6 +33,10 @@ export function ProjectCard({ project, className, lang = 'en' }: { project: Proj
           </div>
         </CardHeader>
         <CardContent className="flex-grow p-6">
+          <div className={cn("flex items-center gap-2 text-xs text-muted-foreground mb-2", isFa && "justify-end flex-row-reverse")}>
+              <Folder className="h-4 w-4 text-primary"/>
+              <span>{category}</span>
+          </div>
           <CardTitle className={cn("font-headline text-lg mb-2", isFa && "text-right")}>{title}</CardTitle>
           <p className={cn("text-muted-foreground text-sm line-clamp-2", isFa && "text-right")}>{description}</p>
         </CardContent>

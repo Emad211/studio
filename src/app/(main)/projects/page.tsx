@@ -1,32 +1,35 @@
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectFilter } from "@/components/projects/project-filter";
-import { getProjects, getAllTags } from "@/lib/actions";
+import { getProjects, getAllTags, getAllCategories } from "@/lib/actions";
 
 export default async function ProjectsPage({ searchParams }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
+  const selectedCategories = typeof searchParams?.categories === 'string' ? [searchParams.categories] : (Array.isArray(searchParams?.categories) ? searchParams.categories : []);
   const selectedTags = typeof searchParams?.tags === 'string' ? [searchParams.tags] : (Array.isArray(searchParams?.tags) ? searchParams.tags : []);
   const searchTerm = typeof searchParams?.search === 'string' ? searchParams.search.toLowerCase() : '';
 
   const projects = await getProjects();
   const allTags = await getAllTags();
+  const allCategories = await getAllCategories('en');
 
   const filteredProjects = projects.filter(project => {
+    const categoryMatch = selectedCategories.length > 0 ? selectedCategories.includes(project.category) : true;
     const tagsMatch = selectedTags.length > 0 ? selectedTags.every(tag => project.tags.includes(tag)) : true;
-    const searchMatch = searchTerm 
+    const searchMatch = searchTerm
       ? project.title.toLowerCase().includes(searchTerm) || project.description.toLowerCase().includes(searchTerm)
       : true;
-    return tagsMatch && searchMatch;
+    return categoryMatch && tagsMatch && searchMatch;
   });
 
   return (
-    <div className="container py-12">
+    <div className="container py-12 md:py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold font-headline text-primary">My Projects</h1>
-        <p className="mt-2 text-lg text-muted-foreground">A collection of my work, from web apps to open source.</p>
+        <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">A collection of my work, from web apps to open source. Use the filters below to find projects that interest you.</p>
       </div>
 
-      <ProjectFilter allTags={allTags} lang="en" />
+      <ProjectFilter allTags={allTags} allCategories={allCategories} lang="en" />
 
       {filteredProjects.length > 0 ? (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

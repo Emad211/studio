@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { Project, BlogPost } from "./data";
-import { getInitialData } from "./data";
+import { getInitialData, skillCategories, skillCategoriesFa } from "./data";
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
@@ -49,6 +49,13 @@ export async function getAllTags(): Promise<string[]> {
     return allTags;
 }
 
+export async function getAllCategories(lang: 'en' | 'fa'): Promise<string[]> {
+    if (lang === 'fa') {
+        return skillCategoriesFa.map(c => c.title);
+    }
+    return skillCategories.map(c => c.title);
+}
+
 
 // Server Actions for Projects
 
@@ -73,6 +80,8 @@ export async function saveProject(
 
   const projectData: Project = {
     ...validatedData,
+    category: "Web Development", // Placeholder
+    category_fa: "توسعه وب", // Placeholder
     tags: validatedData.tags.split(",").map((t) => t.trim()),
     links: {
       github: validatedData.github,
@@ -83,7 +92,7 @@ export async function saveProject(
   if (existingSlug) {
     const projectIndex = data.projects.findIndex((p) => p.slug === existingSlug);
     if (projectIndex !== -1) {
-      data.projects[projectIndex] = projectData;
+      data.projects[projectIndex] = { ...data.projects[projectIndex], ...projectData };
     }
   } else {
     // Check for duplicate slug
