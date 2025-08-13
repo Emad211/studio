@@ -16,7 +16,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="text-foreground">
+    <>
       <HeroBackground />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header />
@@ -24,6 +24,6 @@ export default function MainLayout({
         <Footer />
       </div>
       <Toaster />
-    </div>
+    </>
   );
 }
