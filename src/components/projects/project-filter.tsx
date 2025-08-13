@@ -88,30 +88,23 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
   const hasActiveFilters = selectedCategories.size > 0 || selectedTags.size > 0 || searchTerm;
 
   return (
-    <div className="border rounded-lg p-4 bg-card/30 backdrop-blur-sm sticky top-20 z-40 space-y-4">
-        <div className="flex flex-col md:flex-row gap-2">
-            <div className="relative flex-grow">
+    <div className="space-y-4">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center border-b pb-4">
+            <div className="flex items-center gap-2">
+              <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
+              <FilterPopover title={t.tags} options={allTags} selected={selectedTags} onSelect={(value) => handleSelect('tags', value)} />
+            </div>
+            <div className="relative w-full md:w-auto">
                 <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isFa ? "right-3" : "left-3")} />
                 <Input
                     placeholder={t.searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={cn("h-10 w-full", isFa ? "pr-10" : "pl-10")}
+                    className={cn("h-10 w-full md:w-64", isFa ? "pr-10" : "pl-10")}
                 />
             </div>
-            <div className="flex items-center gap-2">
-              <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
-              <FilterPopover title={t.tags} options={allTags} selected={selectedTags} onSelect={(value) => handleSelect('tags', value)} />
-            
-              {hasActiveFilters && (
-                  <Button variant="ghost" onClick={clearAllFilters} className="h-10 flex-shrink-0">
-                      <X className={cn("h-4 w-4", isFa ? "ml-2" : "mr-2")}/>
-                      <span className="hidden sm:inline">{t.clearFilters}</span>
-                  </Button>
-              )}
-            </div>
         </div>
-        <div className={cn("flex flex-wrap gap-2", (selectedCategories.size === 0 && selectedTags.size === 0) && "hidden")}>
+        <div className={cn("flex flex-wrap gap-2 pt-2 transition-all", (selectedCategories.size === 0 && selectedTags.size === 0) ? "h-0 opacity-0" : "h-auto opacity-100")}>
             {[...selectedCategories, ...selectedTags].map(value => (
                 <Badge key={value} variant="secondary" className="px-2 py-1 flex items-center gap-1">
                     {value}
@@ -120,6 +113,11 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
                     </button>
                 </Badge>
             ))}
+             {hasActiveFilters && (
+                  <Button variant="ghost" onClick={clearAllFilters} className="h-auto px-2 py-1 text-xs">
+                      {t.clearFilters}
+                  </Button>
+              )}
         </div>
     </div>
   )
@@ -129,7 +127,7 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-10 border-dashed w-full justify-start text-left font-normal">
+        <Button variant="outline" size="sm" className="h-10 border-dashed w-full sm:w-auto justify-start text-left font-normal">
           <Plus className="mr-2 h-4 w-4" />
           <span className="flex-grow">{title}</span>
           {selected.size > 0 && (
