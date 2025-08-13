@@ -88,7 +88,7 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
   const hasActiveFilters = selectedCategories.size > 0 || selectedTags.size > 0 || searchTerm;
 
   return (
-    <div className="border rounded-lg p-4 bg-card/30 backdrop-blur-sm sticky top-20 z-40">
+    <div className="border rounded-lg p-4 bg-card/30 backdrop-blur-sm sticky top-20 z-40 space-y-4">
         <div className="flex flex-col md:flex-row gap-2">
             <div className="relative flex-grow">
                 <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isFa ? "right-3" : "left-3")} />
@@ -99,18 +99,19 @@ export function ProjectFilter({ allTags, allCategories, lang = 'en' }: { allTags
                     className={cn("h-10 w-full", isFa ? "pr-10" : "pl-10")}
                 />
             </div>
-
-            <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
-            <FilterPopover title={t.tags} options={allTags} selected={selectedTags} onSelect={(value) => handleSelect('tags', value)} />
-           
-            {hasActiveFilters && (
-                <Button variant="ghost" onClick={clearAllFilters} className="h-10">
-                    <X className={cn("h-4 w-4", isFa ? "ml-2" : "mr-2")}/>
-                    {t.clearFilters}
-                </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <FilterPopover title={t.category} options={allCategories} selected={selectedCategories} onSelect={(value) => handleSelect('categories', value)} />
+              <FilterPopover title={t.tags} options={allTags} selected={selectedTags} onSelect={(value) => handleSelect('tags', value)} />
+            
+              {hasActiveFilters && (
+                  <Button variant="ghost" onClick={clearAllFilters} className="h-10 flex-shrink-0">
+                      <X className={cn("h-4 w-4", isFa ? "ml-2" : "mr-2")}/>
+                      <span className="hidden sm:inline">{t.clearFilters}</span>
+                  </Button>
+              )}
+            </div>
         </div>
-        <div className={cn("flex flex-wrap gap-2 mt-4", (selectedCategories.size === 0 && selectedTags.size === 0) && "hidden")}>
+        <div className={cn("flex flex-wrap gap-2", (selectedCategories.size === 0 && selectedTags.size === 0) && "hidden")}>
             {[...selectedCategories, ...selectedTags].map(value => (
                 <Badge key={value} variant="secondary" className="px-2 py-1 flex items-center gap-1">
                     {value}
@@ -128,9 +129,9 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-10 border-dashed flex-shrink-0">
+        <Button variant="outline" size="sm" className="h-10 border-dashed w-full justify-start text-left font-normal">
           <Plus className="mr-2 h-4 w-4" />
-          {title}
+          <span className="flex-grow">{title}</span>
           {selected.size > 0 && (
             <>
               <div className="mx-2 h-4 w-px bg-border" />
@@ -139,7 +140,7 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className="w-[220px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
@@ -156,6 +157,9 @@ function FilterPopover({ title, options, selected, onSelect }: { title: string, 
                         <Check className="h-4 w-4" />
                     </div>
                     <span>{option}</span>
+                    {isSelected && (
+                      <Check className="ml-auto h-4 w-4 text-primary" />
+                    )}
                   </CommandItem>
                 );
               })}
