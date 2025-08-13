@@ -1,12 +1,11 @@
 import { notFound } from 'next/navigation';
-import { getBlogPosts } from '@/lib/actions';
+import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
-import { siteConfig } from '@/lib/data';
 
 export async function generateStaticParams() {
     const blogPosts = await getBlogPosts();
@@ -18,25 +17,30 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const blogPosts = await getBlogPosts();
   const post = blogPosts.find(p => p.slug === params.slug);
+  const settings = await getSiteSettings();
 
   if (!post) {
     return {};
   }
 
+  const title = `${post.title} | ${settings.en.siteName}`;
+  const url = `${settings.seo.siteURL}/blog/${post.slug}`;
+
   return {
-    title: `${post.title} | ${siteConfig.name}`,
+    title: title,
     description: post.description,
     openGraph: {
-        title: `${post.title} | ${siteConfig.name}`,
+        title: title,
         description: post.description,
         type: 'article',
-        url: `${siteConfig.url}/blog/${post.slug}`,
-        authors: [siteConfig.author],
+        url: url,
+        authors: [settings.en.authorName],
     },
     twitter: {
         card: 'summary_large_image',
-        title: `${post.title} | ${siteConfig.name}`,
+        title: title,
         description: post.description,
+        creator: settings.seo.twitterUsername ? `@${settings.seo.twitterUsername}` : undefined,
     },
   };
 }

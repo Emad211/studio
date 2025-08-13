@@ -4,14 +4,20 @@ import { revalidatePath } from "next/cache";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
-import type { Project, BlogPost } from "./data";
+import type { Project, BlogPost, SiteSettings } from "./data";
 import { getInitialData, services, servicesFa } from "./data";
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
 const DATA_FILE = path.join(process.cwd(), "src", "lib", "_data.json");
 
-async function readData(): Promise<{ projects: Project[]; blogPosts: BlogPost[] }> {
+type DbData = {
+    projects: Project[];
+    blogPosts: BlogPost[];
+    settings: SiteSettings;
+}
+
+async function readData(): Promise<DbData> {
   try {
     const fileContent = await fs.readFile(DATA_FILE, "utf-8");
     return JSON.parse(fileContent);
@@ -27,7 +33,7 @@ async function readData(): Promise<{ projects: Project[]; blogPosts: BlogPost[] 
   }
 }
 
-async function writeData(data: { projects: Project[]; blogPosts: BlogPost[] }): Promise<void> {
+async function writeData(data: DbData): Promise<void> {
   await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
@@ -35,19 +41,25 @@ async function writeData(data: { projects: Project[]; blogPosts: BlogPost[] }): 
 // Data Access Functions
 export async function getProjects(): Promise<Project[]> {
     const data = await readData();
-    return data.projects;
+    return data.projects || [];
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
     const data = await readData();
-    return data.blogPosts;
+    return data.blogPosts || [];
+}
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+    const data = await readData();
+    // Return default settings if none are found
+    return data.settings || getInitialData().settings;
 }
 
 export async function getAllCategories(lang: 'en' | 'fa') {
   if (lang === 'fa') {
-    return servicesFa.map(s => ({id: s.title, name: s.title}));
+    return servicesFa.map(s => s.title);
   }
-  return services.map(s => ({id: s.title, name: s.title}));
+  return services.map(s => s.title);
 }
 
 
@@ -82,7 +94,7 @@ export async function saveProject(
     return categoryName;
   });
 
-  const projectData: Project = {
+  const projectData: Omit<Project, 'showcaseType' | 'gallery' | 'aiPromptContext'> & { links: { github?: string, live?: string } } = {
     ...validatedData,
     categories: validatedData.categories,
     categories_fa: categories_fa,
@@ -103,15 +115,21 @@ export async function saveProject(
     if (data.projects.some(p => p.slug === projectData.slug)) {
         throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
     }
-    data.projects.unshift(projectData);
+    const newProject: Project = {
+        ...projectData,
+        showcaseType: 'links',
+        gallery: [],
+        aiPromptContext: ''
+    }
+    data.projects.unshift(newProject);
   }
 
   await writeData(data);
   revalidatePath("/admin/projects");
   revalidatePath("/projects");
   revalidatePath("/fa/projects");
-  revalidatePath(`/projects/${projectData.slug}`);
-  revalidatePath(`/fa/projects/${projectData.slug}`);
+  revalidatePath(`/projects/${validatedData.slug}`);
+  revalidatePath(`/fa/projects/${validatedData.slug}`);
   revalidatePath("/");
   revalidatePath("/fa");
 
@@ -179,4 +197,44 @@ export async function deleteBlogPost(slug: string): Promise<void> {
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
   revalidatePath("/fa/blog");
+}
+
+// Server Actions for Settings
+const settingsSchema = z.object({
+  en: z.object({
+    siteName: z.string().min(1),
+    authorName: z.string().min(1),
+    metaTitle: z.string().min(1),
+    metaDescription: z.string().min(1),
+  }),
+  fa: z.object({
+    siteName: z.string().min(1),
+    authorName: z.string().min(1),
+    metaTitle: z.string().min(1),
+    metaDescription: z.string().min(1),
+  }),
+  seo: z.object({
+    siteURL: z.string().url(),
+    metaKeywords: z.string().optional(),
+    twitterUsername: z.string().optional(),
+    ogImage: z.string().url().optional().or(z.literal('')),
+  }),
+  socials: z.object({
+      email: z.string().email(),
+      github: z.string().url(),
+      telegram: z.string().url(),
+  }),
+  advanced: z.object({
+      adminEmail: z.string().email(),
+  })
+});
+
+export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>) {
+    const validatedData = settingsSchema.parse(formData);
+    const data = await readData();
+    data.settings = validatedData;
+    await writeData(data);
+
+    // Revalidate all paths that might use settings
+    revalidatePath("/", "layout");
 }

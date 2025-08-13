@@ -29,14 +29,35 @@ export interface BlogPost {
   content: string;
 }
 
-export const siteConfig = {
-    name: "CodeCanvas",
-    name_fa: "کدکانواس",
-    description: "A modern portfolio for developers, showcasing AI projects and skills.",
-    description_fa: "یک پورتفولیو مدرن برای توسعه‌دهندگان، برای نمایش پروژه‌ها و مهارت‌های هوش مصنوعی.",
-    url: "https://your-domain.com", // TODO: Replace with your domain
-    author: "Emad Karimi",
+export interface SiteSettings {
+    en: {
+        siteName: string;
+        authorName: string;
+        metaTitle: string;
+        metaDescription: string;
+    };
+    fa: {
+        siteName: string;
+        authorName: string;
+        metaTitle: string;
+        metaDescription: string;
+    };
+    seo: {
+        siteURL: string;
+        metaKeywords?: string;
+        twitterUsername?: string;
+        ogImage?: string;
+    };
+    socials: {
+        email: string;
+        github: string;
+        telegram: string;
+    };
+    advanced: {
+        adminEmail: string;
+    }
 }
+
 
 export function getInitialData() {
     const initialProjects: Project[] = [
@@ -180,7 +201,37 @@ Deep Learning is a powerful tool. By understanding and using it effectively, you
 `
         }
     ];
-    return { projects: initialProjects, blogPosts: initialBlogPosts };
+
+    const initialSettings: SiteSettings = {
+        en: {
+            siteName: "CodeCanvas Portfolio",
+            authorName: "Emad Karimi",
+            metaTitle: "CodeCanvas | A modern portfolio for developers",
+            metaDescription: "Showcase your projects and skills with this modern, AI-powered portfolio website."
+        },
+        fa: {
+            siteName: "پورتفولیو کدکانواس",
+            authorName: "عماد کریمی",
+            metaTitle: "کدکانواس | یک پورتفولیو مدرن برای توسعه‌دهندگان",
+            metaDescription: "پروژه‌ها و مهارت‌های خود را با این وب‌سایت پورتفولیو مدرن و مجهز به هوش مصنوعی به نمایش بگذارید."
+        },
+        seo: {
+            siteURL: "https://example.com",
+            metaKeywords: "AI, Portfolio, Next.js, React, Developer",
+            twitterUsername: "emad211",
+            ogImage: "https://placehold.co/1200x630.png"
+        },
+        socials: {
+            email: "emad.k50000@gmail.com",
+            github: "https://github.com/Emad211",
+            telegram: "https://t.me/Freelancer_programmerr"
+        },
+        advanced: {
+            adminEmail: "admin@example.com"
+        }
+    };
+    
+    return { projects: initialProjects, blogPosts: initialBlogPosts, settings: initialSettings };
 }
 
 type SkillLevel = 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner';
