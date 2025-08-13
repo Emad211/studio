@@ -87,7 +87,7 @@ export function ProjectAIChat({ projectContext, lang = 'en' }: { projectContext:
                     <p className="text-sm text-muted-foreground mb-6" dir={isFa ? "rtl" : "ltr"}>
                         {t.welcome}
                     </p>
-                    <div className="grid grid-cols-2 gap-2 w-full">
+                    <div className="flex flex-wrap justify-center gap-2 w-full">
                         {t.suggestedQuestions.map((q, i) => (
                            <Button 
                                 key={i}
