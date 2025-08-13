@@ -6,12 +6,45 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Github, ExternalLink } from "lucide-react"
 import { CodeBlock } from "@/components/ui/code-block"
+import { ProjectSimulator } from "@/components/projects/project-simulator"
+import { ProjectAIChat } from "@/components/projects/project-ai-chat"
+import type { Project } from "@/lib/data"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
   return projects.map((project) => ({
     slug: project.slug,
   }))
+}
+
+const Showcase = ({ project }: { project: Project }) => {
+  if (project.showcaseType === 'simulator' && project.gallery) {
+    return <ProjectSimulator images={project.gallery} />;
+  }
+
+  if (project.showcaseType === 'ai_chatbot' && project.aiPromptContext) {
+    return <ProjectAIChat projectContext={project.aiPromptContext} lang="fa" />;
+  }
+
+  // Default to links
+  return (
+      <div className="mt-12 flex justify-center gap-4">
+        {project.links.github && (
+          <Button asChild variant="outline">
+            <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
+              <Github className="ml-2 h-4 w-4" /> گیت‌هاب
+            </Link>
+          </Button>
+        )}
+        {project.links.live && (
+          <Button asChild>
+            <Link href={project.links.live} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="ml-2 h-4 w-4" /> پیش‌نمایش زنده
+            </Link>
+          </Button>
+        )}
+      </div>
+  )
 }
 
 export default async function ProjectDetailsPage({ params }: { params: { slug: string } }) {
@@ -77,22 +110,7 @@ function MyComponent() {
           </p>
         </div>
 
-        <div className="mt-12 flex justify-center gap-4">
-          {project.links.github && (
-            <Button asChild variant="outline">
-              <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
-                <Github className="ml-2 h-4 w-4" /> گیت‌هاب
-              </Link>
-            </Button>
-          )}
-          {project.links.live && (
-            <Button asChild>
-              <Link href={project.links.live} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="ml-2 h-4 w-4" /> پیش‌نمایش زنده
-              </Link>
-            </Button>
-          )}
-        </div>
+        <Showcase project={project} />
       </div>
     </div>
   )

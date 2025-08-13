@@ -15,6 +15,9 @@ export interface Project {
     github?: string;
     live?: string;
   };
+  showcaseType?: 'links' | 'simulator' | 'ai_chatbot';
+  gallery?: string[];
+  aiPromptContext?: string;
 }
 
 export interface BlogPost {
@@ -51,21 +54,28 @@ export function getInitialData() {
           github: "https://github.com/Emad211",
           live: "#",
         },
+        showcaseType: "links",
+        gallery: [],
+        aiPromptContext: "",
       },
       {
         title: "Intelligent Task Management App",
         title_fa: "اپلیکیشن هوشمند مدیریت وظایف",
         slug: "intelligent-task-app",
-        categories: ["AI Agent Development"],
-        categories_fa: ["توسعه ایجنت‌های هوشمند"],
+        categories: ["AI Agent Development", "Web Development & Design"],
+        categories_fa: ["توسعه ایجنت‌های هوشمند", "توسعه و طراحی وب"],
         description: "A collaborative task management tool with AI-driven task prioritization and real-time updates.",
         description_fa: "یک ابزار مدیریت وظایف تیمی با اولویت‌بندی هوشمند وظایف توسط هوش مصنوعی و به‌روزرسانی‌های آنی.",
         image: "https://placehold.co/600x400.png",
         tags: ["React", "Firebase", "AI Agents", "Scikit-learn", "Real-time"],
-        links: {
-          github: "https://github.com/Emad211",
-          live: "#",
-        },
+        links: {},
+        showcaseType: "simulator",
+        gallery: [
+          "https://placehold.co/1280x720.png",
+          "https://placehold.co/1280x720.png",
+          "https://placehold.co/1280x720.png",
+        ],
+        aiPromptContext: "",
       },
       {
         title: "AI Portfolio Website",
@@ -81,6 +91,9 @@ export function getInitialData() {
           github: "https://github.com/Emad211",
           live: "#",
         },
+        showcaseType: "links",
+        gallery: [],
+        aiPromptContext: "",
       },
       {
         title: "Deep Learning Weather Forecaster",
@@ -92,10 +105,10 @@ export function getInitialData() {
         description_fa: "یک اپلیکیشن هواشناسی که از مدل‌های یادگیری عمیق برای ارائه پیش‌بینی‌های بلندمدت و بسیار دقیق استفاده می‌کند.",
         image: "https://placehold.co/600x400.png",
         tags: ["Python", "TensorFlow", "Keras", "Flask", "API"],
-        links: {
-          github: "https://github.com/Emad211",
-          live: "#",
-        },
+        links: {},
+        showcaseType: "ai_chatbot",
+        gallery: [],
+        aiPromptContext: "This project is a sophisticated weather forecasting application that leverages a Long Short-Term Memory (LSTM) deep learning model, implemented with TensorFlow and Keras. The primary goal was to achieve higher accuracy in long-range weather predictions compared to traditional models. The model was trained on a massive historical weather dataset spanning over 20 years, including variables like temperature, humidity, wind speed, and pressure. A Flask API was developed to serve the model's predictions, which can be integrated into various front-end applications. One of the main challenges was handling the time-series nature of the data and preventing model overfitting, which was addressed using techniques like dropout and early stopping. The final model demonstrated a 15% improvement in accuracy for 7-day forecasts over the baseline model.",
       },
     ];
 
