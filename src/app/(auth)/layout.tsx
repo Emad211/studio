@@ -15,7 +15,7 @@ export default function AuthLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased transition-colors duration-300 bg-background">
+      <body className="font-body antialiased transition-colors duration-300 bg-background text-foreground">
         {children}
       </body>
     </html>
