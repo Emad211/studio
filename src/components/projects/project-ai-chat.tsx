@@ -16,7 +16,7 @@ interface Message {
 export function ProjectAIChat({ projectContext, lang = 'en' }: { projectContext: string, lang?: 'en' | 'fa' }) {
   const isFa = lang === 'fa';
   const t = {
-    initialMessage: isFa ? "سلام! من ربات هوشمند این پروژه هستم. در مورد جزئیات فنی، چالش‌ها یا هر چیز دیگری که کنجکاو هستید از من بپرسید." : "Hi! I'm the smart bot for this project. Ask me about technical details, challenges, or anything you're curious about.",
+    initialMessage: isFa ? "من دستیار هوش مصنوعی این پروژه هستم. هر سوالی دارید بپرسید!" : "I'm the project's AI assistant. Ask me anything!",
     placeholder: isFa ? "سوال خود را اینجا تایپ کنید..." : "Type your question here...",
     button: isFa ? "ارسال" : "Send",
   };
@@ -71,9 +71,9 @@ export function ProjectAIChat({ projectContext, lang = 'en' }: { projectContext:
   };
 
   return (
-    <div className="mt-12 w-full max-w-2xl mx-auto">
-      <div className="rounded-lg border bg-card/50 p-4 space-y-4">
-        <ScrollArea className="h-[400px] w-full pr-4" ref={scrollAreaRef}>
+    <div className="mt-12 w-full max-w-md mx-auto">
+      <div className="rounded-lg border bg-card/50 p-4 space-y-4 shadow-lg">
+        <ScrollArea className="h-[300px] w-full pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
@@ -96,7 +96,7 @@ export function ProjectAIChat({ projectContext, lang = 'en' }: { projectContext:
                       : "bg-muted"
                   )}
                 >
-                  <p className={cn("text-sm", isFa && message.role === 'ai' && "text-right")} dir="auto">{message.content}</p>
+                  <p className={cn("text-sm", isFa && "text-right")} dir="auto">{message.content}</p>
                 </div>
                 {message.role === "user" && (
                    <div className="p-2 bg-muted rounded-full">
