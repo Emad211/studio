@@ -84,7 +84,7 @@ export function ProjectAIChat({ projectContext, lang = 'en' }: { projectContext:
                       : "bg-muted"
                   )}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <p className={cn("text-sm", isFa && "text-right")} dir="auto">{message.content}</p>
                 </div>
                 {message.role === "user" && (
                    <div className="p-2 bg-muted rounded-full">
