@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { getProjects } from "@/lib/actions"
+import { getProjects, getSiteSettings } from "@/lib/actions"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,12 +10,44 @@ import { ProjectSimulator } from "@/components/projects/project-simulator"
 import { ProjectAIChat } from "@/components/projects/project-ai-chat"
 import type { Project } from "@/lib/data"
 import { Separator } from "@/components/ui/separator"
+import type { Metadata } from "next"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
   return projects.map((project) => ({
     slug: project.slug,
   }))
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const projects = await getProjects();
+  const project = projects.find(p => p.slug === params.slug);
+  const settings = await getSiteSettings();
+
+  if (!project) {
+    return {};
+  }
+
+  const title = `${project.title_fa} | ${settings.fa.siteName}`;
+  const url = `${settings.seo.siteURL}/projects/${project.slug}`;
+
+  return {
+    title: title,
+    description: project.description_fa,
+    openGraph: {
+        title: title,
+        description: project.description_fa,
+        type: 'article',
+        url: url,
+        authors: [settings.fa.authorName],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: title,
+        description: project.description_fa,
+        creator: settings.seo.twitterUsername ? `@${settings.seo.twitterUsername}` : undefined,
+    },
+  };
 }
 
 const Showcase = ({ project }: { project: Project }) => {

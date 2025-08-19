@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react"
 
 export default async function BlogPage() {
   const blogPosts = await getBlogPosts();
+  const publishedPosts = blogPosts.filter(p => p.status === 'published');
   
   return (
     <div className="container py-12">
@@ -14,7 +15,7 @@ export default async function BlogPage() {
         <p className="mt-2 text-lg text-muted-foreground">Thoughts on technology, design, and development.</p>
       </div>
       <div className="max-w-3xl mx-auto space-y-8">
-        {blogPosts.map((post) => (
+        {publishedPosts.map((post) => (
           <Link href={`/en/blog/${post.slug}`} key={post.slug} className="block group">
             <Card className="transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
               <CardHeader>
