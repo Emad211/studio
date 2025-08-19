@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
-import { getBlogPosts } from '@/lib/actions';
+import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
+import type { Metadata } from 'next';
 
 export async function generateStaticParams() {
     const blogPosts = await getBlogPosts();
@@ -12,6 +13,38 @@ export async function generateStaticParams() {
         slug: post.slug,
     }));
 }
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const blogPosts = await getBlogPosts();
+  const post = blogPosts.find(p => p.slug === params.slug);
+  const settings = await getSiteSettings();
+
+  if (!post) {
+    return {};
+  }
+
+  const title = `${post.title} | ${settings.en.siteName}`;
+  const url = `${settings.seo.siteURL}/en/blog/${post.slug}`;
+
+  return {
+    title: title,
+    description: post.description,
+    openGraph: {
+        title: title,
+        description: post.description,
+        type: 'article',
+        url: url,
+        authors: [settings.en.authorName],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: title,
+        description: post.description,
+        creator: settings.seo.twitterUsername ? `@${settings.seo.twitterUsername}` : undefined,
+    },
+  };
+}
+
 
 const parseMarkdown = (markdown: string) => {
     const headings: { id: string; level: number; text: string }[] = [];
@@ -25,7 +58,7 @@ const parseMarkdown = (markdown: string) => {
     for (const line of lines) {
         if (line.startsWith('```')) {
             if (inCodeBlock) {
-                content.push(<div dir="ltr"><CodeBlock key={content.length} code={codeBlockContent.trim()} language={codeBlockLang} /></div>);
+                content.push(<CodeBlock key={content.length} code={codeBlockContent.trim()} language={codeBlockLang} />);
                 inCodeBlock = false;
                 codeBlockContent = '';
                 codeBlockLang = '';
@@ -70,27 +103,28 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <>
             <ReadingProgress />
             <div className="container py-12 md:py-20">
-                <div className="grid lg:grid-cols-4 gap-12">
-                    <aside className="lg:col-span-1 relative order-last lg:order-first">
-                        <TableOfContents headings={headings} />
-                    </aside>
+                <div className="grid lg:grid-cols-4 gap-8 md:gap-12">
                     <article className="lg:col-span-3">
-                        <div className="mb-8 text-right">
-                            <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
+                        <div className="mb-8">
+                            <h1 className="text-3xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
                             <p className="mt-2 text-muted-foreground">
-                                منتشر شده در {new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
-                            <div className="mt-4 flex flex-wrap gap-2 justify-end">
+                            <div className="mt-4 flex flex-wrap gap-2">
                                 {post.tags.map((tag) => (
                                     <Badge key={tag} variant="secondary">{tag}</Badge>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="prose prose-invert prose-lg max-w-none text-right">
+                        <div className="prose prose-invert prose-lg max-w-none">
                             {content}
                         </div>
                     </article>
+
+                    <aside className="hidden lg:block lg:col-span-1 relative">
+                        <TableOfContents headings={headings} />
+                    </aside>
                 </div>
             </div>
         </>

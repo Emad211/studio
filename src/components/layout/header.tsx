@@ -15,22 +15,23 @@ import {
 import { LanguageSwitcher } from "./language-switcher"
 
 const navLinks = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/projects", label: "Projects", icon: Code },
-  { href: "/blog", label: "Blog", icon: Book },
+  { href: "/", label: "خانه", icon: Home },
+  { href: "/projects", label: "پروژه‌ها", icon: Code },
+  { href: "/blog", label: "وبلاگ", icon: Book },
 ]
 
-const faNavLinks = [
-    { href: "/fa", label: "خانه", icon: Home },
-    { href: "/fa/projects", label: "پروژه‌ها", icon: Code },
-    { href: "/fa/blog", label: "وبلاگ", icon: Book },
+const enNavLinks = [
+    { href: "/en", label: "Home", icon: Home },
+    { href: "/en/projects", label: "Projects", icon: Code },
+    { href: "/en/blog", label: "Blog", icon: Book },
 ]
 
 export function Header() {
   const pathname = usePathname()
-  const isFa = pathname.startsWith('/fa')
+  const isEn = pathname.startsWith('/en')
 
-  const currentNavLinks = isFa ? faNavLinks : navLinks
+  const currentNavLinks = isEn ? enNavLinks : navLinks
+  const homeLink = isEn ? "/en" : "/";
 
   const renderNavLinks = (isMobile: boolean = false) =>
     currentNavLinks.map((link) => (
@@ -45,7 +46,7 @@ export function Header() {
         )}
       >
         <Link href={link.href}>
-          <link.icon className={isFa && !isMobile ? "ml-2 h-4 w-4" : "mr-2 h-4 w-4"} />
+          <link.icon className={!isEn && !isMobile ? "ml-2 h-4 w-4" : "mr-2 h-4 w-4"} />
           {link.label}
         </Link>
       </Button>
@@ -58,7 +59,7 @@ export function Header() {
             <LanguageSwitcher />
         </div>
         <div className="hidden md:flex items-center">
-          <Link href={isFa ? "/fa" : "/"} className="mr-6 flex items-center space-x-2">
+          <Link href={homeLink} className="mr-6 flex items-center space-x-2">
             <Logo />
             <span className="hidden font-bold sm:inline-block font-headline">
               CodeCanvas
@@ -84,12 +85,12 @@ export function Header() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side={isFa ? "right" : "left"} className="pr-0">
+            <SheetContent side={!isEn ? "right" : "left"} className="pr-0">
                <SheetHeader className="hidden">
                   <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
               </SheetHeader>
               <Link
-                href="/"
+                href={homeLink}
                 className="mr-6 flex items-center space-x-2 mb-6"
               >
                 <Logo />

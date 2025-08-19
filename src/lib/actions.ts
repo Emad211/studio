@@ -139,11 +139,11 @@ export async function saveProject(
   await writeData(data);
   revalidatePath("/admin/projects");
   revalidatePath("/projects");
-  revalidatePath("/fa/projects");
+  revalidatePath("/en/projects");
   revalidatePath(`/projects/${validatedData.slug}`);
-  revalidatePath(`/fa/projects/${validatedData.slug}`);
+  revalidatePath(`/en/projects/${validatedData.slug}`);
   revalidatePath("/");
-  revalidatePath("/fa");
+  revalidatePath("/en");
 
 }
 
@@ -153,9 +153,9 @@ export async function deleteProject(slug: string): Promise<void> {
   await writeData(data);
   revalidatePath("/admin/projects");
   revalidatePath("/projects");
-  revalidatePath("/fa/projects");
+  revalidatePath("/en/projects");
   revalidatePath("/");
-  revalidatePath("/fa");
+  revalidatePath("/en");
 }
 
 // Server Actions for Blog Posts
@@ -197,9 +197,9 @@ export async function saveBlogPost(
   await writeData(data);
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
-  revalidatePath("/fa/blog");
+  revalidatePath("/en/blog");
   revalidatePath(`/blog/${blogPostData.slug}`);
-  revalidatePath(`/fa/blog/${blogPostData.slug}`);
+  revalidatePath(`/en/blog/${blogPostData.slug}`);
 }
 
 export async function deleteBlogPost(slug: string): Promise<void> {
@@ -208,7 +208,7 @@ export async function deleteBlogPost(slug: string): Promise<void> {
   await writeData(data);
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
-  revalidatePath("/fa/blog");
+  revalidatePath("/en/blog");
 }
 
 // Server Actions for Settings

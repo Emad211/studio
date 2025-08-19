@@ -6,18 +6,18 @@ import { ProjectsSection } from '@/components/sections/projects-section';
 import { ContactSection } from '@/components/sections/contact-section';
 import { getProjects } from '@/lib/actions';
 
-export default async function HomeFa() {
+export default async function Home() {
   const projects = await getProjects();
-
+  
   return (
     <div className="flex flex-col">
-      <HeroSection lang="fa" />
+      <HeroSection lang="en"/>
       <div className="space-y-16 md:space-y-24 my-16 md:my-24">
-        <AboutSection lang="fa" />
-        <ServicesSection lang="fa" />
-        <SkillsSection lang="fa" />
-        <ProjectsSection projects={projects} lang="fa" />
-        <ContactSection lang="fa" />
+        <AboutSection lang="en" />
+        <ServicesSection lang="en" />
+        <SkillsSection lang="en" />
+        <ProjectsSection projects={projects} lang="en" />
+        <ContactSection lang="en" />
       </div>
     </div>
   );

@@ -17,6 +17,8 @@ export function ProjectsSection({ projects, lang = 'en' }: { projects: Project[]
     buttonText: isFa ? "مشاهده همه پروژه‌ها" : "View All Projects",
     number: "04."
   }
+  
+  const projectsLink = isFa ? "/projects" : "/en/projects";
 
   return (
     <section id="projects" className="container">
@@ -33,7 +35,7 @@ export function ProjectsSection({ projects, lang = 'en' }: { projects: Project[]
       </div>
        <div className="mt-16 text-center">
         <Button asChild variant="outline" size="lg">
-          <Link href={isFa ? "/fa/projects" : "/projects"}>
+          <Link href={projectsLink}>
             {t.buttonText}
             {isFa ? <ArrowLeft className="ml-2 h-4 w-4" /> : <ArrowRight className="ml-2 h-4 w-4" />}
           </Link>

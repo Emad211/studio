@@ -6,8 +6,8 @@ import { getSiteSettings } from '@/lib/actions';
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   
-  const title = settings.en.siteName || 'CodeCanvas Portfolio';
-  const description = settings.en.metaDescription || 'A modern portfolio for developers';
+  const title = settings.fa.siteName || 'پورتفولیو کدکانواس';
+  const description = settings.fa.metaDescription || 'یک پورتفولیو مدرن برای توسعه‌دهندگان';
 
   return {
     title: {
@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: description,
     keywords: settings.seo.metaKeywords?.split(',').map(k => k.trim()),
-    authors: [{ name: settings.en.authorName, url: settings.socials.github }],
+    authors: [{ name: settings.fa.authorName, url: settings.socials.github }],
     openGraph: {
       title: title,
       description: description,
@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale: 'en_US',
+      locale: 'fa_IR',
       type: 'website',
     },
     twitter: {
@@ -48,9 +48,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Determine language and direction from the route if needed, or set a default
-  const lang = 'en'; // Default language
-  const dir = 'ltr';   // Default direction
+  const lang = 'fa';
+  const dir = 'rtl';
 
   return (
     <html lang={lang} dir={dir} className="dark" suppressHydrationWarning>

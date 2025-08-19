@@ -15,12 +15,12 @@ export function LanguageSwitcher() {
   const router = useRouter()
 
   const handleLanguageChange = (newLang: 'en' | 'fa') => {
-    const isFa = pathname.startsWith('/fa');
+    const isEn = pathname.startsWith('/en');
     let newPath = pathname;
 
-    if (newLang === 'fa' && !isFa) {
-        newPath = `/fa${pathname}`;
-    } else if (newLang === 'en' && isFa) {
+    if (newLang === 'en' && !isEn) {
+        newPath = `/en${pathname}`;
+    } else if (newLang === 'fa' && isEn) {
         newPath = pathname.substring(3) || '/';
     }
     

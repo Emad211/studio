@@ -22,6 +22,8 @@ export function HeroSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
       exploreWork: isFa ? "کاوش در کارهای من" : "Explore My Work",
       getInTouch: isFa ? "در تماس باشید" : "Get In Touch",
   }
+  
+  const projectsLink = isFa ? "/projects" : "/en/projects";
 
   const FADE_UP_ANIMATION_VARIANTS = {
     hidden: { opacity: 0, y: 10 },
@@ -68,7 +70,7 @@ export function HeroSection({ lang = 'en' }: { lang?: 'en' | 'fa' }) {
             className="mt-8 flex w-full flex-col sm:flex-row items-center justify-center gap-4 px-4 sm:px-0"
           >
             <Button size="lg" asChild className="group w-full sm:w-auto">
-              <Link href={isFa ? "/fa/projects" : "/projects"}>
+              <Link href={projectsLink}>
                 {t.exploreWork}
                 {isFa ? <ArrowLeft className="ml-2 h-4 w-4 transition-transform group-hover:-translate-x-1" /> : <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />}
               </Link>

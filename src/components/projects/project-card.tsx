@@ -11,7 +11,13 @@ export function ProjectCard({ project, className, lang = 'en' }: { project: Proj
   const title = isFa ? project.title_fa : project.title;
   const description = isFa ? project.description_fa : project.description;
   const categories = isFa ? project.categories_fa : project.categories;
-  const href = isFa ? `/fa/projects/${project.slug}` : `/projects/${project.slug}`;
+  
+  let href;
+  if (isFa) {
+    href = `/projects/${project.slug}`;
+  } else {
+    href = `/en/projects/${project.slug}`;
+  }
 
   return (
     <Link href={href} className="group block h-full">
