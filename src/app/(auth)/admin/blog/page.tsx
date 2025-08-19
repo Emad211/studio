@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { PlusCircle } from "lucide-react"
-
 import { getBlogPosts } from "@/lib/actions"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { DeleteButton } from "@/components/admin/delete-button"
 import { deleteBlogPost } from "@/lib/actions"
+import { cn } from "@/lib/utils"
 
 export default async function AdminBlogPage() {
   const blogPosts = await getBlogPosts();
@@ -47,9 +47,9 @@ export default async function AdminBlogPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>عنوان</TableHead>
+                <TableHead>عنوان (فارسی)</TableHead>
+                <TableHead className="hidden md:table-cell">وضعیت</TableHead>
                 <TableHead className="hidden md:table-cell">تاریخ</TableHead>
-                <TableHead className="hidden md:table-cell">تگ‌ها</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -58,23 +58,24 @@ export default async function AdminBlogPage() {
             <TableBody>
               {blogPosts.map((post) => (
                 <TableRow key={post.slug}>
-                  <TableCell className="font-medium">{post.title}</TableCell>
+                  <TableCell className="font-medium">{post.title_fa}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant="outline" className={cn(
+                        post.status === 'published' ? "border-green-500 text-green-500" : "border-yellow-500 text-yellow-500"
+                    )}>
+                        {post.status === 'published' ? 'منتشر شده' : 'پیش‌نویس'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {new Date(post.date).toLocaleDateString('fa-IR')}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <div className="flex gap-1">
-                      {post.tags.map((tag) => (
-                        <Badge key={tag} variant="outline">{tag}</Badge>
-                      ))}
-                    </div>
-                  </TableCell>
+                  
                   <TableCell>
                     <div className="flex gap-2 justify-end">
                        <Button asChild variant="outline" size="sm">
                           <Link href={`/admin/blog/edit/${post.slug}`}>ویرایش</Link>
                        </Button>
-                       <DeleteButton itemType="پست وبلاگ" itemName={post.title} deleteAction={async () => { "use server"; await deleteBlogPost(post.slug)}} />
+                       <DeleteButton itemType="پست وبلاگ" itemName={post.title_fa} deleteAction={async () => { "use server"; await deleteBlogPost(post.slug)}} />
                     </div>
                   </TableCell>
                 </TableRow>

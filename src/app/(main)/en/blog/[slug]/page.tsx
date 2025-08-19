@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -28,24 +29,28 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     return {};
   }
 
-  const title = `${post.title} | ${settings.en.siteName}`;
+  const title = post.meta_title_en || `${post.title} | ${settings.en.siteName}`;
+  const description = post.meta_description_en || post.description;
   const url = `${settings.seo.siteURL}/en/blog/${slug}`;
+  const ogImage = post.og_image || settings.seo.ogImage;
 
   return {
     title: title,
-    description: post.description,
+    description: description,
     openGraph: {
         title: title,
-        description: post.description,
+        description: description,
         type: 'article',
         url: url,
+        images: ogImage ? [ogImage] : [],
         authors: [settings.en.authorName],
     },
     twitter: {
         card: 'summary_large_image',
         title: title,
-        description: post.description,
+        description: description,
         creator: settings.seo.twitterUsername ? `@${settings.seo.twitterUsername}` : undefined,
+        images: ogImage ? [ogImage] : [],
     },
   };
 }
@@ -99,7 +104,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const blogPosts = await getBlogPosts();
     const post = blogPosts.find((p) => p.slug === slug);
 
-    if (!post) {
+    if (!post || post.status === 'draft') {
         notFound();
     }
 
@@ -122,6 +127,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 ))}
                             </div>
                         </div>
+
+                        {post.featured_image && (
+                            <div className="relative aspect-video mb-12 rounded-lg overflow-hidden border">
+                                <Image 
+                                    src={post.featured_image} 
+                                    alt={post.title} 
+                                    fill 
+                                    className="object-cover"
+                                    data-ai-hint="post illustration"
+                                />
+                            </div>
+                        )}
 
                         <div className="prose prose-invert prose-lg max-w-none">
                             {content}

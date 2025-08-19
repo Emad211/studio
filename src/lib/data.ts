@@ -33,11 +33,22 @@ export interface Project {
 export interface BlogPost {
   slug: string;
   title: string;
+  title_fa: string;
   description: string;
+  description_fa: string;
   date: string;
   tags: string[];
   content: string;
+  content_fa: string;
+  featured_image: string;
+  status: 'published' | 'draft';
+  meta_title_en?: string;
+  meta_description_en?: string;
+  meta_title_fa?: string;
+  meta_description_fa?: string;
+  og_image?: string;
 }
+
 
 export interface SiteSettings {
     en: {
@@ -193,9 +204,13 @@ export function getInitialData() {
         {
             slug: 'mastering-deep-learning',
             title: 'Mastering Deep Learning: A Deep Dive',
+            title_fa: 'تسلط بر یادگیری عمیق: یک شیرجه عمیق',
             description: 'An in-depth guide to understanding and mastering Deep Learning for more efficient and powerful models.',
+            description_fa: 'یک راهنمای عمیق برای درک و تسلط بر یادگیری عمیق برای مدل‌های کارآمدتر و قدرتمندتر.',
             date: '2024-05-15',
             tags: ['Deep Learning', 'Python', 'AI'],
+            status: 'published',
+            featured_image: "https://placehold.co/1200x630.png",
             content: `
 ## Understanding the Power of Deep Learning
 
@@ -254,7 +269,71 @@ One of the most powerful features of Deep Learning is transfer learning. Pre-tra
 ## Conclusion
 
 Deep Learning is a powerful tool. By understanding and using it effectively, you can build very powerful models. It is the core of modern AI.
-`
+`,
+            content_fa: `
+## درک قدرت یادگیری عمیق
+
+یادگیری عمیق، زیرمجموعه‌ای از یادگیری ماشین، بر پایه شبکه‌های عصبی مصنوعی است. این حوزه با ایجاد پیشرفت‌هایی در زمینه‌هایی مانند بینایی کامپیوتر، پردازش زبان طبیعی و هوش مصنوعی مولد، صنایع را متحول کرده است.
+
+### پرسپترون
+
+بنیادی‌ترین واحد، پرسپترون است، یک مدل تک نورونی.
+
+\`\`\`python
+import numpy as np
+
+class Perceptron:
+    def __init__(self, learning_rate=0.01, n_iters=1000):
+        self.lr = learning_rate
+        self.n_iters = n_iters
+        self.activation_func = self._unit_step_func
+        self.weights = None
+        self.bias = None
+
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        self.weights = np.zeros(n_features)
+        self.bias = 0
+        y_ = np.array([1 if i > 0 else 0 for i in y])
+
+        for _ in range(self.n_iters):
+            for idx, x_i in enumerate(X):
+                linear_output = np.dot(x_i, self.weights) + self.bias
+                y_predicted = self.activation_func(linear_output)
+                update = self.lr * (y_[idx] - y_predicted)
+                self.weights += update * x_i
+                self.bias += update
+
+    def predict(self, X):
+        linear_output = np.dot(X, self.weights) + self.bias
+        y_predicted = self.activation_func(linear_output)
+        return y_predicted
+
+    def _unit_step_func(self, x):
+        return np.where(x>=0, 1, 0)
+\`\`\`
+
+### هوک useEffect در ری‌اکت
+
+هوک \`useEffect\` به شما اجازه می‌دهد تا در کامپوننت‌های تابعی، عملیات جانبی انجام دهید. این هوک جایگزین نزدیکی برای \`componentDidMount\`، \`componentDidUpdate\` و \`componentWillUnmount\` است.
+
+- **واکشی داده**: می‌توانید هنگام بارگذاری کامپوننت، داده‌ها را از یک API واکشی کنید.
+- **اشتراک در رویدادها**: شنونده‌های رویداد را تنظیم کرده و هنگام پیاده‌سازی کامپوننت، آن‌ها را پاک کنید.
+- **تغییر دستی در DOM**: در صورت نیاز، به طور مستقیم با DOM تعامل داشته باشید.
+
+## راه‌حل‌های سفارشی برای قابلیت استفاده مجدد
+
+یکی از قدرتمندترین ویژگی‌های یادگیری عمیق، یادگیری انتقالی است. مدل‌های از پیش آموزش‌دیده می‌توانند به عنوان نقطه شروعی برای حل مسائل جدید استفاده شوند. به عنوان مثال، مدلی که روی ImageNet آموزش دیده است، می‌تواند برای یک وظیفه طبقه‌بندی تصویر خاص، تنظیم دقیق شود.
+
+## نتیجه‌گیری
+
+یادگیری عمیق یک ابزار قدرتمند است. با درک و استفاده مؤثر از آن، می‌توانید مدل‌های بسیار قدرتمندی بسازید. این حوزه، هسته هوش مصنوعی مدرن است.
+`,
+            meta_title_en: "A Deep Dive into Mastering Deep Learning",
+            meta_description_en: "Learn the fundamentals and advanced concepts of Deep Learning in this comprehensive guide. Perfect for beginners and experts alike.",
+            meta_title_fa: "شیرجه عمیق در تسلط بر یادگیری عمیق",
+            meta_description_fa: "در این راهنمای جامع، اصول و مفاهیم پیشرفته یادگیری عمیق را بیاموزید. مناسب برای مبتدیان و متخصصان.",
+            og_image: "https://placehold.co/1200x630.png"
         }
     ];
 

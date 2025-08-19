@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
-import { getBlogPosts } from '@/lib/actions';
+import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
+import type { Metadata } from 'next';
+import Image from 'next/image';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -15,6 +17,42 @@ export async function generateStaticParams() {
     return blogPosts.map((post) => ({
         slug: post.slug,
     }));
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = params;
+  const blogPosts = await getBlogPosts();
+  const post = blogPosts.find(p => p.slug === slug);
+  const settings = await getSiteSettings();
+
+  if (!post) {
+    return {};
+  }
+
+  const title = post.meta_title_fa || `${post.title_fa} | ${settings.fa.siteName}`;
+  const description = post.meta_description_fa || post.description_fa;
+  const url = `${settings.seo.siteURL}/blog/${slug}`;
+  const ogImage = post.og_image || settings.seo.ogImage;
+
+  return {
+    title: title,
+    description: description,
+    openGraph: {
+        title: title,
+        description: description,
+        type: 'article',
+        url: url,
+        images: ogImage ? [ogImage] : [],
+        authors: [settings.fa.authorName],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: title,
+        description: description,
+        creator: settings.seo.twitterUsername ? `@${settings.seo.twitterUsername}` : undefined,
+        images: ogImage ? [ogImage] : [],
+    },
+  };
 }
 
 const parseMarkdown = (markdown: string) => {
@@ -65,11 +103,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const blogPosts = await getBlogPosts();
     const post = blogPosts.find((p) => p.slug === slug);
 
-    if (!post) {
+    if (!post || post.status === 'draft') {
         notFound();
     }
 
-    const { headings, content } = parseMarkdown(post.content);
+    const { headings, content } = parseMarkdown(post.content_fa);
 
     return (
         <>
@@ -80,8 +118,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         <TableOfContents headings={headings} />
                     </aside>
                     <article className="lg:col-span-3">
-                        <div className="mb-8 text-right">
-                            <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
+                         <div className="mb-8 text-right">
+                            <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title_fa}</h1>
                             <p className="mt-2 text-muted-foreground">
                                 منتشر شده در {new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
@@ -91,6 +129,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 ))}
                             </div>
                         </div>
+
+                        {post.featured_image && (
+                            <div className="relative aspect-video mb-12 rounded-lg overflow-hidden border">
+                                <Image 
+                                    src={post.featured_image} 
+                                    alt={post.title_fa} 
+                                    fill 
+                                    className="object-cover"
+                                    data-ai-hint="post illustration"
+                                />
+                            </div>
+                        )}
 
                         <div className="prose prose-invert prose-lg max-w-none text-right">
                             {content}

@@ -161,12 +161,23 @@ export async function deleteProject(slug: string): Promise<void> {
 // Server Actions for Blog Posts
 
 const blogPostSchema = z.object({
-  title: z.string().min(1, "عنوان الزامی است."),
+  title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
+  content_fa: z.string().min(10, "محتوای فارسی باید حداقل 10 کاراکتر باشد."),
+  featured_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر شاخص وارد کنید." }),
+  
+  title: z.string().optional(),
+  content: z.string().optional(),
+  
   slug: z.string().min(1, "اسلاگ الزامی است."),
-  description: z.string().min(1, "توضیحات الزامی است."),
   date: z.string().min(1, "تاریخ الزامی است."),
   tags: z.string().min(1, "حداقل یک تگ الزامی است."),
-  content: z.string().min(10, "محتوا باید حداقل 10 کاراکتر باشد."),
+  status: z.enum(['published', 'draft']),
+
+  meta_title_fa: z.string().optional(),
+  meta_description_fa: z.string().optional(),
+  meta_title_en: z.string().optional(),
+  meta_description_en: z.string().optional(),
+  og_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر OG وارد کنید." }).optional().or(z.literal('')),
 });
 
 
@@ -179,6 +190,10 @@ export async function saveBlogPost(
 
   const blogPostData: BlogPost = {
     ...validatedData,
+    title: validatedData.title || validatedData.title_fa,
+    description: validatedData.meta_description_en || '',
+    description_fa: validatedData.meta_description_fa || '',
+    content: validatedData.content || validatedData.content_fa,
     tags: validatedData.tags.split(",").map((t) => t.trim()),
   };
 

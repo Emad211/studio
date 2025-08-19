@@ -15,7 +15,7 @@ export default async function EditBlogPostPage({ params }: { params: { slug: str
     <Card>
       <CardHeader>
         <CardTitle>ویرایش پست وبلاگ</CardTitle>
-        <CardDescription>فرم زیر را برای ویرایش پست وبلاگ خود پر کنید.</CardDescription>
+        <CardDescription>فرم زیر را برای ویرایش پست «{post.title_fa}» پر کنید.</CardDescription>
       </CardHeader>
       <CardContent>
         <BlogForm post={post} />
