@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, useWatch } from "react-hook-form";
@@ -25,6 +26,7 @@ import { services } from "@/lib/data";
 import { Separator } from "../ui/separator";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Bot, Image as ImageIcon, Link } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -111,7 +113,7 @@ const ShowcaseFields = ({ control }: { control: any }) => {
                     لیستی از URL های تصاویر، که هر کدام با یک خط جدید از هم جدا شده‌اند.
                 </FormDescription>
                 <FormControl>
-                    <Textarea dir="ltr" className="min-h-[150px]" placeholder="https://.../image1.png&#10;https://.../image2.png" {...field} />
+                    <Textarea dir="ltr" className="min-h-[150px]" placeholder="https://.../image1.png\nhttps://.../image2.png" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
