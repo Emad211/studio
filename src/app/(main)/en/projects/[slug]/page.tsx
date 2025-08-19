@@ -122,7 +122,7 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
           <h3 className="font-headline text-2xl text-foreground">Technical Details</h3>
           <p>{project.technical_details}</p>
 
-          <CodeBlock code={exampleCode} language="jsx" />
+          <CodeBlock code={exampleCode} language="python" />
 
           <h3 className="font-headline text-2xl text-foreground">Challenges and Solutions</h3>
           <p>{project.challenges}</p>

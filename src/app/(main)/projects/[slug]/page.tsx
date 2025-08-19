@@ -121,7 +121,7 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
           <p>{project.technical_details_fa}</p>
 
           <div dir="ltr">
-            <CodeBlock code={exampleCode} language="jsx" />
+            <CodeBlock code={exampleCode} language="python" />
           </div>
 
           <h3 className="font-headline text-2xl text-foreground">چالش‌ها و راه‌حل‌ها</h3>
