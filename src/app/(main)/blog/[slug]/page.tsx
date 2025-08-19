@@ -6,6 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 
+type BlogPostPageProps = {
+    params: { slug: string };
+};
+
 export async function generateStaticParams() {
     const blogPosts = await getBlogPosts();
     return blogPosts.map((post) => ({
@@ -56,9 +60,10 @@ const parseMarkdown = (markdown: string) => {
     return { headings, content: <>{content}</> };
 };
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+    const { slug } = params;
     const blogPosts = await getBlogPosts();
-    const post = blogPosts.find((p) => p.slug === params.slug);
+    const post = blogPosts.find((p) => p.slug === slug);
 
     if (!post) {
         notFound();

@@ -5,8 +5,11 @@ import { getProjects, getAllCategories } from "@/lib/actions";
 export default async function ProjectsPage({ searchParams }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
-  const selectedCategories = typeof searchParams?.categories === 'string' ? [searchParams.categories] : (Array.isArray(searchParams?.categories) ? searchParams.categories : []);
-  const searchTerm = typeof searchParams?.search === 'string' ? searchParams.search.toLowerCase() : '';
+  const categories = searchParams?.categories;
+  const search = searchParams?.search;
+
+  const selectedCategories = typeof categories === 'string' ? [categories] : (Array.isArray(categories) ? categories : []);
+  const searchTerm = typeof search === 'string' ? search.toLowerCase() : '';
 
   const projects = await getProjects();
   const allCategories = await getAllCategories('fa');

@@ -7,6 +7,10 @@ import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
 
+type BlogPostPageProps = {
+    params: { slug: string };
+};
+
 export async function generateStaticParams() {
     const blogPosts = await getBlogPosts();
     return blogPosts.map((post) => ({
@@ -14,9 +18,10 @@ export async function generateStaticParams() {
     }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = params;
   const blogPosts = await getBlogPosts();
-  const post = blogPosts.find(p => p.slug === params.slug);
+  const post = blogPosts.find(p => p.slug === slug);
   const settings = await getSiteSettings();
 
   if (!post) {
@@ -24,7 +29,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   const title = `${post.title} | ${settings.en.siteName}`;
-  const url = `${settings.seo.siteURL}/en/blog/${post.slug}`;
+  const url = `${settings.seo.siteURL}/en/blog/${slug}`;
 
   return {
     title: title,
@@ -89,9 +94,10 @@ const parseMarkdown = (markdown: string) => {
     return { headings, content: <>{content}</> };
 };
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+    const { slug } = params;
     const blogPosts = await getBlogPosts();
-    const post = blogPosts.find((p) => p.slug === params.slug);
+    const post = blogPosts.find((p) => p.slug === slug);
 
     if (!post) {
         notFound();
