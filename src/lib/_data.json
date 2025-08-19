@@ -1,5 +1,47 @@
+
 {
   "projects": [
+    {
+      "title": "Deep Learning for Brain MRI Classification",
+      "title_fa": "طبقه‌بندی MRI مغز با یادگیری عمیق",
+      "slug": "deep-learning-brain-mri",
+      "categories": [
+        "AI Model Development",
+        "Data Analysis & Statistics"
+      ],
+      "categories_fa": [
+        "توسعه مدل‌های هوش مصنوعی",
+        "تحلیل داده و آمار"
+      ],
+      "description": "Utilizing advanced Deep Learning models (CNN, EfficientNet, ResNet, VGG16) to classify brain tumor MRI scans with high accuracy.",
+      "description_fa": "استفاده از مدل‌های پیشرفته یادگیری عمیق (CNN، EfficientNet، ResNet، VGG16) برای طبقه‌بندی تصاویر MRI تومور مغزی با دقت بالا.",
+      "image": "https://placehold.co/600x400.png",
+      "tags": [
+        "Deep Learning",
+        "TensorFlow",
+        "Keras",
+        "Python",
+        "Computer Vision",
+        "Brain MRI"
+      ],
+      "links": {
+        "github": "https://github.com/Emad211/Deep-Learning-for-Brain-MRI-Classification",
+        "live": ""
+      },
+      "showcaseType": "links",
+      "gallery": [],
+      "aiPromptContext": "",
+      "about": "This project explores various Deep Learning models for the critical task of Brain MRI Tumor Classification. Using the Brain Tumor MRI Scans dataset from Kaggle, multiple neural network architectures including custom CNNs, EfficientNet, ResNet, and VGG16 are implemented and compared to classify images into tumor and non-tumor categories accurately.",
+      "about_fa": "این پروژه به بررسی مدل‌های مختلف یادگیری عمیق برای وظیفه حیاتی طبقه‌بندی تومور در تصاویر MRI مغز می‌پردازد. با استفاده از مجموعه داده اسکن‌های MRI تومور مغزی از Kaggle، چندین معماری شبکه عصبی شامل CNN سفارشی، EfficientNet، ResNet و VGG16 پیاده‌سازی و مقایسه شده‌اند تا تصاویر را با دقت به دسته‌های دارای تومور و بدون تومور طبقه‌بندی کنند.",
+      "technical_details": "The implementation uses TensorFlow and Keras to build and train the models. Data is efficiently loaded and preprocessed using `image_dataset_from_directory`. Advanced training techniques like EarlyStopping, ReduceLROnPlateau, and ModelCheckpoint are applied for optimization, and TensorBoard is used for real-time monitoring. Performance is evaluated using Confusion Matrices and Classification Reports.",
+      "technical_details_fa": "پیاده‌سازی با استفاده از TensorFlow و Keras برای ساخت و آموزش مدل‌ها انجام شده است. داده‌ها با استفاده از `image_dataset_from_directory` به طور کارآمد بارگذاری و پیش‌پردازش می‌شوند. تکنیک‌های پیشرفته آموزشی مانند EarlyStopping، ReduceLROnPlateau و ModelCheckpoint برای بهینه‌سازی اعمال شده و از TensorBoard برای نظارت آنی بر فرآیند آموزش استفاده می‌شود. عملکرد با استفاده از ماتریس درهم‌ریختگی و گزارش طبقه‌بندی ارزیابی می‌گردد.",
+      "challenges": "A key challenge was to effectively compare the performance of different complex architectures on the given dataset. This required a systematic approach to training, fine-tuning, and evaluating each model under similar conditions to ensure a fair comparison. Another challenge was interpreting the model's decisions, which was addressed using visualization techniques like Grad-CAM.",
+      "challenges_fa": "یک چالش کلیدی، مقایسه مؤثر عملکرد معماری‌های پیچیده مختلف بر روی مجموعه داده موجود بود. این امر نیازمند یک رویکرد سیستماتیک برای آموزش، تنظیم دقیق و ارزیابی هر مدل تحت شرایط مشابه برای اطمینان از یک مقایسه منصفانه بود. چالش دیگر، تفسیر تصمیمات مدل بود که با استفاده از تکنیک‌های مصورسازی مانند Grad-CAM به آن پرداخته شد.",
+      "solution": "By implementing a structured workflow in a Jupyter Notebook, each model was trained and evaluated methodically. The results, including accuracy, loss, and confusion matrices, were analyzed to determine the best-performing architecture for this specific task. The use of Grad-CAM provided valuable insights into which regions of the MRI scans the models were focusing on, enhancing the explainability of the results.",
+      "solution_fa": "با پیاده‌سازی یک گردش کار ساختاریافته در یک نوتبوک جوپیتر، هر مدل به صورت روشمند آموزش و ارزیابی شد. نتایج، شامل دقت، خطا و ماتریس‌های درهم‌ریختگی، تحلیل شدند تا بهترین معماری برای این وظیفه خاص مشخص شود. استفاده از Grad-CAM بینش‌های ارزشمندی در مورد اینکه مدل‌ها بر روی کدام نواحی از اسکن‌های MRI تمرکز می‌کنند، فراهم آورد و قابلیت توضیح‌پذیری نتایج را افزایش داد.",
+      "code_snippet": "def build_model(base_model_class, input_shape=(224, 224, 3), num_classes=4, dropout_rate=0.3):\n    inputs = layers.Input(shape=input_shape)\n    base_model = base_model_class(include_top=False, input_tensor=inputs, weights='imagenet')\n    base_model.trainable = False\n    x = base_model.output\n    x = GlobalAveragePooling2D()(x)\n    x = BatchNormalization()(x)\n    x = Dropout(dropout_rate)(x)\n    outputs = Dense(num_classes, activation='softmax')(x)\n    model = Model(inputs, outputs)\n    return model",
+      "code_snippet_fa": "def build_model(base_model_class, input_shape=(224, 224, 3), num_classes=4, dropout_rate=0.3):\n    inputs = layers.Input(shape=input_shape)\n    base_model = base_model_class(include_top=False, input_tensor=inputs, weights='imagenet')\n    base_model.trainable = False\n    x = base_model.output\n    x = GlobalAveragePooling2D()(x)\n    x = BatchNormalization()(x)\n    x = Dropout(dropout_rate)(x)\n    outputs = Dense(num_classes, activation='softmax')(x)\n    model = Model(inputs, outputs)\n    return model"
+    },
     {
       "title": "AI-Powered E-commerce Platform",
       "title_fa": "پلتفرم فروشگاهی مجهز به هوش مصنوعی",
