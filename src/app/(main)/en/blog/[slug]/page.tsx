@@ -3,14 +3,12 @@ import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
-import React, { createElement, Fragment } from 'react';
+import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import rehypeReact from 'rehype-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -59,66 +57,22 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   };
 }
 
-const renderContent = (markdown: string) => {
+// Function to extract headings for TOC
+const extractHeadings = (markdown: string) => {
     const headings: { id: string; level: number; text: string }[] = [];
-    
-    const processor = unified()
-        .use(remarkParse)
-        .use(remarkRehype, { allowDangerousHtml: true })
-        .use(rehypeReact, {
-            createElement,
-            Fragment,
-            components: {
-                h1: (props: any) => {
-                    const text = props.children[0];
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                    headings.push({ id, level: 1, text });
-                    return <h1 id={id} className='font-headline scroll-mt-20' {...props} />;
-                },
-                h2: (props: any) => {
-                    const text = props.children[0];
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                    headings.push({ id, level: 2, text });
-                    return <h2 id={id} className='font-headline scroll-mt-20' {...props} />;
-                },
-                h3: (props: any) => {
-                    const text = props.children[0];
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                    headings.push({ id, level: 3, text });
-                    return <h3 id={id} className='font-headline scroll-mt-20' {...props} />;
-                },
-                h4: (props: any) => {
-                    const text = props.children[0];
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                    headings.push({ id, level: 4, text });
-                    return <h4 id={id} className='font-headline scroll-mt-20' {...props} />;
-                },
-                h5: (props: any) => {
-                    const text = props.children[0];
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                    headings.push({ id, level: 5, text });
-                    return <h5 id={id} className='font-headline scroll-mt-20' {...props} />;
-                },
-                h6: (props: any) => {
-                    const text = props.children[0];
-                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                    headings.push({ id, level: 6, text });
-                    return <h6 id={id} className='font-headline scroll-mt-20' {...props} />;
-                },
-                code: (props: any) => {
-                     const match = /language-(\w+)/.exec(props.className || '');
-                    if (match) {
-                        return <CodeBlock code={String(props.children).replace(/\n$/, '')} language={match[1]} />;
-                    }
-                    return <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props} />;
-                },
-                pre: (props: any) => <div {...props} />,
-            },
-        });
-
-    const content = processor.processSync(markdown).result;
-    return { headings, content };
+    const lines = markdown.split('\n');
+    lines.forEach(line => {
+        const match = line.match(/^(#+)\s+(.*)/);
+        if (match) {
+            const level = match[1].length;
+            const text = match[2];
+            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+            headings.push({ id, level, text });
+        }
+    });
+    return headings;
 };
+
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const { slug } = params;
@@ -129,7 +83,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         notFound();
     }
 
-    const { headings, content } = renderContent(post.content);
+    const headings = extractHeadings(post.content);
 
     return (
         <>
@@ -162,7 +116,53 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         )}
 
                         <div className="prose prose-invert prose-lg max-w-none">
-                            {content}
+                             <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    h1: ({node, ...props}) => {
+                                        const text = props.children?.toString() || '';
+                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                                        return <h1 id={id} className='font-headline scroll-mt-20' {...props} />;
+                                    },
+                                    h2: ({node, ...props}) => {
+                                        const text = props.children?.toString() || '';
+                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                                        return <h2 id={id} className='font-headline scroll-mt-20' {...props} />;
+                                    },
+                                    h3: ({node, ...props}) => {
+                                        const text = props.children?.toString() || '';
+                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                                        return <h3 id={id} className='font-headline scroll-mt-20' {...props} />;
+                                    },
+                                    h4: ({node, ...props}) => {
+                                        const text = props.children?.toString() || '';
+                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                                        return <h4 id={id} className='font-headline scroll-mt-20' {...props} />;
+                                    },
+                                    h5: ({node, ...props}) => {
+                                        const text = props.children?.toString() || '';
+                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                                        return <h5 id={id} className='font-headline scroll-mt-20' {...props} />;
+                                    },
+                                    h6: ({node, ...props}) => {
+                                        const text = props.children?.toString() || '';
+                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                                        return <h6 id={id} className='font-headline scroll-mt-20' {...props} />;
+                                    },
+                                    code({node, className, children, ...props}) {
+                                        const match = /language-(\w+)/.exec(className || '')
+                                        return match ? (
+                                            <CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} />
+                                        ) : (
+                                            <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
+                                                {children}
+                                            </code>
+                                        )
+                                    }
+                                }}
+                            >
+                                {post.content}
+                            </ReactMarkdown>
                         </div>
                     </article>
 
