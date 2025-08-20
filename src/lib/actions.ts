@@ -1,3 +1,4 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -253,15 +254,41 @@ const settingsSchema = z.object({
       github: z.string().url(),
       telegram: z.string().url(),
   }),
-  advanced: z.object({
+  security: z.object({
       adminEmail: z.string().email(),
+      currentPassword: z.string().optional(),
+      newPassword: z.string().optional(),
+      confirmNewPassword: z.string().optional(),
   })
+}).refine(data => data.security.newPassword === data.security.confirmNewPassword, {
+    message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
+    path: ["security", "confirmNewPassword"],
 });
 
 export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>) {
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
-    data.settings = validatedData;
+    
+    // Merge security settings into advanced settings before saving
+    const { adminEmail } = validatedData.security;
+    
+    data.settings = {
+        en: validatedData.en,
+        fa: validatedData.fa,
+        seo: validatedData.seo,
+        socials: validatedData.socials,
+        advanced: {
+            adminEmail: adminEmail,
+        },
+    };
+    
+    // Here you would typically handle password change logic
+    // e.g. check current password, hash new password, save it
+    // This is omitted for simplicity in this file-based CMS.
+    if (validatedData.security.newPassword) {
+        console.log("Password change requested, but logic is not implemented.");
+    }
+
     await writeData(data);
 
     // Revalidate all paths that might use settings

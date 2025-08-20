@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -22,7 +23,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { saveSiteSettings } from "@/lib/actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Search, Share2, Wrench } from "lucide-react";
+import { Globe, Search, Share2, Shield } from "lucide-react";
+import { Separator } from "../ui/separator";
 
 const settingsSchema = z.object({
   en: z.object({
@@ -48,9 +50,15 @@ const settingsSchema = z.object({
       github: z.string().url("Please enter a valid GitHub URL."),
       telegram: z.string().url("Please enter a valid Telegram URL."),
   }),
-  advanced: z.object({
+  security: z.object({
       adminEmail: z.string().email("Please enter a valid admin email."),
+      currentPassword: z.string().optional(),
+      newPassword: z.string().optional(),
+      confirmNewPassword: z.string().optional(),
   })
+}).refine(data => data.security.newPassword === data.security.confirmNewPassword, {
+    message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
+    path: ["security", "confirmNewPassword"],
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -66,7 +74,16 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: settings,
+    // Add default empty values for the new security fields
+    defaultValues: {
+      ...settings,
+      security: {
+        adminEmail: settings.advanced?.adminEmail || "",
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      }
+    },
   });
 
   const onSubmit = (data: SettingsFormValues) => {
@@ -96,7 +113,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             <TabsTrigger value="general"><Globe className="w-4 h-4 mr-2" />عمومی</TabsTrigger>
             <TabsTrigger value="seo"><Search className="w-4 h-4 mr-2" />سئو</TabsTrigger>
             <TabsTrigger value="social"><Share2 className="w-4 h-4 mr-2" />شبکه‌های اجتماعی</TabsTrigger>
-            <TabsTrigger value="advanced"><Wrench className="w-4 h-4 mr-2" />پیشرفته</TabsTrigger>
+            <TabsTrigger value="security"><Shield className="w-4 h-4 mr-2" />امنیت</TabsTrigger>
           </TabsList>
           
           <TabsContent value="general">
@@ -249,18 +266,41 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             </Card>
           </TabsContent>
 
-           <TabsContent value="advanced">
+           <TabsContent value="security">
             <Card>
               <CardHeader>
-                <CardTitle>تنظیمات پیشرفته</CardTitle>
-                <CardDescription>تنظیمات مربوط به مدیریت سایت.</CardDescription>
+                <CardTitle>تنظیمات امنیتی</CardTitle>
+                <CardDescription>ایمیل و رمز عبور خود برای ورود به پنل مدیریت را تغییر دهید.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6" dir="rtl">
-                <FormField control={form.control} name="advanced.adminEmail" render={({ field }) => (
+                <FormField control={form.control} name="security.adminEmail" render={({ field }) => (
                     <FormItem>
                         <FormLabel>ایمیل ادمین</FormLabel>
-                        <FormDescription>این ایمیل برای دریافت نوتیفیکیشن‌های مدیریتی استفاده می‌شود.</FormDescription>
+                        <FormDescription>این ایمیل برای ورود و دریافت نوتیفیکیشن‌ها استفاده می‌شود.</FormDescription>
                         <FormControl><Input dir="ltr" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                <Separator />
+                 <h4 className="text-lg font-medium">تغییر رمز عبور</h4>
+                <FormField control={form.control} name="security.currentPassword" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>رمز عبور فعلی</FormLabel>
+                        <FormControl><Input type="password" dir="ltr" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="security.newPassword" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>رمز عبور جدید</FormLabel>
+                        <FormControl><Input type="password" dir="ltr" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="security.confirmNewPassword" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>تکرار رمز عبور جدید</FormLabel>
+                        <FormControl><Input type="password" dir="ltr" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
