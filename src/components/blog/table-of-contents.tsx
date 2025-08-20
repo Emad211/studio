@@ -41,12 +41,16 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
     }
   }, [headings])
 
+  if (headings.length === 0) {
+    return null;
+  }
+
   return (
     <div className="sticky top-24">
-      <h3 className="font-headline text-lg font-semibold mb-4">On this page</h3>
+      <h3 className="font-headline text-lg font-semibold mb-4 lg:text-right">On this page</h3>
       <ul className="space-y-2">
         {headings.map((heading) => (
-          <li key={heading.id} style={{ paddingLeft: `${(heading.level - 2) * 1}rem` }}>
+          <li key={heading.id} className="lg:text-right" style={{ paddingRight: `${(heading.level - 1) * 1}rem` }}>
             <a
               href={`#${heading.id}`}
               className={cn(

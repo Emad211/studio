@@ -10,6 +10,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { List } from 'lucide-react';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -115,6 +117,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 />
                             </div>
                         )}
+
+                        <div className="lg:hidden mb-8">
+                            <Accordion type="single" collapsible>
+                                <AccordionItem value="toc">
+                                    <AccordionTrigger className="text-lg font-headline">
+                                        <div className='flex items-center gap-2'>
+                                            <List className="h-5 w-5" />
+                                            Table of Contents
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <TableOfContents headings={headings} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+
 
                         <div className="prose prose-invert prose-lg max-w-none">
                              <ReactMarkdown

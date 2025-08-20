@@ -10,6 +10,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { List } from 'lucide-react';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -91,7 +93,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <ReadingProgress />
             <div className="container py-12 md:py-20">
                 <div className="grid lg:grid-cols-4 gap-12">
-                    <aside className="lg:col-span-1 relative order-last lg:order-first">
+                    <aside className="hidden lg:block lg:col-span-1 relative order-last lg:order-first">
                         <TableOfContents headings={headings} />
                     </aside>
                     <article className="lg:col-span-3">
@@ -118,6 +120,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 />
                             </div>
                         )}
+
+                        <div className="lg:hidden mb-8">
+                             <Accordion type="single" collapsible>
+                                <AccordionItem value="toc">
+                                    <AccordionTrigger className="text-lg font-headline">
+                                        <div className='flex items-center gap-2'>
+                                            <List className="h-5 w-5" />
+                                            فهرست مطالب
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <TableOfContents headings={headings} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
 
                         <div className="prose prose-invert prose-lg max-w-none text-right">
                             <ReactMarkdown
