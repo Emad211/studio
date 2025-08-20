@@ -109,7 +109,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                             {children}
                                         </code>
                                     )
-                                }
+                                },
+                                img: ({ node, ...props }) => (
+                                    <div className="relative my-6 aspect-video rounded-lg overflow-hidden border">
+                                        <Image 
+                                            src={props.src || ""} 
+                                            alt={props.alt || "Image from blog post"} 
+                                            fill 
+                                            className="object-contain" 
+                                        />
+                                    </div>
+                                ),
                             }}
                         >
                             {post.content}

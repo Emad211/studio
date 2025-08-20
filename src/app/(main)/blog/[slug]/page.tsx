@@ -104,13 +104,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 code({node, className, children, ...props}) {
                                     const match = /language-(\w+)/.exec(className || '')
                                     return match ? (
-                                        <CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} />
+                                        <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
                                     ) : (
                                         <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
                                             {children}
                                         </code>
                                     )
-                                }
+                                },
+                                img: ({ node, ...props }) => (
+                                    <div className="relative my-6 aspect-video rounded-lg overflow-hidden border">
+                                        <Image 
+                                            src={props.src || ""} 
+                                            alt={props.alt || "Image from blog post"} 
+                                            fill 
+                                            className="object-contain" 
+                                        />
+                                    </div>
+                                ),
                             }}
                         >
                             {post.content_fa}
@@ -121,4 +131,3 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
     );
 }
-
