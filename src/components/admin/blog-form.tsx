@@ -37,6 +37,14 @@ import {
 } from "@/components/ui/dialog"
 import { generateBlogPost, BlogPostGeneratorInput } from "@/ai/flows/blog-post-generator-flow";
 import { Label } from "@/components/ui/label";
+import { MarkdownGuide } from "./markdown-guide";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
@@ -271,15 +279,17 @@ export function BlogForm({ post }: BlogFormProps) {
                                 name="content_fa"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>محتوای کامل (Markdown)</FormLabel>
+                                    <FormLabel>محتوای کامل (پشتیبانی از Markdown)</FormLabel>
                                     <FormControl>
                                         <Textarea placeholder="محتوای پست خود را اینجا بنویسید..." className="min-h-[400px] font-code" {...field} />
                                     </FormControl>
-                                     <FormDescription>می‌توانید از سینتکس مارک‌داون برای قالب‌بندی متن استفاده کنید.</FormDescription>
                                     <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                             <div className="pt-2">
+                                <MarkdownGuide />
+                             </div>
                         </TabsContent>
                         <TabsContent value="en-content" className="space-y-6 pt-6" dir="ltr">
                             <FormField
@@ -300,15 +310,17 @@ export function BlogForm({ post }: BlogFormProps) {
                                 name="content"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Full Content (Markdown)</FormLabel>
+                                    <FormLabel>Full Content (Markdown Supported)</FormLabel>
                                     <FormControl>
                                         <Textarea placeholder="Write your post content here..." className="min-h-[400px] font-code" {...field} />
                                     </FormControl>
-                                    <FormDescription>You can use Markdown syntax for formatting.</FormDescription>
                                     <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                             <div className="pt-2">
+                                <MarkdownGuide />
+                             </div>
                         </TabsContent>
                     </Tabs>
                 </CardContent>

@@ -27,6 +27,8 @@ import { Separator } from "../ui/separator";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Bot, Image as ImageIcon, Link } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { MarkdownGuide } from "./markdown-guide";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -71,74 +73,124 @@ const ShowcaseFields = ({ control }: { control: any }) => {
     });
   
     return (
-      <div className="space-y-8">
-        {showcaseType === 'links' && (
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <FormField
-                control={control}
-                name="github"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>لینک گیت‌هاب</FormLabel>
-                    <FormControl>
-                        <Input dir="ltr" placeholder="https://github.com/..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={control}
-                name="live"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>لینک پیش‌نمایش زنده</FormLabel>
-                    <FormControl>
-                        <Input dir="ltr" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            </div>
-        )}
-        {showcaseType === 'simulator' && (
+      <Card>
+        <CardHeader>
+            <CardTitle>ویترین پروژه</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-8">
             <FormField
             control={control}
-            name="gallery"
+            name="showcaseType"
             render={({ field }) => (
-                <FormItem>
-                <FormLabel>گالری تصاویر/GIF شبیه‌ساز</FormLabel>
-                <FormDescription>
-                    لیستی از URL های تصاویر یا GIF، که هر کدام با یک خط جدید از هم جدا شده‌اند.
-                </FormDescription>
+                <FormItem className="space-y-3">
+                <FormLabel>نوع ویترین را انتخاب کنید</FormLabel>
                 <FormControl>
-                    <Textarea dir="ltr" className="min-h-[150px] font-code" placeholder="https://.../image1.png\nhttps://.../animation.gif" {...field} />
+                    <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                    >
+                    <FormItem>
+                        <FormControl>
+                            <RadioGroupItem value="links" id="links" className="sr-only" />
+                        </FormControl>
+                        <Label htmlFor="links" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                            <Link className="mb-2 h-6 w-6" />
+                            لینک‌ها
+                        </Label>
+                    </FormItem>
+                    <FormItem>
+                        <FormControl>
+                            <RadioGroupItem value="simulator" id="simulator" className="sr-only" />
+                        </FormControl>
+                        <Label htmlFor="simulator" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                            <ImageIcon className="mb-2 h-6 w-6" />
+                            شبیه‌ساز (گالری)
+                        </Label>
+                    </FormItem>
+                    <FormItem>
+                        <FormControl>
+                            <RadioGroupItem value="ai_chatbot" id="ai_chatbot" className="sr-only" />
+                        </FormControl>
+                        <Label htmlFor="ai_chatbot" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                            <Bot className="mb-2 h-6 w-6" />
+                            چت‌بات AI
+                        </Label>
+                    </FormItem>
+                    </RadioGroup>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
             )}
             />
-        )}
-        {showcaseType === 'ai_chatbot' && (
-            <FormField
-            control={control}
-            name="aiPromptContext"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>متن زمینه برای چت‌بات هوش مصنوعی</FormLabel>
-                <FormDescription>
-                    این متنی است که به عنوان دانش پایه به ربات داده می‌شود تا به سوالات کاربران پاسخ دهد.
-                </FormDescription>
-                <FormControl>
-                    <Textarea className="min-h-[150px]" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
+            {showcaseType === 'links' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField
+                    control={control}
+                    name="github"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>لینک گیت‌هاب</FormLabel>
+                        <FormControl>
+                            <Input dir="ltr" placeholder="https://github.com/..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={control}
+                    name="live"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>لینک پیش‌نمایش زنده</FormLabel>
+                        <FormControl>
+                            <Input dir="ltr" placeholder="https://..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
             )}
-            />
-        )}
-      </div>
+            {showcaseType === 'simulator' && (
+                <FormField
+                control={control}
+                name="gallery"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>گالری تصاویر/GIF شبیه‌ساز</FormLabel>
+                    <FormDescription>
+                        لیستی از URL های تصاویر یا GIF، که هر کدام با یک خط جدید از هم جدا شده‌اند.
+                    </FormDescription>
+                    <FormControl>
+                        <Textarea dir="ltr" className="min-h-[150px] font-code" placeholder="https://.../image1.png\nhttps://.../animation.gif" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            )}
+            {showcaseType === 'ai_chatbot' && (
+                <FormField
+                control={control}
+                name="aiPromptContext"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>متن زمینه برای چت‌بات هوش مصنوعی</FormLabel>
+                    <FormDescription>
+                        این متنی است که به عنوان دانش پایه به ربات داده می‌شود تا به سوالات کاربران پاسخ دهد.
+                    </FormDescription>
+                    <FormControl>
+                        <Textarea className="min-h-[150px]" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            )}
+        </CardContent>
+      </Card>
     );
 };
 
@@ -208,347 +260,315 @@ export function ProjectForm({ project }: ProjectFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" dir="rtl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <FormField
-            control={form.control}
-            name="title_fa"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>عنوان فارسی</FormLabel>
-                <FormControl>
-                  <Input placeholder="عنوان پروژه..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>عنوان انگلیسی</FormLabel>
-                <FormControl>
-                  <Input dir="ltr" placeholder="Project Title..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>اسلاگ (Slug)</FormLabel>
-                 <FormDescription>
-                    یک شناسه منحصر به فرد انگلیسی برای آدرس پروژه.
-                </FormDescription>
-                <FormControl>
-                  <Input dir="ltr" placeholder="a-unique-english-slug" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        
-        <FormField
-            control={form.control}
-            name="categories"
-            render={() => (
-                <FormItem>
-                    <div className="mb-4">
-                        <FormLabel className="text-base">دسته‌بندی‌ها</FormLabel>
-                        <FormDescription>
-                           یک یا چند دسته‌بندی مرتبط با پروژه را انتخاب کنید.
-                        </FormDescription>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {services.map((item) => (
-                        <FormField
-                        key={item.title}
+        <Card>
+            <CardHeader>
+                <CardTitle>اطلاعات اصلی پروژه</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField
                         control={form.control}
-                        name="categories"
-                        render={({ field }) => {
-                            return (
-                            <FormItem
+                        name="title_fa"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>عنوان فارسی</FormLabel>
+                            <FormControl>
+                            <Input placeholder="عنوان پروژه..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>عنوان انگلیسی</FormLabel>
+                            <FormControl>
+                            <Input dir="ltr" placeholder="Project Title..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                </div>
+                <FormField
+                    control={form.control}
+                    name="slug"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>اسلاگ (Slug)</FormLabel>
+                        <FormDescription>
+                            یک شناسه منحصر به فرد انگلیسی برای آدرس پروژه.
+                        </FormDescription>
+                        <FormControl>
+                        <Input dir="ltr" placeholder="a-unique-english-slug" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                
+                <FormField
+                    control={form.control}
+                    name="categories"
+                    render={() => (
+                        <FormItem>
+                            <div className="mb-4">
+                                <FormLabel className="text-base">دسته‌بندی‌ها</FormLabel>
+                                <FormDescription>
+                                یک یا چند دسته‌بندی مرتبط با پروژه را انتخاب کنید.
+                                </FormDescription>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {services.map((item) => (
+                                <FormField
                                 key={item.title}
-                                className="flex flex-row items-start space-x-0 space-x-reverse space-y-0"
-                            >
-                                <FormControl>
-                                <Checkbox
-                                    checked={field.value?.includes(item.title)}
-                                    onCheckedChange={(checked) => {
-                                    return checked
-                                        ? field.onChange([...(field.value || []), item.title])
-                                        : field.onChange(
-                                            (field.value || [])?.filter(
-                                            (value) => value !== item.title
-                                            )
-                                        )
-                                    }}
+                                control={form.control}
+                                name="categories"
+                                render={({ field }) => {
+                                    return (
+                                    <FormItem
+                                        key={item.title}
+                                        className="flex flex-row items-start space-x-0 space-x-reverse space-y-0"
+                                    >
+                                        <FormControl>
+                                        <Checkbox
+                                            checked={field.value?.includes(item.title)}
+                                            onCheckedChange={(checked) => {
+                                            return checked
+                                                ? field.onChange([...(field.value || []), item.title])
+                                                : field.onChange(
+                                                    (field.value || [])?.filter(
+                                                    (value) => value !== item.title
+                                                    )
+                                                )
+                                            }}
+                                        />
+                                        </FormControl>
+                                        <FormLabel className="font-normal mr-2">
+                                        {item.title}
+                                        </FormLabel>
+                                    </FormItem>
+                                    )
+                                }}
                                 />
-                                </FormControl>
-                                <FormLabel className="font-normal mr-2">
-                                {item.title}
-                                </FormLabel>
-                            </FormItem>
-                            )
-                        }}
-                        />
-                    ))}
-                    </div>
+                            ))}
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                
+                <FormField
+                control={form.control}
+                name="description_fa"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>توضیحات کوتاه فارسی</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="توضیحاتی که در کارت پروژه نمایش داده می‌شود..." {...field} />
+                    </FormControl>
                     <FormMessage />
-                </FormItem>
-            )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="description_fa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>توضیحات کوتاه فارسی</FormLabel>
-              <FormControl>
-                <Textarea placeholder="توضیحاتی که در کارت پروژه نمایش داده می‌شود..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>توضیحات کوتاه انگلیسی</FormLabel>
-              <FormControl>
-                <Textarea dir="ltr" placeholder="A short description for the project card..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>URL تصویر اصلی</FormLabel>
-                <FormControl>
-                    <Input dir="ltr" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="tags"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>تگ‌ها (جدا شده با ویرگول)</FormLabel>
-                <FormControl>
-                    <Input dir="ltr" placeholder="Next.js, AI, ..." {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-        </div>
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>توضیحات کوتاه انگلیسی</FormLabel>
+                    <FormControl>
+                        <Textarea dir="ltr" placeholder="A short description for the project card..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>URL تصویر اصلی</FormLabel>
+                        <FormControl>
+                            <Input dir="ltr" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>تگ‌ها (جدا شده با ویرگول)</FormLabel>
+                        <FormControl>
+                            <Input dir="ltr" placeholder="Next.js, AI, ..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+            </CardContent>
+        </Card>
 
-        <Separator />
-        <h3 className="text-xl font-semibold">ویترین پروژه</h3>
-        <FormField
-          control={form.control}
-          name="showcaseType"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>نوع ویترین را انتخاب کنید</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                >
-                  <FormItem>
-                    <FormControl>
-                        <RadioGroupItem value="links" id="links" className="sr-only" />
-                    </FormControl>
-                    <Label htmlFor="links" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                        <Link className="mb-2 h-6 w-6" />
-                        لینک‌ها
-                    </Label>
-                  </FormItem>
-                  <FormItem>
-                    <FormControl>
-                        <RadioGroupItem value="simulator" id="simulator" className="sr-only" />
-                    </FormControl>
-                     <Label htmlFor="simulator" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                        <ImageIcon className="mb-2 h-6 w-6" />
-                        شبیه‌ساز (گالری)
-                    </Label>
-                  </FormItem>
-                  <FormItem>
-                    <FormControl>
-                        <RadioGroupItem value="ai_chatbot" id="ai_chatbot" className="sr-only" />
-                    </FormControl>
-                    <Label htmlFor="ai_chatbot" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                        <Bot className="mb-2 h-6 w-6" />
-                        چت‌بات AI
-                    </Label>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <ShowcaseFields control={form.control} />
 
+        <Card>
+            <CardHeader>
+                <CardTitle>محتوای صفحه پروژه</CardTitle>
+                <FormDescription>
+                    این محتوا در صفحه اختصاصی پروژه نمایش داده می‌شود و از Markdown پشتیبانی می‌کند.
+                </FormDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                <FormField
+                control={form.control}
+                name="about_fa"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>درباره پروژه (فارسی)</FormLabel>
+                    <FormControl>
+                        <Textarea className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="about"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>About Project (English)</FormLabel>
+                    <FormControl>
+                        <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                
+                <FormField
+                control={form.control}
+                name="technical_details_fa"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>جزئیات فنی (فارسی)</FormLabel>
+                    <FormControl>
+                        <Textarea className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="technical_details"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Technical Details (English)</FormLabel>
+                    <FormControl>
+                        <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="challenges_fa"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>چالش‌ها (فارسی)</FormLabel>
+                    <FormControl>
+                        <Textarea className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="challenges"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Challenges (English)</FormLabel>
+                    <FormControl>
+                        <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="solution_fa"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>راه‌حل (فارسی)</FormLabel>
+                    <FormControl>
+                        <Textarea className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="solution"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Solution (English)</FormLabel>
+                    <FormControl>
+                        <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
 
-        <Separator />
-        <h3 className="text-xl font-semibold">محتوای صفحه پروژه (پشتیبانی از Markdown)</h3>
-        
-        <FormField
-          control={form.control}
-          name="about_fa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>درباره پروژه (فارسی)</FormLabel>
-              <FormControl>
-                <Textarea className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="about"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>About Project (English)</FormLabel>
-              <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="technical_details_fa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>جزئیات فنی (فارسی)</FormLabel>
-              <FormControl>
-                <Textarea className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="technical_details"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Technical Details (English)</FormLabel>
-              <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="challenges_fa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>چالش‌ها (فارسی)</FormLabel>
-              <FormControl>
-                <Textarea className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="challenges"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Challenges (English)</FormLabel>
-              <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="solution_fa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>راه‌حل (فارسی)</FormLabel>
-              <FormControl>
-                <Textarea className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-         <FormField
-          control={form.control}
-          name="solution"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Solution (English)</FormLabel>
-              <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormField
+                control={form.control}
+                name="code_snippet_fa"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>قطعه کد نمایشی (فارسی)</FormLabel>
+                    <FormDescription>می‌توانید از متغیر &#123;project.title_fa&#125; در اینجا استفاده کنید.</FormDescription>
+                    <FormControl>
+                        <Textarea className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="code_snippet"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Code Snippet (English)</FormLabel>
+                    <FormDescription>You can use the &#123;project.title&#125; variable here.</FormDescription>
+                    <FormControl>
+                        <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                 <MarkdownGuide />
+            </CardContent>
+        </Card>
 
-        <FormField
-          control={form.control}
-          name="code_snippet_fa"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>قطعه کد نمایشی (فارسی)</FormLabel>
-              <FormDescription>می‌توانید از متغیر &#123;project.title_fa&#125; در اینجا استفاده کنید.</FormDescription>
-              <FormControl>
-                <Textarea className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="code_snippet"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Code Snippet (English)</FormLabel>
-              <FormDescription>You can use the &#123;project.title&#125; variable here.</FormDescription>
-              <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "در حال ذخیره..." : "ذخیره پروژه"}
+        <Button type="submit" disabled={isPending} size="lg">
+          {isPending ? "در حال ذخیره..." : (project ? "به‌روزرسانی پروژه" : "ایجاد پروژه")}
         </Button>
       </form>
     </Form>
