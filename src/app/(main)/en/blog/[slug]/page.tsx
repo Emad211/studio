@@ -2,7 +2,6 @@
 import { notFound } from 'next/navigation';
 import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
-import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
@@ -10,8 +9,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { List } from 'lucide-react';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -60,23 +57,6 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   };
 }
 
-// Function to extract headings for TOC
-const extractHeadings = (markdown: string) => {
-    const headings: { id: string; level: number; text: string }[] = [];
-    const lines = markdown.split('\n');
-    lines.forEach((line, index) => {
-        const match = line.match(/^(#+)\s+(.*)/);
-        if (match) {
-            const level = match[1].length;
-            const text = match[2];
-            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') + '-' + index;
-            headings.push({ id, level, text });
-        }
-    });
-    return headings;
-};
-
-
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const { slug } = params;
     const blogPosts = await getBlogPosts();
@@ -86,110 +66,56 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         notFound();
     }
 
-    const headings = extractHeadings(post.content);
-
     return (
         <>
             <ReadingProgress />
             <div className="container py-12 md:py-20">
-                <div className="grid lg:grid-cols-4 gap-8 md:gap-12">
-                    <article className="lg:col-span-3">
-                        <div className="mb-8">
-                            <h1 className="text-3xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
-                            <p className="mt-2 text-muted-foreground">
-                                Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                            </p>
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {post.tags.map((tag) => (
-                                    <Badge key={tag} variant="secondary">{tag}</Badge>
-                                ))}
-                            </div>
+                <article className="max-w-3xl mx-auto">
+                    <div className="mb-8 text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title}</h1>
+                        <p className="mt-4 text-muted-foreground">
+                            Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
+                        <div className="mt-6 flex flex-wrap gap-2 justify-center">
+                            {post.tags.map((tag) => (
+                                <Badge key={tag} variant="secondary">{tag}</Badge>
+                            ))}
                         </div>
+                    </div>
 
-                        {post.featured_image && (
-                            <div className="relative aspect-video mb-12 rounded-lg overflow-hidden border">
-                                <Image 
-                                    src={post.featured_image} 
-                                    alt={post.title} 
-                                    fill 
-                                    className="object-cover"
-                                    data-ai-hint="post illustration"
-                                />
-                            </div>
-                        )}
-
-                        <div className="lg:hidden mb-8">
-                            <Accordion type="single" collapsible>
-                                <AccordionItem value="toc">
-                                    <AccordionTrigger className="text-lg font-headline">
-                                        <div className='flex items-center gap-2'>
-                                            <List className="h-5 w-5" />
-                                            Table of Contents
-                                        </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent>
-                                        <TableOfContents headings={headings} />
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
+                    {post.featured_image && (
+                        <div className="relative aspect-video mb-12 rounded-lg overflow-hidden border">
+                            <Image 
+                                src={post.featured_image} 
+                                alt={post.title} 
+                                fill 
+                                className="object-cover"
+                                data-ai-hint="post illustration"
+                                priority
+                            />
                         </div>
+                    )}
 
-
-                        <div className="prose prose-invert prose-lg max-w-none">
-                             <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                    h1: ({node, ...props}) => {
-                                        const text = props.children?.toString() || '';
-                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                                        return <h1 id={id} className='font-headline scroll-mt-20' {...props} />;
-                                    },
-                                    h2: ({node, ...props}) => {
-                                        const text = props.children?.toString() || '';
-                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                                        return <h2 id={id} className='font-headline scroll-mt-20' {...props} />;
-                                    },
-                                    h3: ({node, ...props}) => {
-                                        const text = props.children?.toString() || '';
-                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                                        return <h3 id={id} className='font-headline scroll-mt-20' {...props} />;
-                                    },
-                                    h4: ({node, ...props}) => {
-                                        const text = props.children?.toString() || '';
-                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                                        return <h4 id={id} className='font-headline scroll-mt-20' {...props} />;
-                                    },
-                                    h5: ({node, ...props}) => {
-                                        const text = props.children?.toString() || '';
-                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                                        return <h5 id={id} className='font-headline scroll-mt-20' {...props} />;
-                                    },
-                                    h6: ({node, ...props}) => {
-                                        const text = props.children?.toString() || '';
-                                        const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-                                        return <h6 id={id} className='font-headline scroll-mt-20' {...props} />;
-                                    },
-                                    code({node, className, children, ...props}) {
-                                        const match = /language-(\w+)/.exec(className || '')
-                                        return match ? (
-                                            <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
-                                        ) : (
-                                            <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
-                                                {children}
-                                            </code>
-                                        )
-                                    }
-                                }}
-                            >
-                                {post.content}
-                            </ReactMarkdown>
-                        </div>
-                    </article>
-
-                    <aside className="hidden lg:block lg:col-span-1 relative">
-                        <TableOfContents headings={headings} />
-                    </aside>
-                </div>
+                    <div className="prose prose-invert prose-lg max-w-none">
+                         <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                                code({node, className, children, ...props}) {
+                                    const match = /language-(\w+)/.exec(className || '')
+                                    return match ? (
+                                        <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
+                                    ) : (
+                                        <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
+                                            {children}
+                                        </code>
+                                    )
+                                }
+                            }}
+                        >
+                            {post.content}
+                        </ReactMarkdown>
+                    </div>
+                </article>
             </div>
         </>
     );
