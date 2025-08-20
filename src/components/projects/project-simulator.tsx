@@ -1,6 +1,6 @@
+
 "use client"
 
-import Image from "next/image"
 import {
   Carousel,
   CarouselContent,
@@ -22,21 +22,16 @@ export function ProjectSimulator({ images, lang = 'en' }: ProjectSimulatorProps)
   }
   return (
     <div className="mt-12 w-full">
-       <div className="text-center mb-6">
-        <h3 className="font-headline text-2xl font-semibold">{t.title}</h3>
-        <p className="text-muted-foreground">{t.subtitle}</p>
-      </div>
       <Carousel className="w-full max-w-3xl mx-auto">
         <CarouselContent>
           {images.map((src, index) => (
             <CarouselItem key={index}>
               <div className="p-1">
-                <div className="aspect-video relative overflow-hidden rounded-lg border">
-                   <Image
+                <div className="aspect-video relative overflow-hidden rounded-lg border bg-muted">
+                   <img
                     src={src}
-                    alt={`Project screenshot ${index + 1}`}
-                    fill
-                    className="object-contain"
+                    alt={`Project screenshot or GIF ${index + 1}`}
+                    className="w-full h-full object-contain"
                     data-ai-hint="app screenshot"
                   />
                 </div>

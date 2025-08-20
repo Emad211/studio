@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation"
 import { getProjects, getSiteSettings } from "@/lib/actions"
 import Image from "next/image"
@@ -11,7 +12,8 @@ import { ProjectAIChat } from "@/components/projects/project-ai-chat"
 import type { Project } from "@/lib/data"
 import { Separator } from "@/components/ui/separator"
 import type { Metadata } from 'next';
-
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -82,6 +84,36 @@ const Showcase = ({ project }: { project: Project }) => {
   )
 }
 
+const MarkdownContent = ({ content }: { content: string }) => (
+    <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+            code({node, className, children, ...props}) {
+                const match = /language-(\w+)/.exec(className || '')
+                return match ? (
+                    <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
+                ) : (
+                    <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
+                        {children}
+                    </code>
+                )
+            },
+            img: ({ node, ...props }) => (
+                <div className="relative my-6 aspect-video rounded-lg overflow-hidden border">
+                    <Image 
+                        src={props.src || ""} 
+                        alt={props.alt || "Image from project details"} 
+                        fill 
+                        className="object-contain" 
+                    />
+                </div>
+            ),
+        }}
+    >
+        {content}
+    </ReactMarkdown>
+);
+
 export default async function ProjectDetailsPage({ params }: { params: { slug: string } }) {
   const projects = await getProjects();
   const project = projects.find((p) => p.slug === params.slug)
@@ -117,22 +149,27 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
 
         <div className="prose prose-invert prose-lg mx-auto max-w-none">
           <h2 className="font-headline text-3xl text-foreground">About the Project</h2>
-          <p>{project.about}</p>
+          <MarkdownContent content={project.about} />
 
           <h3 className="font-headline text-2xl text-foreground">Technical Details</h3>
-          <p>{project.technical_details}</p>
+          <MarkdownContent content={project.technical_details} />
 
-          <CodeBlock code={exampleCode} language="python" />
+          <div dir="ltr">
+            <CodeBlock code={exampleCode} language="python" />
+          </div>
 
           <h3 className="font-headline text-2xl text-foreground">Challenges and Solutions</h3>
-          <p>{project.challenges}</p>
-          <p>{project.solution}</p>
+           <MarkdownContent content={project.challenges} />
+           <MarkdownContent content={project.solution} />
         </div>
         
         <Separator className="my-16" />
 
         <div className="space-y-8">
-            <h2 className="text-3xl font-bold font-headline text-center text-primary">Project Showcase</h2>
+            <div className="text-center">
+                <h2 className="text-3xl font-bold font-headline text-primary">Project Showcase</h2>
+                <p className="mt-2 text-muted-foreground">Explore the project through the interactive showcase below.</p>
+            </div>
             <Showcase project={project} />
         </div>
 

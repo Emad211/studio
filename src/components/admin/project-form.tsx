@@ -108,12 +108,12 @@ const ShowcaseFields = ({ control }: { control: any }) => {
             name="gallery"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>گالری تصاویر شبیه‌ساز</FormLabel>
+                <FormLabel>گالری تصاویر/GIF شبیه‌ساز</FormLabel>
                 <FormDescription>
-                    لیستی از URL های تصاویر، که هر کدام با یک خط جدید از هم جدا شده‌اند.
+                    لیستی از URL های تصاویر یا GIF، که هر کدام با یک خط جدید از هم جدا شده‌اند.
                 </FormDescription>
                 <FormControl>
-                    <Textarea dir="ltr" className="min-h-[150px]" placeholder="https://.../image1.png\nhttps://.../image2.png" {...field} />
+                    <Textarea dir="ltr" className="min-h-[150px] font-code" placeholder="https://.../image1.png\nhttps://.../animation.gif" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -180,8 +180,8 @@ export function ProjectForm({ project }: ProjectFormProps) {
           challenges_fa: "",
           solution: "",
           solution_fa: "",
-          code_snippet: "",
-          code_snippet_fa: "",
+          code_snippet: "print('Hello from {project.title}!')",
+          code_snippet_fa: "print('درود از طرف {project.title_fa}!')",
         },
   });
 
@@ -410,7 +410,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
 
 
         <Separator />
-        <h3 className="text-xl font-semibold">محتوای صفحه پروژه</h3>
+        <h3 className="text-xl font-semibold">محتوای صفحه پروژه (پشتیبانی از Markdown)</h3>
         
         <FormField
           control={form.control}
@@ -419,7 +419,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>درباره پروژه (فارسی)</FormLabel>
               <FormControl>
-                <Textarea className="min-h-[120px]" {...field} />
+                <Textarea className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -432,7 +432,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>About Project (English)</FormLabel>
               <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -446,7 +446,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>جزئیات فنی (فارسی)</FormLabel>
               <FormControl>
-                <Textarea className="min-h-[120px]" {...field} />
+                <Textarea className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -459,7 +459,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>Technical Details (English)</FormLabel>
               <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -472,7 +472,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>چالش‌ها (فارسی)</FormLabel>
               <FormControl>
-                <Textarea className="min-h-[120px]" {...field} />
+                <Textarea className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -485,7 +485,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>Challenges (English)</FormLabel>
               <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -498,7 +498,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>راه‌حل (فارسی)</FormLabel>
               <FormControl>
-                <Textarea className="min-h-[120px]" {...field} />
+                <Textarea className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -511,7 +511,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             <FormItem>
               <FormLabel>Solution (English)</FormLabel>
               <FormControl>
-                <Textarea dir="ltr" className="min-h-[120px]" {...field} />
+                <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -523,7 +523,8 @@ export function ProjectForm({ project }: ProjectFormProps) {
           name="code_snippet_fa"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>قطعه کد (فارسی/نمایشی)</FormLabel>
+              <FormLabel>قطعه کد نمایشی (فارسی)</FormLabel>
+              <FormDescription>می‌توانید از متغیر &#123;project.title_fa&#125; در اینجا استفاده کنید.</FormDescription>
               <FormControl>
                 <Textarea className="min-h-[120px] font-code" {...field} />
               </FormControl>
@@ -537,6 +538,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Code Snippet (English)</FormLabel>
+              <FormDescription>You can use the &#123;project.title&#125; variable here.</FormDescription>
               <FormControl>
                 <Textarea dir="ltr" className="min-h-[120px] font-code" {...field} />
               </FormControl>
