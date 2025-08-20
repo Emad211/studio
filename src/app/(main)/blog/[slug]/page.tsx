@@ -9,6 +9,9 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { calculateReadingTime } from '@/lib/reading-time';
+import { Clock } from 'lucide-react';
+import { SocialShare } from '@/components/ui/social-share';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -66,6 +69,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     if (!post || post.status === 'draft') {
         notFound();
     }
+    
+    const readingTime = calculateReadingTime(post.content_fa);
+    const settings = await getSiteSettings();
+    const shareUrl = `${settings.seo.siteURL}/blog/${slug}`;
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -74,9 +81,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <article className="max-w-3xl mx-auto">
                      <div className="mb-8 text-center">
                         <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title_fa}</h1>
-                        <p className="mt-4 text-muted-foreground">
-                            منتشر شده در {new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </p>
+                         <div className="mt-4 text-muted-foreground flex items-center justify-center gap-x-4 gap-y-2 flex-wrap">
+                            <span>
+                                منتشر شده در {new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </span>
+                            <span className='flex items-center gap-1.5'>
+                                <Clock className="w-4 h-4" />
+                                <span>زمان مطالعه: {readingTime} دقیقه</span>
+                            </span>
+                        </div>
                         <div className="mt-6 flex flex-wrap gap-2 justify-center">
                             {post.tags.map((tag) => (
                                 <Badge key={tag} variant="secondary">{tag}</Badge>
@@ -125,6 +138,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         >
                             {post.content_fa}
                         </ReactMarkdown>
+                    </div>
+
+                    <div className="mt-16">
+                        <SocialShare url={shareUrl} title={post.title_fa} lang="fa" />
                     </div>
                 </article>
             </div>

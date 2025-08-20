@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import type { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { SocialShare } from "@/components/ui/social-share"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -123,6 +124,8 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
   }
 
   const exampleCode = project.code_snippet.replace("{project.title}", project.title);
+  const settings = await getSiteSettings();
+  const shareUrl = `${settings.seo.siteURL}/en/projects/${project.slug}`;
 
   return (
     <div className="container py-12 md:py-20">
@@ -171,6 +174,10 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
                 <p className="mt-2 text-muted-foreground">Explore the project through the interactive showcase below.</p>
             </div>
             <Showcase project={project} />
+        </div>
+
+        <div className="mt-16">
+            <SocialShare url={shareUrl} title={project.title} lang="en" />
         </div>
 
       </div>

@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import type { Metadata } from "next"
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { SocialShare } from "@/components/ui/social-share"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -122,6 +123,8 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
   }
 
   const exampleCode = project.code_snippet_fa.replace("{project.title_fa}", project.title_fa);
+  const settings = await getSiteSettings();
+  const shareUrl = `${settings.seo.siteURL}/projects/${project.slug}`;
 
   return (
     <div className="container py-12 md:py-20">
@@ -170,6 +173,10 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
                 <p className="mt-2 text-muted-foreground">پروژه را از طریق ویترین تعاملی زیر کاوش کنید.</p>
             </div>
             <Showcase project={project} />
+        </div>
+
+        <div className="mt-16">
+            <SocialShare url={shareUrl} title={project.title_fa} lang="fa" />
         </div>
         
       </div>
