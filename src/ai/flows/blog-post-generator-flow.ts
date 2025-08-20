@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that generates a full blog post from a given context.
@@ -47,11 +48,11 @@ Title for the post:
 "{{{title}}}"
 
 Based on the context and title, generate the following:
-1.  **Persian Content (`content_fa`):** The full blog post in Persian.
-2.  **English Content (`content`):** The full blog post in English.
-3.  **Tags (`tags`):** A list of 3-5 relevant technical tags (e.g., 'Deep Learning', 'Next.js').
-4.  **Persian Meta Description (`meta_description_fa`):** An SEO-optimized summary in Persian, about 155 characters.
-5.  **English Meta Description (`meta_description_en`):** An SEO-optimized summary in English, about 155 characters.
+1.  **Persian Content (\`content_fa\`):** The full blog post in Persian.
+2.  **English Content (\`content\`):** The full blog post in English.
+3.  **Tags (\`tags\`):** A list of 3-5 relevant technical tags (e.g., 'Deep Learning', 'Next.js').
+4.  **Persian Meta Description (\`meta_description_fa\`):** An SEO-optimized summary in Persian, about 155 characters.
+5.  **English Meta Description (\`meta_description_en\`):** An SEO-optimized summary in English, about 155 characters.
 
 Ensure the tone is professional yet accessible. The content should be technically accurate and provide real value to the reader.
 `,
