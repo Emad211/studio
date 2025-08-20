@@ -1,7 +1,18 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { getSiteSettings } from '@/lib/actions';
+import { Fira_Code, Inter } from 'next/font/google'
+import { cn } from '@/lib/utils';
 
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  variable: '--font-fira-code',
+})
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -51,15 +62,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl" className="dark" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="font-body antialiased transition-colors duration-300 bg-background text-foreground">
+      <body className={cn(
+          "font-body antialiased transition-colors duration-300 bg-background text-foreground",
+          inter.variable,
+          firaCode.variable
+      )}>
         {children}
       </body>
     </html>
