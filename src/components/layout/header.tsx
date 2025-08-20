@@ -13,6 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { LanguageSwitcher } from "./language-switcher"
+import { useState, useEffect } from "react"
 
 const navLinks = [
   { href: "/", label: "خانه", icon: Home },
@@ -28,8 +29,17 @@ const enNavLinks = [
 
 export function Header() {
   const pathname = usePathname()
-  const isEn = pathname.startsWith('/en')
+  const [isClient, setIsClient] = useState(false)
 
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (!isClient) {
+    return null;
+  }
+
+  const isEn = pathname.startsWith('/en')
   const currentNavLinks = isEn ? enNavLinks : navLinks
   const homeLink = isEn ? "/en" : "/";
 
