@@ -39,4 +39,25 @@
   body {
     @apply text-foreground;
   }
+  .prose {
+    @apply text-foreground;
+  }
+  .prose a {
+      @apply text-primary hover:text-primary/80;
+  }
+  .prose strong {
+      @apply text-foreground;
+  }
+  .prose blockquote {
+      @apply border-l-4 border-primary pl-4 text-muted-foreground;
+  }
+  .prose code {
+      @apply bg-muted text-primary rounded px-1.5 py-1 font-code;
+  }
+  .prose ul, .prose ol {
+      @apply text-muted-foreground;
+  }
+   .prose ul > li::before {
+      @apply bg-primary;
+  }
 }

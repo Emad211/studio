@@ -3,10 +3,14 @@ import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
-import React from 'react';
+import React, { createElement, Fragment } from 'react';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeReact from 'rehype-react';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -55,48 +59,65 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   };
 }
 
-
-const parseMarkdown = (markdown: string) => {
+const renderContent = (markdown: string) => {
     const headings: { id: string; level: number; text: string }[] = [];
-    const content = [];
+    
+    const processor = unified()
+        .use(remarkParse)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeReact, {
+            createElement,
+            Fragment,
+            components: {
+                h1: (props: any) => {
+                    const text = props.children[0];
+                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    headings.push({ id, level: 1, text });
+                    return <h1 id={id} className='font-headline scroll-mt-20' {...props} />;
+                },
+                h2: (props: any) => {
+                    const text = props.children[0];
+                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    headings.push({ id, level: 2, text });
+                    return <h2 id={id} className='font-headline scroll-mt-20' {...props} />;
+                },
+                h3: (props: any) => {
+                    const text = props.children[0];
+                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    headings.push({ id, level: 3, text });
+                    return <h3 id={id} className='font-headline scroll-mt-20' {...props} />;
+                },
+                h4: (props: any) => {
+                    const text = props.children[0];
+                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    headings.push({ id, level: 4, text });
+                    return <h4 id={id} className='font-headline scroll-mt-20' {...props} />;
+                },
+                h5: (props: any) => {
+                    const text = props.children[0];
+                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    headings.push({ id, level: 5, text });
+                    return <h5 id={id} className='font-headline scroll-mt-20' {...props} />;
+                },
+                h6: (props: any) => {
+                    const text = props.children[0];
+                    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    headings.push({ id, level: 6, text });
+                    return <h6 id={id} className='font-headline scroll-mt-20' {...props} />;
+                },
+                code: (props: any) => {
+                    if (props.className) {
+                        const language = props.className.replace('language-', '');
+                        return <CodeBlock code={props.children} language={language} />;
+                    }
+                    return <code {...props} />;
+                },
+                pre: (props: any) => <div {...props} />, // Prevent nested <pre>
+            },
+        });
 
-    const lines = markdown.trim().split('\n');
-    let inCodeBlock = false;
-    let codeBlockContent = '';
-    let codeBlockLang = '';
-
-    for (const line of lines) {
-        if (line.startsWith('```')) {
-            if (inCodeBlock) {
-                content.push(<CodeBlock key={content.length} code={codeBlockContent.trim()} language={codeBlockLang} />);
-                inCodeBlock = false;
-                codeBlockContent = '';
-                codeBlockLang = '';
-            } else {
-                inCodeBlock = true;
-                codeBlockLang = line.substring(3);
-            }
-            continue;
-        }
-
-        if (inCodeBlock) {
-            codeBlockContent += line + '\n';
-            continue;
-        }
-
-        const headingMatch = line.match(/^(#+)\s(.*)/);
-        if (headingMatch) {
-            const level = headingMatch[1].length;
-            const text = headingMatch[2];
-            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-            headings.push({ id, level, text });
-            content.push(React.createElement(`h${level}`, { key: id, id, className: 'font-headline scroll-mt-20' }, text));
-        } else if (line.trim() !== '') {
-            content.push(<p key={content.length}>{line}</p>);
-        }
-    }
-
-    return { headings, content: <>{content}</> };
+    const content = processor.processSync(markdown).result;
+    return { headings, content };
 };
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -108,7 +129,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         notFound();
     }
 
-    const { headings, content } = parseMarkdown(post.content);
+    const { headings, content } = renderContent(post.content);
 
     return (
         <>
