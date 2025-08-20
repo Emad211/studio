@@ -5,7 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { BlogPost } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SeoPreview } from "./seo-preview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { generateBlogPost, BlogPostGeneratorInput } from "@/ai/flows/blog-post-generator-flow";
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
@@ -51,6 +61,101 @@ type BlogPostFormValues = z.infer<typeof blogPostSchema>;
 
 interface BlogFormProps {
   post?: BlogPost;
+}
+
+function AiGeneratorDialog({ setFormValues }: { setFormValues: (data: any) => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [context, setContext] = useState("");
+    const [title, setTitle] = useState("");
+    const { toast } = useToast();
+
+    const handleGenerate = async () => {
+        if (!context.trim() || !title.trim()) {
+            toast({
+                variant: "destructive",
+                title: "ورودی ناقص",
+                description: "لطفاً هم موضوع و هم عنوان را برای تولید محتوا وارد کنید.",
+            });
+            return;
+        }
+
+        setIsGenerating(true);
+        try {
+            const input: BlogPostGeneratorInput = { context, title };
+            const result = await generateBlogPost(input);
+            setFormValues({
+                ...result,
+                tags: result.tags.join(", "),
+            });
+            toast({
+                title: "محتوا تولید شد",
+                description: "فیلدهای فرم با محتوای تولید شده توسط هوش مصنوعی به‌روز شد.",
+            });
+            setIsOpen(false);
+        } catch (error) {
+            console.error("Failed to generate blog post:", error);
+            toast({
+                variant: "destructive",
+                title: "خطا در تولید محتوا",
+                description: "مشکلی در ارتباط با سرویس هوش مصنوعی پیش آمد. لطفاً دوباره تلاش کنید.",
+            });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline">
+                    <Sparkles className="ml-2 h-4 w-4" />
+                    تولید محتوا با AI
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]" dir="rtl">
+                <DialogHeader>
+                    <DialogTitle>تولید پست وبلاگ با هوش مصنوعی</DialogTitle>
+                    <DialogDescription>
+                        موضوع اصلی و یک عنوان برای پست خود وارد کنید تا ما بقیه کار را برایتان انجام دهیم.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="title" className="text-right">
+                            عنوان پست
+                        </Label>
+                        <Input
+                            id="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="col-span-3"
+                            placeholder="مثال: تسلط بر یادگیری عمیق"
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 items-start gap-4">
+                        <Label htmlFor="context" className="text-right pt-2">
+                            موضوع/زمینه
+                        </Label>
+                        <Textarea
+                            id="context"
+                            value={context}
+                            onChange={(e) => setContext(e.target.value)}
+                            className="col-span-3"
+                            placeholder="چند جمله در مورد موضوع اصلی که می‌خواهید پست در مورد آن باشد بنویسید..."
+                        />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleGenerate} disabled={isGenerating}>
+                        {isGenerating && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                        {isGenerating ? "در حال تولید..." : "تولید کن"}
+                    </Button>
+                    <Button variant="ghost" onClick={() => setIsOpen(false)}>انصراف</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
 }
 
 export function BlogForm({ post }: BlogFormProps) {
@@ -81,6 +186,14 @@ export function BlogForm({ post }: BlogFormProps) {
   });
 
   const watchedValues = useWatch({ control: form.control });
+
+  const setAiGeneratedValues = (data: any) => {
+    form.setValue("content_fa", data.content_fa, { shouldValidate: true, shouldDirty: true });
+    form.setValue("content", data.content, { shouldValidate: true, shouldDirty: true });
+    form.setValue("tags", data.tags, { shouldValidate: true, shouldDirty: true });
+    form.setValue("meta_description_fa", data.meta_description_fa, { shouldValidate: true, shouldDirty: true });
+    form.setValue("meta_description_en", data.meta_description_en, { shouldValidate: true, shouldDirty: true });
+  }
 
   const onSubmit = (data: BlogPostFormValues) => {
     startTransition(async () => {
@@ -124,8 +237,13 @@ export function BlogForm({ post }: BlogFormProps) {
         <div className="lg:col-span-2 space-y-8">
             <Card>
                  <CardHeader>
-                    <CardTitle>محتوای پست</CardTitle>
-                    <CardDescription>محتوای اصلی پست خود را در اینجا به دو زبان وارد کنید.</CardDescription>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle>محتوای پست</CardTitle>
+                            <CardDescription>محتوای اصلی پست خود را در اینجا به دو زبان وارد کنید.</CardDescription>
+                        </div>
+                         <AiGeneratorDialog setFormValues={setAiGeneratedValues} />
+                    </div>
                 </CardHeader>
                 <CardContent>
                      <Tabs defaultValue="fa-content" className="w-full">
@@ -409,5 +527,3 @@ export function BlogForm({ post }: BlogFormProps) {
     </Form>
   );
 }
-
-    
