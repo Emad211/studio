@@ -348,7 +348,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
                                         />
                                         </FormControl>
                                         <FormLabel className="font-normal mr-2">
-                                        {item.title}
+                                        {item.title_fa} ({item.title})
                                         </FormLabel>
                                     </FormItem>
                                     )

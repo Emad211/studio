@@ -6,7 +6,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { Project, BlogPost, SiteSettings } from "./data";
-import { getInitialData, services, servicesFa } from "./data";
+import { getInitialData, services } from "./data";
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
@@ -58,7 +58,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 
 export async function getAllCategories(lang: 'en' | 'fa') {
   if (lang === 'fa') {
-    return servicesFa.map(s => s.title);
+    return services.map(s => s.title_fa);
   }
   return services.map(s => s.title);
 }
@@ -105,11 +105,7 @@ export async function saveProject(
 
   const categories_fa = validatedData.categories.map(categoryName => {
     const service = services.find(s => s.title === categoryName);
-    if (service) {
-      const faService = servicesFa.find(s => s.icon === service.icon);
-      return faService ? faService.title : categoryName;
-    }
-    return categoryName;
+    return service ? service.title_fa : categoryName;
   });
 
   const projectData: Project = {

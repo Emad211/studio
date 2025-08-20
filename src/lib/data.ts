@@ -566,67 +566,49 @@ export const skillCategoriesFa: SkillCategory[] = [
 
 export interface Service {
   title: string;
+  title_fa: string;
   description: string;
+  description_fa: string;
   icon: LucideIcon;
 }
 
 export const services: Service[] = [
   {
     title: "AI Model Development",
+    title_fa: "توسعه مدل‌های هوش مصنوعی",
     description: "Developing custom machine learning and deep learning models to solve complex problems, from natural language processing to computer vision.",
+    description_fa: "توسعه مدل‌های سفارشی یادگیری ماشین و یادگیری عمیق برای حل مسائل پیچیده، از پردازش زبان طبیعی تا بینایی کامپیوتر.",
     icon: BrainCircuit,
   },
   {
     title: "AI Agent Development",
+    title_fa: "توسعه ایجنت‌های هوشمند",
     description: "Building intelligent, autonomous agents that can reason, plan, and execute complex tasks to automate workflows and enhance capabilities.",
+    description_fa: "ساخت ایجنت‌های هوشمند و مستقل که می‌توانند استدلال، برنامه‌ریزی و اجرای وظایف پیچیده را برای خودکارسازی گردش کار و افزایش قابلیت‌ها انجام دهند.",
     icon: Bot,
   },
   {
     title: "Data Analysis & Statistics",
+    title_fa: "تحلیل داده و آمار",
     description: "In-depth data analysis, statistical modeling, and visualization to extract valuable insights and inform decision-making.",
+    description_fa: "تحلیل عمیق داده‌ها، مدل‌سازی آماری و تصویرسازی برای استخراج بینش‌های ارزشمند و اطلاع‌رسانی در تصمیم‌گیری‌ها.",
     icon: Activity,
   },
   {
     title: "Research & Thesis Writing",
+    title_fa: "تحقیق و نگارش پایان‌نامه",
     description: "Providing expertise in academic research, experimental design, and writing high-quality technical papers and theses.",
+    description_fa: "ارائه تخصص در تحقیقات آکادمیک، طراحی آزمایش‌ها و نگارش مقالات فنی و پایان‌نامه‌های با کیفیت بالا.",
     icon: Book,
   },
    {
     title: "Web Development & Design",
+    title_fa: "توسعه و طراحی وب",
     description: "Creating modern, responsive, and high-performance websites and web applications tailored to your specific needs.",
+    description_fa: "ایجاد وب‌سایت‌ها و برنامه‌های کاربردی وب مدرن، واکنش‌گرا و با کارایی بالا متناسب با نیازهای خاص شما.",
     icon: Code,
   },
 ];
-
-export const servicesFa: Service[] = [
-  {
-    title: "توسعه مدل‌های هوش مصنوعی",
-    description: "توسعه مدل‌های سفارشی یادگیری ماشین و یادگیری عمیق برای حل مسائل پیچیده، از پردازش زبان طبیعی تا بینایی کامپیوتر.",
-    icon: BrainCircuit,
-  },
-  {
-    title: "توسعه ایجنت‌های هوشمند",
-    description: "ساخت ایجنت‌های هوشمند و مستقل که می‌توانند استدلال، برنامه‌ریزی و اجرای وظایف پیچیده را برای خودکارسازی گردش کار و افزایش قابلیت‌ها انجام دهند.",
-    icon: Bot,
-  },
-  {
-    title: "تحلیل داده و آمار",
-    description: "تحلیل عمیق داده‌ها، مدل‌سازی آماری و تصویرسازی برای استخراج بینش‌های ارزشمند و اطلاع‌رسانی در تصمیم‌گیری‌ها.",
-    icon: Activity,
-  },
-  {
-    title: "تحقیق و نگارش پایان‌نامه",
-    description: "ارائه تخصص در تحقیقات آکادمیک، طراحی آزمایش‌ها و نگارش مقالات فنی و پایان‌نامه‌های با کیفیت بالا.",
-    icon: Book,
-  },
-   {
-    title: "توسعه و طراحی وب",
-    description: "ایجاد وب‌سایت‌ها و برنامه‌های کاربردی وب مدرن، واکنش‌گرا و با کارایی بالا متناسب با نیازهای خاص شما.",
-    icon: Code,
-  },
-];
-
-
 
 
 export const education = [
