@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, useWatch } from "react-hook-form";
@@ -23,6 +24,8 @@ import { saveBlogPost } from "@/lib/actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SeoPreview } from "./seo-preview";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Sparkles } from "lucide-react";
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
@@ -62,7 +65,7 @@ export function BlogForm({ post }: BlogFormProps) {
       : {
           title_fa: "",
           content_fa: "",
-          featured_image: "https://placehold.co/1200x630.png",
+          featured_image: "https://placehold.co/1280x720.png",
           title: "",
           content: "",
           slug: "",
@@ -99,118 +102,193 @@ export function BlogForm({ post }: BlogFormProps) {
     });
   };
 
+  const generateSlug = () => {
+    const title = form.getValues("title_fa");
+    if (title) {
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9\u0600-\u06FF\s-]/g, '') // Remove non-alphanumeric, non-Persian characters
+        .trim()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/-+/g, '-'); // Replace multiple - with single -
+      form.setValue("slug", slug, { shouldValidate: true });
+    }
+  };
+
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Tabs defaultValue="fa-content" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="fa-content">محتوای فارسی</TabsTrigger>
-                <TabsTrigger value="en-content">محتوای انگلیسی</TabsTrigger>
-                <TabsTrigger value="settings">تنظیمات و سئو</TabsTrigger>
-            </TabsList>
-            <TabsContent value="fa-content" className="space-y-6 pt-6" dir="rtl">
-                 <FormField
-                    control={form.control}
-                    name="title_fa"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>عنوان فارسی</FormLabel>
-                        <FormControl>
-                            <Input placeholder="عنوان اصلی پست به فارسی..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                 />
-                 <FormField
-                    control={form.control}
-                    name="featured_image"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>URL تصویر شاخص</FormLabel>
-                        <FormControl>
-                            <Input dir="ltr" placeholder="https://example.com/image.png" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                 <FormField
-                    control={form.control}
-                    name="content_fa"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>محتوای کامل پست (فارسی - Markdown)</FormLabel>
-                        <FormControl>
-                            <Textarea placeholder="محتوای پست خود را اینجا بنویسید..." className="min-h-[400px]" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </TabsContent>
-            <TabsContent value="en-content" className="space-y-6 pt-6" dir="ltr">
-                 <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Title (English)</FormLabel>
-                        <FormControl>
-                            <Input placeholder="English post title..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                 />
-                 <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Full Content (English - Markdown)</FormLabel>
-                        <FormControl>
-                            <Textarea placeholder="Write your post content here..." className="min-h-[400px]" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </TabsContent>
-             <TabsContent value="settings" className="space-y-8 pt-6" dir="rtl">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>اسلاگ (Slug)</FormLabel>
-                        <FormControl>
-                            <Input dir="ltr" placeholder="a-unique-slug" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>تاریخ انتشار</FormLabel>
-                        <FormControl>
-                            <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start" dir="rtl">
+        
+        {/* Main Content Column */}
+        <div className="lg:col-span-2 space-y-8">
+            <Card>
+                 <CardHeader>
+                    <CardTitle>محتوای پست</CardTitle>
+                    <CardDescription>محتوای اصلی پست خود را در اینجا به دو زبان وارد کنید.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                     <Tabs defaultValue="fa-content" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="fa-content">فارسی</TabsTrigger>
+                            <TabsTrigger value="en-content">انگلیسی</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="fa-content" className="space-y-6 pt-6">
+                            <FormField
+                                control={form.control}
+                                name="title_fa"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>عنوان فارسی</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="عنوان اصلی پست به فارسی..." {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="content_fa"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>محتوای کامل (Markdown)</FormLabel>
+                                    <FormControl>
+                                        <Textarea placeholder="محتوای پست خود را اینجا بنویسید..." className="min-h-[400px] font-code" {...field} />
+                                    </FormControl>
+                                     <FormDescription>می‌توانید از سینتکس مارک‌داون برای قالب‌بندی متن استفاده کنید.</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </TabsContent>
+                        <TabsContent value="en-content" className="space-y-6 pt-6" dir="ltr">
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Title (English)</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="English post title..." {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="content"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Full Content (Markdown)</FormLabel>
+                                    <FormControl>
+                                        <Textarea placeholder="Write your post content here..." className="min-h-[400px] font-code" {...field} />
+                                    </FormControl>
+                                    <FormDescription>You can use Markdown syntax for formatting.</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>بهینه‌سازی برای موتورهای جستجو (SEO)</CardTitle>
+                    <CardDescription>این اطلاعات به بهبود رتبه پست شما در گوگل کمک می‌کند.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Tabs defaultValue="seo-fa" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="seo-fa">سئوی فارسی</TabsTrigger>
+                            <TabsTrigger value="seo-en">SEO (English)</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="seo-fa" className="pt-4 space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="meta_title_fa"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>عنوان متا</FormLabel>
+                                    <FormControl><Input {...field} placeholder="یک عنوان جذاب برای گوگل بنویسید" /></FormControl>
+                                    <FormDescription>اگر خالی باشد، از عنوان اصلی پست استفاده می‌شود. (بهینه: ۶۰ کاراکتر)</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="meta_description_fa"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>توضیحات متا</FormLabel>
+                                    <FormControl><Textarea {...field} placeholder="توضیحی کوتاه و جذاب که کاربر را به کلیک ترغیب کند." /></FormControl>
+                                    <FormDescription>توضیحاتی که در نتایج گوگل نمایش داده می‌شود. (بهینه: ۱۵۵-۱۶۰ کاراکتر)</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <h4 className="font-semibold text-sm">پیش‌نمایش در گوگل</h4>
+                            <SeoPreview
+                                title={watchedValues.meta_title_fa || watchedValues.title_fa || "عنوان پست شما"}
+                                description={watchedValues.meta_description_fa || "توضیحات پست شما در اینجا برای پیش‌نمایش نمایش داده می‌شود..."}
+                                slug={`blog/${watchedValues.slug || "your-post-slug"}`}
+                            />
+                        </TabsContent>
+                        <TabsContent value="seo-en" className="pt-4 space-y-6" dir="ltr">
+                            <FormField
+                                control={form.control}
+                                name="meta_title_en"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Meta Title</FormLabel>
+                                    <FormControl><Input {...field} placeholder="Write a catchy title for Google" /></FormControl>
+                                     <FormDescription>If empty, the main post title will be used. (Optimal: 60 characters)</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="meta_description_en"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Meta Description</FormLabel>
+                                    <FormControl><Textarea {...field} placeholder="A short, compelling description to encourage clicks." /></FormControl>
+                                     <FormDescription>The description shown in Google search results. (Optimal: 155-160 characters)</FormDescription>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                             <h4 className="font-semibold text-sm">Google Preview</h4>
+                            <SeoPreview
+                                title={watchedValues.meta_title_en || watchedValues.title || "Your Post Title"}
+                                description={watchedValues.meta_description_en || "Your post description will be shown here for the preview..."}
+                                slug={`en/blog/${watchedValues.slug || "your-post-slug"}`}
+                            />
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+
+        </div>
+        
+        {/* Sidebar Column */}
+        <div className="lg:col-span-1 space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>انتشار</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                     <FormField
                         control={form.control}
                         name="status"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>وضعیت انتشار</FormLabel>
+                                <FormLabel>وضعیت</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
@@ -226,110 +304,110 @@ export function BlogForm({ post }: BlogFormProps) {
                             </FormItem>
                         )}
                     />
-                </div>
-                 <FormField
-                    control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>تگ‌ها (جدا شده با ویرگول)</FormLabel>
-                        <FormControl>
-                            <Input dir="ltr" placeholder="Next.js, AI, ..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
+                     <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>تاریخ انتشار</FormLabel>
+                            <FormControl>
+                                <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                </CardContent>
+                 <div className="p-6 pt-0">
+                    <Button type="submit" disabled={isPending} size="lg" className="w-full">
+                        {isPending ? "در حال ذخیره..." : (post ? "به‌روزرسانی پست" : "ایجاد پست")}
+                    </Button>
+                 </div>
+            </Card>
+            
+             <Card>
+                 <CardHeader>
+                    <CardTitle>تنظیمات پست</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                     <FormField
+                        control={form.control}
+                        name="slug"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>اسلاگ (Slug)</FormLabel>
+                            <div className="flex gap-2">
+                                <FormControl>
+                                <Input dir="ltr" placeholder="a-unique-slug" {...field} />
+                                </FormControl>
+                                <Button type="button" variant="outline" size="icon" onClick={generateSlug} aria-label="ایجاد اسلاگ خودکار">
+                                    <Sparkles className="w-4 h-4" />
+                                </Button>
+                            </div>
+                             <FormDescription>شناسه منحصر به فرد پست در URL.</FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
                     />
-                
-                <h3 className="text-lg font-semibold border-t pt-6">تنظیمات سئو</h3>
-                <Tabs defaultValue="seo-fa" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="seo-fa">سئوی فارسی</TabsTrigger>
-                        <TabsTrigger value="seo-en">SEO (English)</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="seo-fa" className="pt-4 space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="meta_title_fa"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>عنوان متا (فارسی)</FormLabel>
-                                 <FormDescription>اگر خالی باشد، از عنوان اصلی پست استفاده می‌شود.</FormDescription>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name="meta_description_fa"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>توضیحات متا (فارسی)</FormLabel>
-                                <FormControl><Textarea {...field} /></FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <SeoPreview
-                            title={watchedValues.meta_title_fa || watchedValues.title_fa || "عنوان پست شما"}
-                            description={watchedValues.meta_description_fa || "توضیحات پست شما در اینجا نمایش داده می‌شود..."}
-                            slug={watchedValues.slug || "your-post-slug"}
-                        />
-                    </TabsContent>
-                    <TabsContent value="seo-en" className="pt-4 space-y-6" dir="ltr">
-                        <FormField
-                            control={form.control}
-                            name="meta_title_en"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Meta Title (English)</FormLabel>
-                                 <FormDescription>If empty, the main post title will be used.</FormDescription>
-                                <FormControl><Input {...field} /></FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name="meta_description_en"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Meta Description (English)</FormLabel>
-                                <FormControl><Textarea {...field} /></FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <SeoPreview
-                            title={watchedValues.meta_title_en || watchedValues.title || "Your Post Title"}
-                            description={watchedValues.meta_description_en || "Your post description will be shown here..."}
-                            slug={`en/blog/${watchedValues.slug || "your-post-slug"}`}
-                        />
-                    </TabsContent>
-                </Tabs>
-                <FormField
-                    control={form.control}
-                    name="og_image"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>URL تصویر Open Graph</FormLabel>
-                        <FormDescription>
-                            تصویری که هنگام اشتراک‌گذاری پست در شبکه‌های اجتماعی نمایش داده می‌شود (1200x630 پیکسل). اگر خالی باشد از تصویر پیش‌فرض سایت استفاده می‌شود.
-                        </FormDescription>
-                        <FormControl>
-                            <Input dir="ltr" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </TabsContent>
-        </Tabs>
-        <Button type="submit" disabled={isPending} size="lg" className="w-full md:w-auto">
-          {isPending ? "در حال ذخیره..." : "ذخیره پست"}
-        </Button>
+                     <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>تگ‌ها</FormLabel>
+                            <FormControl>
+                                <Input dir="ltr" placeholder="Next.js, AI, ..." {...field} />
+                            </FormControl>
+                            <FormDescription>تگ‌ها را با ویرگول (,) جدا کنید.</FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                     />
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle>تصاویر</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                     <FormField
+                        control={form.control}
+                        name="featured_image"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>تصویر شاخص</FormLabel>
+                            <FormControl>
+                                <Input dir="ltr" placeholder="https://example.com/image.png" {...field} />
+                            </FormControl>
+                            <FormDescription>این تصویر در بالای پست و در لیست وبلاگ نمایش داده می‌شود.</FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="og_image"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>تصویر Open Graph</FormLabel>
+                            <FormControl>
+                                <Input dir="ltr" placeholder="https://example.com/social-image.png" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                تصویر برای اشتراک‌گذاری در شبکه‌های اجتماعی (1200x630). اگر خالی باشد از تصویر شاخص استفاده می‌شود.
+                            </FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </CardContent>
+            </Card>
+        </div>
+
       </form>
     </Form>
   );
 }
+
+    
