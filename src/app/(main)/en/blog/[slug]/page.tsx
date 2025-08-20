@@ -4,7 +4,7 @@ import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React, { createElement } from 'react';
-import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
+import { Fragment } from 'react/jsx-runtime';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -69,8 +69,6 @@ const renderContent = (markdown: string) => {
         .use(rehypeReact, {
             createElement,
             Fragment,
-            jsx,
-            jsxs,
             components: {
                 h1: (props: any) => {
                     const text = props.children[0];
@@ -109,13 +107,13 @@ const renderContent = (markdown: string) => {
                     return <h6 id={id} className='font-headline scroll-mt-20' {...props} />;
                 },
                 code: (props: any) => {
-                    if (props.className) {
-                        const language = props.className.replace('language-', '');
-                        return <CodeBlock code={props.children} language={language} />;
+                     const match = /language-(\w+)/.exec(props.className || '');
+                    if (match) {
+                        return <CodeBlock code={String(props.children).replace(/\n$/, '')} language={match[1]} />;
                     }
-                    return <code {...props} />;
+                    return <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props} />;
                 },
-                pre: (props: any) => <div {...props} />, // Prevent nested <pre>
+                pre: (props: any) => <div {...props} />,
             },
         });
 

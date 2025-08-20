@@ -40,7 +40,7 @@
     @apply text-foreground;
   }
   .prose {
-    @apply text-foreground;
+    @apply text-foreground text-base leading-relaxed;
   }
   .prose a {
       @apply text-primary hover:text-primary/80;
@@ -49,9 +49,9 @@
       @apply text-foreground;
   }
   .prose blockquote {
-      @apply border-l-4 border-primary pl-4 text-muted-foreground;
+      @apply border-r-4 border-primary pr-4 text-muted-foreground italic;
   }
-  .prose code {
+  .prose code:not(pre > code) {
       @apply bg-muted text-primary rounded px-1.5 py-1 font-code;
   }
   .prose ul, .prose ol {
