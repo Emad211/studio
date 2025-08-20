@@ -163,7 +163,7 @@ export async function deleteProject(slug: string): Promise<void> {
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
   content_fa: z.string().min(10, "محتوای فارسی باید حداقل 10 کاراکتر باشد."),
-  featured_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر شاخص وارد کنید." }),
+  featured_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر شاخص وارد کنید." }).optional().or(z.literal('')),
   
   title: z.string().optional(),
   content: z.string().optional(),
@@ -188,25 +188,27 @@ export async function saveBlogPost(
   const validatedData = blogPostSchema.parse(formData);
   const data = await readData();
 
-  const blogPostData: BlogPost = {
+  const blogPostData: Omit<BlogPost, 'description' | 'description_fa'> & { description?: string; description_fa?: string } = {
     ...validatedData,
     title: validatedData.title || validatedData.title_fa,
-    description: validatedData.meta_description_en || '',
-    description_fa: validatedData.meta_description_fa || '',
     content: validatedData.content || validatedData.content_fa,
     tags: validatedData.tags.split(",").map((t) => t.trim()),
   };
 
+  blogPostData.description_fa = validatedData.meta_description_fa || blogPostData.content_fa.substring(0, 150);
+  blogPostData.description = validatedData.meta_description_en || (blogPostData.content || '').substring(0, 150);
+
+
   if (existingSlug) {
     const postIndex = data.blogPosts.findIndex((p) => p.slug === existingSlug);
     if (postIndex !== -1) {
-      data.blogPosts[postIndex] = blogPostData;
+      data.blogPosts[postIndex] = blogPostData as BlogPost;
     }
   } else {
      if (data.blogPosts.some(p => p.slug === blogPostData.slug)) {
         throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
     }
-    data.blogPosts.unshift(blogPostData);
+    data.blogPosts.unshift(blogPostData as BlogPost);
   }
 
   await writeData(data);

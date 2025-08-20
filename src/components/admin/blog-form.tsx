@@ -27,7 +27,7 @@ import { SeoPreview } from "./seo-preview";
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
   content_fa: z.string().min(10, "محتوای فارسی باید حداقل 10 کاراکتر باشد."),
-  featured_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر شاخص وارد کنید." }),
+  featured_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر شاخص وارد کنید." }).optional().or(z.literal('')),
 
   title: z.string().optional(),
   content: z.string().optional(),
