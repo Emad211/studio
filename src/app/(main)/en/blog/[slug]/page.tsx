@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
@@ -61,12 +62,12 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 const extractHeadings = (markdown: string) => {
     const headings: { id: string; level: number; text: string }[] = [];
     const lines = markdown.split('\n');
-    lines.forEach(line => {
+    lines.forEach((line, index) => {
         const match = line.match(/^(#+)\s+(.*)/);
         if (match) {
             const level = match[1].length;
             const text = match[2];
-            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') + '-' + index;
             headings.push({ id, level, text });
         }
     });
@@ -152,7 +153,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                     code({node, className, children, ...props}) {
                                         const match = /language-(\w+)/.exec(className || '')
                                         return match ? (
-                                            <CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} />
+                                            <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
                                         ) : (
                                             <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
                                                 {children}

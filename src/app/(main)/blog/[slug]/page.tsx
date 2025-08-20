@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
@@ -61,12 +62,12 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 const extractHeadings = (markdown: string) => {
     const headings: { id: string; level: number; text: string }[] = [];
     const lines = markdown.split('\n');
-    lines.forEach(line => {
+    lines.forEach((line, index) => {
         const match = line.match(/^(#+)\s+(.*)/);
         if (match) {
             const level = match[1].length;
             const text = match[2];
-            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+            const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') + '-' + index;
             headings.push({ id, level, text });
         }
     });
