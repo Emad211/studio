@@ -6,6 +6,7 @@ import { getSiteSettings } from '@/lib/actions';
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   
+  // Default metadata for the root, can be overridden by nested layouts
   const title = settings.fa.siteName || 'پورتفولیو کدکانواس';
   const description = settings.fa.metaDescription || 'یک پورتفولیو مدرن برای توسعه‌دهندگان';
 
@@ -48,11 +49,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lang = 'fa';
-  const dir = 'rtl';
-
   return (
-    <html lang={lang} dir={dir} className="dark" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" className="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
