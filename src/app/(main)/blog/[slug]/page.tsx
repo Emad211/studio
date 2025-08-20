@@ -4,6 +4,7 @@ import { ReadingProgress } from '@/components/blog/reading-progress';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import React, { createElement, Fragment } from 'react';
+import { jsx, jsxs } from 'react/jsx-runtime';
 import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -68,6 +69,8 @@ const renderContent = (markdown: string) => {
         .use(rehypeReact, {
             createElement,
             Fragment,
+            jsx,
+            jsxs,
             components: {
                 h1: (props: any) => {
                     const text = props.children[0];
