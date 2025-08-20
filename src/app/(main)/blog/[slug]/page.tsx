@@ -68,9 +68,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     }
 
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
             <ReadingProgress />
-            <div className="container py-12 md:py-20">
+            <div className="container py-12 md:py-20 flex-grow">
                 <article className="max-w-3xl mx-auto">
                      <div className="mb-8 text-center">
                         <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{post.title_fa}</h1>
@@ -97,14 +97,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         </div>
                     )}
 
-                    <div className="prose prose-invert prose-lg max-w-none text-right">
+                    <div className="prose prose-invert prose-lg max-w-none mx-auto text-right">
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
                                 code({node, className, children, ...props}) {
                                     const match = /language-(\w+)/.exec(className || '')
                                     return match ? (
-                                        <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
+                                        <CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} />
                                     ) : (
                                         <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
                                             {children}
@@ -118,6 +118,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     </div>
                 </article>
             </div>
-        </>
+        </div>
     );
 }
+
