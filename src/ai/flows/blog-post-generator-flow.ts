@@ -12,7 +12,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const BlogPostGeneratorInputSchema = z.object({
-  context: z.string().describe('The main topic or a brief outline for the blog post.'),
+  context: z.string().describe('The full source document, article, or documentation to be used as context for generating the blog post.'),
   title: z.string().describe('The desired title for the blog post.'),
 });
 export type BlogPostGeneratorInput = z.infer<typeof BlogPostGeneratorInputSchema>;
@@ -35,26 +35,28 @@ const prompt = ai.definePrompt({
   name: 'blogPostGeneratorPrompt',
   input: { schema: BlogPostGeneratorInputSchema },
   output: { schema: BlogPostGeneratorOutputSchema },
-  prompt: `You are an expert AI developer and a skilled technical writer. Your task is to generate a comprehensive and engaging blog post based on a given context. You must generate the content in both Persian and English.
+  prompt: `You are an expert AI developer and a skilled technical writer. Your task is to act as a Retrieval-Augmented Generation (RAG) system. You will be given a full document as context. You must read, understand, and then generate a comprehensive and engaging blog post based *solely* on the provided context. You must generate the content in both Persian and English.
 
 The blog post should be well-structured, insightful, and formatted using rich Markdown. Use headings (##, ###), lists (bulleted or numbered), bold/italic text, and code blocks (\`\`\`) where appropriate to make the content readable and engaging.
 
-You also need to provide SEO-friendly metadata for the post.
+You also need to provide SEO-friendly metadata for the post, derived from the context.
 
-Context from the user:
-"{{{context}}}"
+Source Context Document:
+"""
+{{{context}}}
+"""
 
 Title for the post:
 "{{{title}}}"
 
-Based on the context and title, generate the following:
+Based on the provided context and title, generate the following:
 1.  **Persian Content (\`content_fa\`):** The full blog post in Persian.
 2.  **English Content (\`content\`):** The full blog post in English.
-3.  **Tags (\`tags\`):** A list of 3-5 relevant technical tags (e.g., 'Deep Learning', 'Next.js').
+3.  **Tags (\`tags\`):** A list of 3-5 relevant technical tags based on the document.
 4.  **Persian Meta Description (\`meta_description_fa\`):** An SEO-optimized summary in Persian, about 155 characters.
 5.  **English Meta Description (\`meta_description_en\`):** An SEO-optimized summary in English, about 155 characters.
 
-Ensure the tone is professional yet accessible. The content should be technically accurate and provide real value to the reader.
+Ensure the tone is professional yet accessible. The content must be technically accurate and provide real value to the reader, strictly based on the information in the source document.
 `,
 });
 

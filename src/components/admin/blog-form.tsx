@@ -76,7 +76,7 @@ function AiGeneratorDialog({ setFormValues }: { setFormValues: (data: any) => vo
             toast({
                 variant: "destructive",
                 title: "ورودی ناقص",
-                description: "لطفاً هم موضوع و هم عنوان را برای تولید محتوا وارد کنید.",
+                description: "لطفاً هم متن کامل منبع و هم عنوان را برای تولید محتوا وارد کنید.",
             });
             return;
         }
@@ -118,7 +118,7 @@ function AiGeneratorDialog({ setFormValues }: { setFormValues: (data: any) => vo
                 <DialogHeader>
                     <DialogTitle>تولید پست وبلاگ با هوش مصنوعی</DialogTitle>
                     <DialogDescription>
-                        موضوع اصلی و یک عنوان برای پست خود وارد کنید تا ما بقیه کار را برایتان انجام دهیم.
+                        یک متن کامل (مقاله، داکیومنت و ...) به عنوان منبع وارد کنید تا ما آن را به یک پست وبلاگ تبدیل کنیم.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -136,14 +136,14 @@ function AiGeneratorDialog({ setFormValues }: { setFormValues: (data: any) => vo
                     </div>
                     <div className="grid grid-cols-4 items-start gap-4">
                         <Label htmlFor="context" className="text-right pt-2">
-                            موضوع/زمینه
+                            متن منبع
                         </Label>
                         <Textarea
                             id="context"
                             value={context}
                             onChange={(e) => setContext(e.target.value)}
-                            className="col-span-3"
-                            placeholder="چند جمله در مورد موضوع اصلی که می‌خواهید پست در مورد آن باشد بنویسید..."
+                            className="col-span-3 min-h-[200px]"
+                            placeholder="متن کامل مقاله یا داکیومنتی که می‌خواهید به پست وبلاگ تبدیل شود را اینجا جای‌گذاری کنید..."
                         />
                     </div>
                 </div>
