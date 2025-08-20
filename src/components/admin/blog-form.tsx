@@ -36,6 +36,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { generateBlogPost, BlogPostGeneratorInput } from "@/ai/flows/blog-post-generator-flow";
+import { Label } from "@/components/ui/label";
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
