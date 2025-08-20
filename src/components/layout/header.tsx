@@ -62,7 +62,7 @@ export function Header() {
           <Link href={homeLink} className="mr-6 flex items-center space-x-2">
             <Logo />
             <span className="hidden font-bold sm:inline-block font-headline">
-              CodeCanvas
+              Emad Karimi
             </span>
           </Link>
           <nav className="flex items-center space-x-1 text-sm font-medium">
@@ -95,7 +95,7 @@ export function Header() {
               >
                 <Logo />
                 <span className="font-bold font-headline">
-                  CodeCanvas
+                  Emad Karimi
                 </span>
               </Link>
               <div className="flex flex-col space-y-2">
