@@ -288,6 +288,5 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     await writeData(data);
 
     // Revalidate all paths that might use settings
-    revalidatePath("/", "layout");
+    revalidatePath("/", "page");
 }
-

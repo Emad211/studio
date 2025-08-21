@@ -38,13 +38,6 @@ import {
 import { generateBlogPost, BlogPostGeneratorInput } from "@/ai/flows/blog-post-generator-flow";
 import { Label } from "@/components/ui/label";
 import { MarkdownGuide } from "./markdown-guide";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),

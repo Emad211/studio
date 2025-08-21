@@ -4,14 +4,12 @@ import { getBlogPosts, getSiteSettings } from '@/lib/actions';
 import { ReadingProgress } from '@/components/blog/reading-progress';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
-import { CodeBlock } from '@/components/ui/code-block';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { calculateReadingTime } from '@/lib/reading-time';
 import { Clock } from 'lucide-react';
 import { SocialShare } from '@/components/ui/social-share';
+import { MarkdownContent } from '@/components/ui/markdown-content';
 
 type BlogPostPageProps = {
     params: { slug: string };
@@ -37,7 +35,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const title = post.meta_title_fa || `${post.title_fa} | ${settings.fa.siteName}`;
   const description = post.meta_description_fa || post.description_fa;
   const url = `${settings.seo.siteURL}/blog/${slug}`;
-  const ogImage = post.og_image || settings.seo.ogImage;
+  const ogImage = post.og_image || post.featured_image || settings.seo.ogImage;
 
   return {
     title: title,
@@ -111,33 +109,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     )}
 
                     <div className="prose prose-invert prose-lg max-w-none mx-auto text-right">
-                        <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                                code({node, className, children, ...props}) {
-                                    const match = /language-(\w+)/.exec(className || '')
-                                    return match ? (
-                                        <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
-                                    ) : (
-                                        <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
-                                            {children}
-                                        </code>
-                                    )
-                                },
-                                img: ({ node, ...props }) => (
-                                    <div className="relative my-6 aspect-video rounded-lg overflow-hidden border">
-                                        <Image 
-                                            src={props.src || ""} 
-                                            alt={props.alt || "Image from blog post"} 
-                                            fill 
-                                            className="object-contain" 
-                                        />
-                                    </div>
-                                ),
-                            }}
-                        >
-                            {post.content_fa}
-                        </ReactMarkdown>
+                       <MarkdownContent content={post.content_fa} />
                     </div>
 
                     <div className="mt-16">

@@ -12,9 +12,8 @@ import { ProjectAIChat } from "@/components/projects/project-ai-chat"
 import type { Project } from "@/lib/data"
 import { Separator } from "@/components/ui/separator"
 import type { Metadata } from "next"
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { SocialShare } from "@/components/ui/social-share"
+import { MarkdownContent } from "@/components/ui/markdown-content"
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -53,36 +52,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     },
   };
 }
-
-const MarkdownContent = ({ content }: { content: string }) => (
-    <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-            code({node, className, children, ...props}) {
-                const match = /language-(\w+)/.exec(className || '')
-                return match ? (
-                    <div dir="ltr"><CodeBlock language={match[1]} code={String(children).replace(/\n$/, '')} /></div>
-                ) : (
-                    <code className='font-code bg-muted text-primary rounded px-1.5 py-1' {...props}>
-                        {children}
-                    </code>
-                )
-            },
-            img: ({ node, ...props }) => (
-                <div className="relative my-6 aspect-video rounded-lg overflow-hidden border">
-                    <Image 
-                        src={props.src || ""} 
-                        alt={props.alt || "Image from project details"} 
-                        fill 
-                        className="object-contain" 
-                    />
-                </div>
-            ),
-        }}
-    >
-        {content}
-    </ReactMarkdown>
-);
 
 export default async function ProjectDetailsPage({ params }: { params: { slug: string } }) {
   const projects = await getProjects();
