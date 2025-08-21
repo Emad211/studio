@@ -132,6 +132,9 @@ function ImageUploader({ form }: { form: any }) {
                     </div>
                 </Button>
             </div>
+             <FormDescription>
+                می‌توانید یک URL را مستقیماً جای‌گذاری کنید یا فایل جدیدی را از سیستم خود آپلود نمایید.
+            </FormDescription>
         </div>
     )
 }

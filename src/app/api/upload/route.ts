@@ -8,7 +8,7 @@ async function configureCloudinary() {
     const { cloudName, apiKey, apiSecret } = settings.integrations.cloudinary || {};
 
     if (!cloudName || !apiKey || !apiSecret) {
-        throw new Error('Cloudinary configuration is missing in site settings.');
+        throw new Error('Cloudinary configuration is missing. Please add it in the admin settings panel.');
     }
 
     cloudinary.config({
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     try {
         await configureCloudinary();
     } catch (error: any) {
-        return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+        return NextResponse.json({ success: false, message: error.message }, { status: 400 });
     }
     
     const formData = await request.formData();
@@ -47,6 +47,6 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
-        return NextResponse.json({ success: false, message: 'Upload failed' }, { status: 500 });
+        return NextResponse.json({ success: false, message: 'Upload failed due to a server error.' }, { status: 500 });
     }
 }

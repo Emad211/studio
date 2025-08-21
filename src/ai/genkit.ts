@@ -1,3 +1,4 @@
+
 import { genkit, GenerationCommonConfig } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 import { getSiteSettings } from '@/lib/actions';
@@ -28,7 +29,11 @@ async function initializeGenkit() {
     // The main `ai` object configuration
     genkit({
       plugins: [googleAiPlugin],
-      model: 'googleai/gemini-2.0-flash',
+      // Flow-level configuration
+      flow: {
+        // All flows will use this model unless they override it.
+        model: 'googleai/gemini-2.0-flash',
+      },
     });
 
   })();
@@ -37,8 +42,10 @@ async function initializeGenkit() {
 }
 
 // Custom `ai` object that ensures initialization before use.
+// This wraps the global genkit functions to make sure initializeGenkit() is called first.
 export const ai = {
   defineFlow: (...args: Parameters<typeof genkit.defineFlow>) => {
+    // Flows are defined at startup, so we don't need to await initialization here.
     return genkit.defineFlow(...args);
   },
   definePrompt: (...args: Parameters<typeof genkit.definePrompt>) => {

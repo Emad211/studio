@@ -131,6 +131,9 @@ function ImageUploader({ fieldName, form }: { fieldName: "featured_image" | "og_
                     </div>
                 </Button>
             </div>
+             <FormDescription>
+                می‌توانید یک URL را مستقیماً جای‌گذاری کنید یا فایل جدیدی را از سیستم خود آپلود نمایید.
+            </FormDescription>
         </div>
     )
 }
@@ -566,7 +569,6 @@ export function BlogForm({ post }: BlogFormProps) {
                             <FormItem>
                             <FormLabel>تصویر شاخص</FormLabel>
                              <ImageUploader fieldName="featured_image" form={form} />
-                            <FormDescription>این تصویر در بالای پست و در لیست وبلاگ نمایش داده می‌شود.</FormDescription>
                             <FormMessage />
                             </FormItem>
                         )}
@@ -579,7 +581,7 @@ export function BlogForm({ post }: BlogFormProps) {
                             <FormLabel>تصویر Open Graph</FormLabel>
                              <ImageUploader fieldName="og_image" form={form} />
                             <FormDescription>
-                                تصویر برای اشتراک‌گذاری در شبکه‌های اجتماعی (1200x630). اگر خالی باشد از تصویر شاخص استفاده می‌شود.
+                                برای اشتراک‌گذاری در شبکه‌های اجتماعی (1200x630). اگر خالی باشد از تصویر شاخص استفاده می‌شود.
                             </FormDescription>
                             <FormMessage />
                             </FormItem>
