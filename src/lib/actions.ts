@@ -75,6 +75,7 @@ export async function handleLogin(prevState: any, formData: FormData) {
   try {
     const { email, password } = loginSchema.parse(Object.fromEntries(formData));
     const settings = await getSiteSettings();
+    
     const adminEmail = settings.adminEmail;
     const adminPasswordHash = settings.adminPasswordHash;
 
@@ -319,36 +320,31 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
     
-    const { currentPassword, newPassword, ...settingsData } = validatedData;
-    let newPasswordHash = data.settings.adminPasswordHash;
+    const { currentPassword, newPassword, confirmNewPassword, ...newSettings } = validatedData;
+    
+    // Merge new settings into existing settings to preserve fields not in the form
+    const updatedSettings = {
+        ...data.settings,
+        ...newSettings
+    };
 
     if (newPassword) {
         if (!currentPassword) {
             throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
         }
         
-        const storedPassword = Buffer.from(data.settings.adminPasswordHash, 'base64').toString('utf-8');
-
-        if (currentPassword !== storedPassword) {
+        const currentPasswordHash = data.settings.adminPasswordHash || '';
+        const inputCurrentPasswordHash = Buffer.from(currentPassword).toString('base64');
+        
+        if (inputCurrentPasswordHash !== currentPasswordHash) {
             throw new Error("رمز عبور فعلی نادرست است.");
         }
-        newPasswordHash = Buffer.from(newPassword).toString('base64');
+        updatedSettings.adminPasswordHash = Buffer.from(newPassword).toString('base64');
     }
     
-    data.settings = {
-        en: settingsData.en,
-        fa: settingsData.fa,
-        seo: settingsData.seo,
-        socials: settingsData.socials,
-        adminEmail: settingsData.adminEmail,
-        integrations: settingsData.integrations,
-        adminPasswordHash: newPasswordHash,
-    };
-
+    data.settings = updatedSettings;
     await writeData(data);
 
     revalidatePath("/", "layout");
     revalidatePath("/admin/settings", "page");
 }
-
-    
