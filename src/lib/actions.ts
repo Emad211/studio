@@ -7,6 +7,7 @@ import path from "node:path";
 import { z } from "zod";
 import type { Project, BlogPost, SiteSettings } from "./data";
 import { getInitialData, services } from "./data";
+import { cookies } from 'next/headers'
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
@@ -63,9 +64,46 @@ export async function getAllCategories(lang: 'en' | 'fa') {
   return services.map(s => s.title);
 }
 
+// --- Authentication Actions ---
 
-// Server Actions for Projects
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1, "Password is required"),
+});
 
+export async function handleLogin(prevState: any, formData: FormData) {
+  try {
+    const { email, password } = loginSchema.parse(Object.fromEntries(formData));
+
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminEmail || !adminPassword) {
+      return { success: false, message: "تنظیمات ورود در سرور پیکربندی نشده است." };
+    }
+
+    if (email === adminEmail && password === adminPassword) {
+      const session = { user: { email: adminEmail }, expires: new Date(Date.now() + 24 * 60 * 60 * 1000) };
+      cookies().set("session", JSON.stringify(session), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        expires: session.expires,
+        sameSite: 'lax',
+        path: '/',
+      });
+      return { success: true, message: "ورود موفقیت‌آمیز بود." };
+    } else {
+      return { success: false, message: "ایمیل یا رمز عبور نامعتبر است." };
+    }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, message: "لطفاً ایمیل و رمز عبور معتبر وارد کنید." };
+    }
+    return { success: false, message: "خطای ناشناخته‌ای رخ داد." };
+  }
+}
+
+// --- Project Actions ---
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
@@ -155,7 +193,7 @@ export async function deleteProject(slug: string): Promise<void> {
   revalidatePath("/en");
 }
 
-// Server Actions for Blog Posts
+// --- Blog Post Actions ---
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
@@ -225,7 +263,7 @@ export async function deleteBlogPost(slug: string): Promise<void> {
   revalidatePath("/en/blog");
 }
 
-// Server Actions for Settings
+// --- Site Settings Actions ---
 const settingsSchema = z.object({
   en: z.object({
     siteName: z.string().min(1),
@@ -265,8 +303,16 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
     
-    // Merge security settings into advanced settings before saving
-    const { adminEmail } = validatedData.security;
+    // This is a simplified example. In a real app, you'd want to handle password changes securely.
+    // For now, we're just updating the admin email in the settings.
+    process.env.ADMIN_EMAIL = validatedData.security.adminEmail;
+
+    // You would typically not store passwords directly or handle them this way.
+    // This is a placeholder for a more robust system.
+    if (validatedData.security.newPassword) {
+        console.log("Password change requested. In a real app, you would hash and store this securely.");
+        // process.env.ADMIN_PASSWORD = validatedData.security.newPassword;
+    }
     
     data.settings = {
         en: validatedData.en,
@@ -274,19 +320,14 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
         seo: validatedData.seo,
         socials: validatedData.socials,
         advanced: {
-            adminEmail: adminEmail,
+            adminEmail: validatedData.security.adminEmail,
         },
     };
-    
-    // Here you would typically handle password change logic
-    // e.g. check current password, hash new password, save it
-    // This is omitted for simplicity in this file-based CMS.
-    if (validatedData.security.newPassword) {
-        console.log("Password change requested, but logic is not implemented.");
-    }
 
     await writeData(data);
 
     // Revalidate all paths that might use settings
     revalidatePath("/", "page");
+    revalidatePath("/en", "page");
+    revalidatePath("/admin/settings", "page");
 }

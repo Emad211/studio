@@ -14,12 +14,23 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { HeroBackground } from "@/components/sections/hero-background"
 import { handleLogin } from "@/lib/actions"
-import { useFormState } from 'react-dom'
+import { useFormState, useFormStatus } from 'react-dom'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Loader2 } from "lucide-react"
 
 const initialState = {
+  success: false,
   message: '',
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+       {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {pending ? "در حال ورود..." : "ورود"}
+    </Button>
+  )
 }
 
 function LoginForm() {
@@ -34,7 +45,7 @@ function LoginForm() {
 
   return (
     <form action={formAction} className="space-y-6">
-      {state?.message && (
+      {state?.message && !state.success && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>خطا در ورود</AlertTitle>
@@ -64,9 +75,7 @@ function LoginForm() {
           autoComplete="current-password"
         />
       </div>
-      <Button type="submit" className="w-full">
-        ورود
-      </Button>
+      <SubmitButton />
     </form>
   )
 }
@@ -92,4 +101,3 @@ export default function LoginPage() {
     </>
   )
 }
-
