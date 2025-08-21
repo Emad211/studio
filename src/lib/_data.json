@@ -14,7 +14,7 @@
       ],
       "description": "Utilizing advanced Deep Learning models (CNN, EfficientNet, ResNet, VGG16) to classify brain tumor MRI scans with high accuracy.",
       "description_fa": "استفاده از مدل‌های پیشرفته یادگیری عمیق (CNN، EfficientNet، ResNet، VGG16) برای طبقه‌بندی تصاویر MRI تومور مغزی با دقت بالا.",
-      "image": "https://res.cloudinary.com/dnoeudkfc/image/upload/v1755640239/profile-pic2_lpvymc.jpg",
+      "image": "https://placehold.co/600x400.png",
       "tags": [
         "Deep Learning",
         "TensorFlow",
@@ -27,7 +27,8 @@
         "github": "https://github.com/Emad211/Deep-Learning-for-Brain-MRI-Classification",
         "live": ""
       },
-      "showcaseType": "links",
+      "showcase_simulator": false,
+      "showcase_ai_chatbot": false,
       "gallery": [],
       "aiPromptContext": "",
       "about": "This project explores various Deep Learning models for the critical task of Brain MRI Tumor Classification. Using the Brain Tumor MRI Scans dataset from Kaggle, multiple neural network architectures including custom CNNs, EfficientNet, ResNet, and VGG16 are implemented and compared to classify images into tumor and non-tumor categories accurately.",
@@ -68,7 +69,8 @@
         "github": "https://github.com/Emad211",
         "live": "#"
       },
-      "showcaseType": "links",
+      "showcase_simulator": false,
+      "showcase_ai_chatbot": false,
       "gallery": [],
       "aiPromptContext": "",
       "about": "This project is an advanced e-commerce platform that leverages AI to create a personalized shopping experience. The system analyzes user behavior to provide tailored product recommendations, increasing engagement and sales. It includes a comprehensive admin dashboard for managing products, users, and orders.",
@@ -108,7 +110,8 @@
         "github": "",
         "live": ""
       },
-      "showcaseType": "simulator",
+      "showcase_simulator": true,
+      "showcase_ai_chatbot": false,
       "gallery": [
         "https://placehold.co/1280x720.png",
         "https://placehold.co/1280x720.png",
@@ -149,7 +152,8 @@
         "github": "https://github.com/Emad211",
         "live": "#"
       },
-      "showcaseType": "links",
+      "showcase_simulator": false,
+      "showcase_ai_chatbot": false,
       "gallery": [],
       "aiPromptContext": "",
       "about": "This is the very portfolio website you are looking at. It's designed to be a clean, modern, and performant platform to showcase my work in the field of AI and software development. It features a bilingual interface (English/Persian) and a content management system for projects and blog posts.",
@@ -189,7 +193,8 @@
         "github": "",
         "live": ""
       },
-      "showcaseType": "ai_chatbot",
+      "showcase_simulator": false,
+      "showcase_ai_chatbot": true,
       "gallery": [],
       "aiPromptContext": "This project is a sophisticated weather forecasting application that leverages a Long Short-Term Memory (LSTM) deep learning model, implemented with TensorFlow and Keras. The primary goal was to achieve higher accuracy in long-range weather predictions compared to traditional models. The model was trained on a massive historical weather dataset spanning over 20 years, including variables like temperature, humidity, wind speed, and pressure. A Flask API was developed to serve the model's predictions, which can be integrated into various front-end applications. One of the main challenges was handling the time-series nature of the data and preventing model overfitting, which was addressed using techniques like dropout and early stopping. The final model demonstrated a 15% improvement in accuracy for 7-day forecasts over the baseline model.",
       "about": "This project aims to provide more accurate weather forecasts using a deep learning approach. Traditional models often struggle with long-term predictions, but by using an LSTM (Long Short-Term Memory) network, this model can capture complex temporal dependencies in historical weather data.",
@@ -234,18 +239,18 @@
     "en": {
       "siteName": "Emad Karimi",
       "authorName": "Emad Karimi",
-      "metaTitle": "CodeCanvas | A modern portfolio for developers",
-      "metaDescription": "Showcase your projects and skills with this modern, AI-powered portfolio website."
+      "metaTitle": "Emad Karimi | AI & Computer Engineer",
+      "metaDescription": "The personal portfolio of Emad Karimi, an AI and Computer Engineer showcasing projects and skills."
     },
     "fa": {
       "siteName": "عماد کریمی",
       "authorName": "عماد کریمی",
-      "metaTitle": "کدکانواس | یک پورتفولیو مدرن برای توسعه‌دهندگان",
-      "metaDescription": "پروژه‌ها و مهارت‌های خود را با این وب‌سایت پورتفولیو مدرن و مجهز به هوش مصنوعی به نمایش بگذارید."
+      "metaTitle": "عماد کریمی | مهندس کامپیوتر و هوش مصنوعی",
+      "metaDescription": "پورتفولیو شخصی عماد کریمی، مهندس کامپیوتر و هوش مصنوعی، شامل پروژه‌ها و مهارت‌ها."
     },
     "seo": {
       "siteURL": "https://example.com",
-      "metaKeywords": "AI, Portfolio, Next.js, React, Developer",
+      "metaKeywords": "AI, Portfolio, Next.js, React, Developer, Emad Karimi, عماد کریمی, هوش مصنوعی",
       "twitterUsername": "emad211",
       "ogImage": "https://placehold.co/1200x630.png"
     },

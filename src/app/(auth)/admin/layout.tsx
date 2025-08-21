@@ -1,4 +1,8 @@
+
+"use client";
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   FileText,
   FolderKanban,
@@ -6,7 +10,6 @@ import {
   PanelLeft,
   Settings,
   Home,
-  ArrowLeft
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,10 +20,10 @@ import {
 import { cn } from '@/lib/utils'
 
 const adminNavLinks = [
-  { href: '/admin', label: 'داشبورد', icon: LayoutDashboard },
-  { href: '/admin/projects', label: 'پروژه‌ها', icon: FolderKanban },
-  { href: '/admin/blog', label: 'وبلاگ', icon: FileText },
-  { href: '/admin/settings', label: 'تنظیمات', icon: Settings },
+  { href: '/admin', label: 'داشبورد', icon: LayoutDashboard, exact: true },
+  { href: '/admin/projects', label: 'پروژه‌ها', icon: FolderKanban, exact: false },
+  { href: '/admin/blog', label: 'وبلاگ', icon: FileText, exact: false },
+  { href: '/admin/settings', label: 'تنظیمات', icon: Settings, exact: true },
 ]
 
 export default function AdminLayout({
@@ -28,6 +31,14 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname();
+
+  const isActive = (href: string, exact: boolean = false) => {
+    if (exact) {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
 
   const navContent = (
     <nav className="grid items-start gap-2 px-4 text-sm font-medium">
@@ -37,6 +48,7 @@ export default function AdminLayout({
           href={link.href}
           className={cn(
             'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+            isActive(link.href, link.exact) && 'bg-accent text-primary'
           )}
         >
           <link.icon className="h-4 w-4" />
