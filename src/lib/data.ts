@@ -76,8 +76,11 @@ export interface SiteSettings {
         github: string;
         telegram: string;
     };
+}
+
+export interface Credentials {
     adminEmail: string;
-    adminPasswordHash: string; // Storing hash instead of plain text
+    adminPasswordHash: string;
     integrations: {
         geminiApiKey?: string;
         googleAnalyticsId?: string;
@@ -352,7 +355,14 @@ export function getInitialData() {
             email: "emad.k50000@gmail.com",
             github: "https://github.com/Emad211",
             telegram: "https://t.me/Freelancer_programmerr"
-        },
+        }
+    };
+    
+    return { projects: initialProjects, blogPosts: initialBlogPosts, settings: initialSettings };
+}
+
+export function getInitialCredentials(): Credentials {
+    return {
         adminEmail: "admin@example.com",
         adminPasswordHash: Buffer.from("admin").toString('base64'),
         integrations: {
@@ -365,9 +375,8 @@ export function getInitialData() {
             }
         }
     };
-    
-    return { projects: initialProjects, blogPosts: initialBlogPosts, settings: initialSettings };
 }
+
 
 type SkillLevel = 'Expert' | 'Advanced' | 'Intermediate' | 'Beginner';
 type SkillLevelFa = 'متخصص' | 'پیشرفته' | 'متوسط' | 'مبتدی';

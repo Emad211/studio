@@ -5,13 +5,12 @@ import { revalidatePath } from "next/cache";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
-import type { Project, BlogPost, SiteSettings } from "./data";
-import { getInitialData, services } from "./data";
+import type { Project, BlogPost, SiteSettings, Credentials } from "./data";
+import { getInitialData, services, getInitialCredentials } from "./data";
 import { cookies } from 'next/headers'
 
-// This is a mock database. In a real application, you would use a database
-// like PostgreSQL, MongoDB, or Firebase.
 const DATA_FILE = path.join(process.cwd(), "src", "lib", "_data.json");
+const CREDENTIALS_FILE = path.join(process.cwd(), ".credentials.json");
 
 type DbData = {
     projects: Project[];
@@ -19,6 +18,7 @@ type DbData = {
     settings: SiteSettings;
 }
 
+// Data Access Functions for Public Data (_data.json)
 async function readData(): Promise<DbData> {
   try {
     const fileContent = await fs.readFile(DATA_FILE, "utf-8");
@@ -39,8 +39,29 @@ async function writeData(data: DbData): Promise<void> {
   await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
+// Data Access Functions for Sensitive Data (.credentials.json)
+async function readCredentials(): Promise<Credentials> {
+    try {
+        const fileContent = await fs.readFile(CREDENTIALS_FILE, "utf-8");
+        return JSON.parse(fileContent);
+    } catch (error: any) {
+        if (error.code === 'ENOENT') {
+            console.log("Credentials file not found, initializing...");
+            const initialCredentials = getInitialCredentials();
+            await writeCredentials(initialCredentials);
+            return initialCredentials;
+        }
+        console.error("Error reading credentials file:", error);
+        throw error;
+    }
+}
 
-// Data Access Functions
+async function writeCredentials(data: Credentials): Promise<void> {
+    await fs.writeFile(CREDENTIALS_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+
+// Public Data Getters
 export async function getProjects(): Promise<Project[]> {
     const data = await readData();
     return data.projects || [];
@@ -53,8 +74,11 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
 export async function getSiteSettings(): Promise<SiteSettings> {
     const data = await readData();
-    // Return default settings if none are found
     return data.settings || getInitialData().settings;
+}
+
+export async function getCredentials(): Promise<Credentials> {
+    return await readCredentials();
 }
 
 export async function getAllCategories(lang: 'en' | 'fa') {
@@ -65,7 +89,6 @@ export async function getAllCategories(lang: 'en' | 'fa') {
 }
 
 // --- Authentication Actions ---
-
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, "Password is required"),
@@ -74,19 +97,16 @@ const loginSchema = z.object({
 export async function handleLogin(prevState: any, formData: FormData) {
   try {
     const { email, password } = loginSchema.parse(Object.fromEntries(formData));
-    const settings = await getSiteSettings();
+    const credentials = await getCredentials();
     
-    const adminEmail = settings.adminEmail;
-    const adminPasswordHash = settings.adminPasswordHash;
-
-    if (!adminEmail || !adminPasswordHash) {
+    if (!credentials.adminEmail || !credentials.adminPasswordHash) {
       return { success: false, message: "تنظیمات ورود در سرور پیکربندی نشده است." };
     }
     
     const inputPasswordHash = Buffer.from(password).toString('base64');
 
-    if (email === adminEmail && inputPasswordHash === adminPasswordHash) {
-      const session = { user: { email: adminEmail }, expires: new Date(Date.now() + 24 * 60 * 60 * 1000) };
+    if (email === credentials.adminEmail && inputPasswordHash === credentials.adminPasswordHash) {
+      const session = { user: { email: credentials.adminEmail }, expires: new Date(Date.now() + 24 * 60 * 60 * 1000) };
       cookies().set("session", JSON.stringify(session), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -118,7 +138,6 @@ const projectSchema = z.object({
   tags: z.string().min(1, "حداقل یک تگ الزامی است."),
   categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
   
-  // Showcase fields
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
   showcase_simulator: z.boolean(),
@@ -126,7 +145,6 @@ const projectSchema = z.object({
   showcase_ai_chatbot: z.boolean(),
   aiPromptContext: z.string().optional(),
 
-  // Page Content fields
   about: z.string().min(1, "About content is required."),
   about_fa: z.string().min(1, "محتوای درباره پروژه الزامی است."),
   technical_details: z.string().min(1, "Technical details are required."),
@@ -168,7 +186,6 @@ export async function saveProject(
       data.projects[projectIndex] = { ...data.projects[projectIndex], ...projectData };
     }
   } else {
-    // Check for duplicate slug
     if (data.projects.some(p => p.slug === projectData.slug)) {
         throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
     }
@@ -198,7 +215,6 @@ export async function deleteProject(slug: string): Promise<void> {
 }
 
 // --- Blog Post Actions ---
-
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
   content_fa: z.string().min(10, "محتوای فارسی باید حداقل 10 کاراکتر باشد."),
@@ -268,7 +284,7 @@ export async function deleteBlogPost(slug: string): Promise<void> {
 }
 
 // --- Site Settings Actions ---
-const settingsSchema = z.object({
+const publicSettingsSchema = z.object({
   en: z.object({
     siteName: z.string().min(1),
     authorName: z.string().min(1),
@@ -292,19 +308,30 @@ const settingsSchema = z.object({
       github: z.string().url(),
       telegram: z.string().url(),
   }),
-  adminEmail: z.string().email(),
-  currentPassword: z.string().optional(),
-  newPassword: z.string().optional(),
-  confirmNewPassword: z.string().optional(),
-  integrations: z.object({
-    geminiApiKey: z.string().optional(),
-    googleAnalyticsId: z.string().optional(),
-    cloudinary: z.object({
-        cloudName: z.string().optional(),
-        apiKey: z.string().optional(),
-        apiSecret: z.string().optional(),
+});
+
+export async function saveSiteSettings(formData: z.infer<typeof publicSettingsSchema>) {
+    const validatedData = publicSettingsSchema.parse(formData);
+    const data = await readData();
+    data.settings = validatedData;
+    await writeData(data);
+    revalidatePath("/", "layout");
+}
+
+const credentialsSchema = z.object({
+    adminEmail: z.string().email(),
+    currentPassword: z.string().optional(),
+    newPassword: z.string().optional(),
+    confirmNewPassword: z.string().optional(),
+    integrations: z.object({
+        geminiApiKey: z.string().optional(),
+        googleAnalyticsId: z.string().optional(),
+        cloudinary: z.object({
+            cloudName: z.string().optional(),
+            apiKey: z.string().optional(),
+            apiSecret: z.string().optional(),
+        })
     })
-  })
 }).refine(data => {
     if (data.newPassword) {
         return data.newPassword === data.confirmNewPassword;
@@ -316,46 +343,31 @@ const settingsSchema = z.object({
 });
 
 
-export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>) {
-    const validatedData = settingsSchema.parse(formData);
-    const data = await readData();
-    
-    // Create a mutable copy of the current settings
-    const updatedSettings: SiteSettings = { ...data.settings };
-    
-    const { currentPassword, newPassword, confirmNewPassword, ...newSettingsData } = validatedData;
+export async function saveCredentials(formData: z.infer<typeof credentialsSchema>) {
+    const validatedData = credentialsSchema.parse(formData);
+    const currentCredentials = await readCredentials();
 
-    // Merge all the new data from the form into the settings object
-    updatedSettings.en = newSettingsData.en;
-    updatedSettings.fa = newSettingsData.fa;
-    updatedSettings.seo = newSettingsData.seo;
-    updatedSettings.socials = newSettingsData.socials;
-    updatedSettings.adminEmail = newSettingsData.adminEmail;
-    updatedSettings.integrations = newSettingsData.integrations;
+    const newCredentials: Credentials = { ...currentCredentials };
     
-    // Handle password change if a new password is provided
-    if (newPassword) {
-        if (!currentPassword) {
+    newCredentials.adminEmail = validatedData.adminEmail;
+    newCredentials.integrations = validatedData.integrations;
+
+    // Handle password change
+    if (validatedData.newPassword) {
+        if (!validatedData.currentPassword) {
             throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
         }
         
-        const currentPasswordHash = updatedSettings.adminPasswordHash || '';
-        const inputCurrentPasswordHash = Buffer.from(currentPassword).toString('base64');
+        const inputCurrentPasswordHash = Buffer.from(validatedData.currentPassword).toString('base64');
         
-        if (inputCurrentPasswordHash !== currentPasswordHash) {
+        if (inputCurrentPasswordHash !== currentCredentials.adminPasswordHash) {
             throw new Error("رمز عبور فعلی نادرست است.");
         }
         
-        // Only update the hash if the current password is correct
-        updatedSettings.adminPasswordHash = Buffer.from(newPassword).toString('base64');
+        newCredentials.adminPasswordHash = Buffer.from(validatedData.newPassword).toString('base64');
     }
     
-    // The adminPasswordHash is now preserved if no new password is set
-    // and updated correctly if a new password is set.
+    await writeCredentials(newCredentials);
 
-    data.settings = updatedSettings;
-    await writeData(data);
-
-    revalidatePath("/", "layout");
-    revalidatePath("/admin/settings", "page");
+    revalidatePath("/admin/settings");
 }

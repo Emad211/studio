@@ -1,8 +1,10 @@
 
-import { getSiteSettings } from "@/lib/actions";
+import { getSiteSettings, getCredentials } from "@/lib/actions";
 import { SettingsForm } from "@/components/admin/settings-form";
 
 export default async function SettingsPage() {
   const settings = await getSiteSettings();
-  return <SettingsForm settings={settings} />;
+  const credentials = await getCredentials();
+  
+  return <SettingsForm settings={settings} credentials={credentials} />;
 }

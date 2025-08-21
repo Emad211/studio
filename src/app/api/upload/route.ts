@@ -1,10 +1,11 @@
+
 import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
-import { getSiteSettings } from '@/lib/actions';
+import { getCredentials } from '@/lib/actions';
 
 async function configureCloudinary() {
-    const settings = await getSiteSettings();
-    const { cloudName, apiKey, apiSecret } = settings.integrations.cloudinary || {};
+    const credentials = await getCredentials();
+    const { cloudName, apiKey, apiSecret } = credentials.integrations.cloudinary || {};
 
     if (!cloudName || !apiKey || !apiSecret) {
         throw new Error('Cloudinary configuration is missing. Please add it in the admin settings panel.');

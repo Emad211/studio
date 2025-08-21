@@ -1,7 +1,7 @@
 
 import { genkit, GenerationCommonConfig } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
-import { getSiteSettings } from '@/lib/actions';
+import { getCredentials } from '@/lib/actions';
 
 // The googleAI() plugin configuration.
 // It will be initialized asynchronously.
@@ -16,8 +16,8 @@ async function initializeGenkit() {
   }
   
   initPromise = (async () => {
-    const settings = await getSiteSettings();
-    const geminiApiKey = settings.integrations?.geminiApiKey || process.env.GEMINI_API_KEY;
+    const credentials = await getCredentials();
+    const geminiApiKey = credentials.integrations?.geminiApiKey || process.env.GEMINI_API_KEY;
 
     if (!geminiApiKey) {
       console.warn("Gemini API Key is not configured. AI features will not be available.");
