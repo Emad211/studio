@@ -8,7 +8,6 @@ import { z } from "zod";
 import type { Project, BlogPost, SiteSettings } from "./data";
 import { getInitialData, services } from "./data";
 import { cookies } from 'next/headers'
-import 'dotenv/config'
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
@@ -75,16 +74,17 @@ const loginSchema = z.object({
 export async function handleLogin(prevState: any, formData: FormData) {
   try {
     const { email, password } = loginSchema.parse(Object.fromEntries(formData));
+    const settings = await getSiteSettings();
+    const { adminEmail, adminPasswordHash } = settings.security;
 
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-
-    if (!adminEmail || !adminPassword) {
-      console.error("Admin credentials are not set in .env file.");
+    if (!adminEmail || !adminPasswordHash) {
       return { success: false, message: "تنظیمات ورود در سرور پیکربندی نشده است." };
     }
+    
+    // Decode the stored password
+    const storedPassword = Buffer.from(adminPasswordHash, 'base64').toString('utf-8');
 
-    if (email === adminEmail && password === adminPassword) {
+    if (email === adminEmail && password === storedPassword) {
       const session = { user: { email: adminEmail }, expires: new Date(Date.now() + 24 * 60 * 60 * 1000) };
       cookies().set("session", JSON.stringify(session), {
         httpOnly: true,
@@ -296,48 +296,62 @@ const settingsSchema = z.object({
       currentPassword: z.string().optional(),
       newPassword: z.string().optional(),
       confirmNewPassword: z.string().optional(),
+  }),
+  integrations: z.object({
+    geminiApiKey: z.string().optional(),
+    googleAnalyticsId: z.string().optional(),
+    cloudinary: z.object({
+        cloudName: z.string().optional(),
+        apiKey: z.string().optional(),
+        apiSecret: z.string().optional(),
+    })
   })
-}).refine(data => data.security.newPassword === data.security.confirmNewPassword, {
+}).refine(data => {
+    if (data.security.newPassword) {
+        return data.security.newPassword === data.security.confirmNewPassword;
+    }
+    return true;
+}, {
     message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
     path: ["security", "confirmNewPassword"],
 });
+
 
 export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>) {
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
     
-    // Note: We are NOT saving sensitive info like passwords to the JSON file.
-    // This action only updates the non-sensitive settings.
-    // Password and email changes should be handled by updating .env variables,
-    // which is beyond the scope of what this function can do for security reasons.
+    // --- Security Logic ---
+    const { currentPassword, newPassword } = validatedData.security;
+    let newPasswordHash = data.settings.security.adminPasswordHash;
+
+    if (newPassword) {
+        if (!currentPassword) {
+            throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
+        }
+        const storedPassword = Buffer.from(data.settings.security.adminPasswordHash, 'base64').toString('utf-8');
+        if (currentPassword !== storedPassword) {
+            throw new Error("رمز عبور فعلی نادرست است.");
+        }
+        // Encode the new password
+        newPasswordHash = Buffer.from(newPassword).toString('base64');
+    }
     
     data.settings = {
         en: validatedData.en,
         fa: validatedData.fa,
         seo: validatedData.seo,
         socials: validatedData.socials,
-        advanced: {
+        integrations: validatedData.integrations,
+        security: {
             adminEmail: validatedData.security.adminEmail,
+            adminPasswordHash: newPasswordHash,
         },
     };
 
     await writeData(data);
 
     // Revalidate all paths that might use settings
-    revalidatePath("/", "page");
-    revalidatePath("/en", "page");
+    revalidatePath("/", "layout");
     revalidatePath("/admin/settings", "page");
-}
-
-export async function getApiKeys() {
-    // This function securely reads API keys from the server environment
-    // and makes them available to the client-side settings page.
-    // It does NOT write or expose them in any other way.
-    return {
-        geminiApiKey: process.env.GEMINI_API_KEY ? '******' + process.env.GEMINI_API_KEY.slice(-4) : 'Not Set',
-        googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || 'Not Set',
-        cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || 'Not Set',
-        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY ? '******' + process.env.CLOUDINARY_API_KEY.slice(-4) : 'Not Set',
-        cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET ? '******' + process.env.CLOUDINARY_API_SECRET.slice(-4) : 'Not Set',
-    };
 }

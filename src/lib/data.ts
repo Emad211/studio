@@ -76,8 +76,18 @@ export interface SiteSettings {
         github: string;
         telegram: string;
     };
-    advanced: {
+    security: {
         adminEmail: string;
+        adminPasswordHash: string; // Storing hash instead of plain text
+    };
+    integrations: {
+        geminiApiKey?: string;
+        googleAnalyticsId?: string;
+        cloudinary?: {
+            cloudName?: string;
+            apiKey?: string;
+            apiSecret?: string;
+        }
     }
 }
 
@@ -136,7 +146,7 @@ export function getInitialData() {
         ],
         aiPromptContext: "",
         about: "This app helps teams manage their tasks intelligently. An AI agent analyzes task descriptions, deadlines, and dependencies to suggest priorities and optimal workflows. It features real-time collaboration, notifications, and progress tracking.",
-        about_fa: "این برنامه به تیم‌ها کمک می‌کند تا وظایف خود را هوشمندانه مدیریت کنند. یک ایجنت هوش مصنوعی توضیحات، مهلت‌ها و وابستگی‌های وظایف را تحلیل کرده و اولویت‌ها و گردش کارهای بهینه را پیشنهاد می‌دهد. این برنامه دارای قابلیت همکاری آنی، اعلان‌ها و پیگیری پیشرفت است.",
+        about_fa: "این برنامه به تیم‌ها کمک می‌کند تا وظایf خود را هوشمندانه مدیریت کنند. یک ایجنت هوش مصنوعی توضیحات، مهلت‌ها و وابستگی‌های وظایف را تحلیل کرده و اولویت‌ها و گردش کارهای بهینه را پیشنهاد می‌دهد. این برنامه دارای قابلیت همکاری آنی، اعلان‌ها و پیگیری پیشرفت است.",
         technical_details: "The application is built using React for the frontend and Firebase (Firestore and Realtime Database) for the backend and real-time data synchronization. The AI agent for task prioritization is a custom model built with Scikit-learn, deployed as a cloud function.",
         technical_details_fa: "اپلیکیشن با استفاده از React برای فرانت‌اند و Firebase (Firestore و Realtime Database) برای بک‌اند و همگام‌سازی آنی داده‌ها ساخته شده است. ایجنت هوش مصنوعی برای اولویت‌بندی وظایف، یک مدل سفارشی ساخته‌شده با Scikit-learn است که به عنوان یک Cloud Function مستقر شده است.",
         challenges: "Ensuring real-time updates across all clients without performance degradation was a key challenge. We optimized our Firestore queries and data structures extensively and used the Realtime Database for presence indicators.",
@@ -367,8 +377,20 @@ class Perceptron:
             github: "https://github.com/Emad211",
             telegram: "https://t.me/Freelancer_programmerr"
         },
-        advanced: {
-            adminEmail: "admin@example.com"
+        security: {
+            adminEmail: "admin@example.com",
+            // Storing a base64 encoded password for simplicity. 
+            // In a real production app, use a strong hashing algorithm like bcrypt.
+            adminPasswordHash: Buffer.from("admin").toString('base64'),
+        },
+        integrations: {
+            geminiApiKey: "",
+            googleAnalyticsId: "",
+            cloudinary: {
+                cloudName: "",
+                apiKey: "",
+                apiSecret: ""
+            }
         }
     };
     
@@ -685,4 +707,3 @@ export const experienceFa = [
         duration: "فروردین ۱۳۹۸ - فروردین ۱۳۹۹"
     }
 ];
-

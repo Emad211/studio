@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useTransition, useEffect, useState } from "react";
+import { useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { SiteSettings } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -20,12 +20,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { saveSiteSettings, getApiKeys } from "@/lib/actions";
+import { saveSiteSettings } from "@/lib/actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Search, Share2, Shield, Plug, Copy } from "lucide-react";
+import { Globe, Search, Share2, Shield, Plug } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { Label } from "@/components/ui/label";
 
 const settingsSchema = z.object({
   en: z.object({
@@ -56,6 +55,15 @@ const settingsSchema = z.object({
       currentPassword: z.string().optional(),
       newPassword: z.string().optional(),
       confirmNewPassword: z.string().optional(),
+  }),
+  integrations: z.object({
+    geminiApiKey: z.string().optional(),
+    googleAnalyticsId: z.string().optional(),
+    cloudinary: z.object({
+        cloudName: z.string().optional(),
+        apiKey: z.string().optional(),
+        apiSecret: z.string().optional(),
+    })
   })
 }).refine(data => data.security.newPassword === data.security.confirmNewPassword, {
     message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
@@ -64,58 +72,18 @@ const settingsSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
 
-interface ApiKeyDisplayProps {
-  label: string;
-  value: string;
-  description: string;
-}
-
-function ApiKeyDisplay({ label, value, description }: ApiKeyDisplayProps) {
-    const { toast } = useToast();
-    
-    const handleCopy = () => {
-        navigator.clipboard.writeText(value);
-        toast({
-            title: "کپی شد",
-            description: `${label} در کلیپ‌بورد کپی شد.`
-        });
-    }
-
-    return (
-        <div className="space-y-2">
-            <Label>{label}</Label>
-            <FormDescription>{description}</FormDescription>
-            <div className="flex items-center gap-2">
-                <Input dir="ltr" readOnly value={value} className="font-mono bg-muted" />
-                <Button type="button" variant="ghost" size="icon" onClick={handleCopy}>
-                    <Copy className="w-4 h-4" />
-                </Button>
-            </div>
-        </div>
-    );
-}
-
 interface SettingsFormProps {
   settings: SiteSettings;
-  apiKeys: Awaited<ReturnType<typeof getApiKeys>>;
 }
 
-export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
+export function SettingsForm({ settings }: SettingsFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      ...settings,
-      security: {
-        adminEmail: settings.advanced?.adminEmail || "",
-        currentPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      }
-    },
+    defaultValues: settings,
   });
 
   const onSubmit = (data: SettingsFormValues) => {
@@ -124,14 +92,14 @@ export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
         await saveSiteSettings(data);
         toast({
           title: "موفقیت",
-          description: "تنظیمات با موفقیت ذخیره شد. تغییرات امنیتی نیاز به ویرایش فایل .env و ری‌استارت سرور دارد.",
+          description: "تنظیمات با موفقیت ذخیره شد. برخی تغییرات ممکن است نیاز به بارگذاری مجدد صفحه داشته باشند.",
         });
         router.refresh();
-      } catch (error) {
+      } catch (error: any) {
         toast({
           variant: "destructive",
           title: "خطا",
-          description: "خطا در ذخیره تنظیمات. لطفا دوباره تلاش کنید.",
+          description: error.message || "خطا در ذخیره تنظیمات. لطفا دوباره تلاش کنید.",
         });
       }
     });
@@ -309,32 +277,32 @@ export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
                 <FormField control={form.control} name="security.adminEmail" render={({ field }) => (
                     <FormItem>
                         <FormLabel>ایمیل ادمین</FormLabel>
-                        <FormDescription>این ایمیل برای ورود و دریافت نوتیفیکیشن‌ها استفاده می‌شود. برای اعمال تغییر، فایل .env را ویرایش کنید.</FormDescription>
+                        <FormDescription>این ایمیل برای ورود و دریافت نوتیفیکیشن‌ها استفاده می‌شود.</FormDescription>
                         <FormControl><Input dir="ltr" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <Separator />
                  <h4 className="text-lg font-medium">تغییر رمز عبور</h4>
-                 <FormDescription>برای تغییر رمز عبور، باید فایل .env را مستقیما ویرایش کرده و سرور را ری‌استارت کنید.</FormDescription>
+                 <FormDescription>برای تغییر رمز عبور، رمز فعلی خود را وارد کنید. اگر فیلدهای رمز عبور جدید را خالی بگذارید، رمز عبور فعلی بدون تغییر باقی خواهد ماند.</FormDescription>
                 <FormField control={form.control} name="security.currentPassword" render={({ field }) => (
                     <FormItem>
                         <FormLabel>رمز عبور فعلی</FormLabel>
-                        <FormControl><Input type="password" dir="ltr" {...field} /></FormControl>
+                        <FormControl><Input type="password" dir="ltr" {...field} autoComplete="current-password" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                  <FormField control={form.control} name="security.newPassword" render={({ field }) => (
                     <FormItem>
                         <FormLabel>رمز عبور جدید</FormLabel>
-                        <FormControl><Input type="password" dir="ltr" {...field} /></FormControl>
+                        <FormControl><Input type="password" dir="ltr" {...field} autoComplete="new-password"/></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                  <FormField control={form.control} name="security.confirmNewPassword" render={({ field }) => (
                     <FormItem>
                         <FormLabel>تکرار رمز عبور جدید</FormLabel>
-                        <FormControl><Input type="password" dir="ltr" {...field} /></FormControl>
+                        <FormControl><Input type="password" dir="ltr" {...field} autoComplete="new-password" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -347,39 +315,51 @@ export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
                     <CardHeader>
                         <CardTitle>یکپارچه‌سازی و API Keys</CardTitle>
                         <CardDescription>
-                            کلیدهای API برای سرویس‌های خارجی در اینجا نمایش داده می‌شوند. این مقادیر از فایل .env خوانده شده و برای امنیت، قابل ویرایش در اینجا نیستند.
+                            کلیدهای API برای سرویس‌های خارجی را اینجا مدیریت کنید. این مقادیر به صورت امن در سرور ذخیره می‌شوند.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6" dir="rtl">
-                        <ApiKeyDisplay
-                            label="Gemini API Key"
-                            value={apiKeys.geminiApiKey}
-                            description="کلید برای استفاده از مدل‌های هوش مصنوعی Gemini در بخش‌هایی مانند چت‌بات و تولید محتوای وبلاگ."
-                        />
+                        <FormField control={form.control} name="integrations.geminiApiKey" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Gemini API Key</FormLabel>
+                                <FormDescription>کلید برای استفاده از مدل‌های هوش مصنوعی Gemini در بخش‌هایی مانند چت‌بات و تولید محتوای وبلاگ.</FormDescription>
+                                <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
                         <Separator />
-                         <ApiKeyDisplay
-                            label="Google Analytics ID"
-                            value={apiKeys.googleAnalyticsId}
-                            description="شناسه اندازه‌گیری گوگل آنالیتیکس برای ردیابی ترافیک سایت. (مثال: G-XXXXXXXXXX)"
-                        />
+                         <FormField control={form.control} name="integrations.googleAnalyticsId" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Google Analytics ID</FormLabel>
+                                <FormDescription>شناسه اندازه‌گیری گوگل آنالیتیکس برای ردیابی ترافیک سایت. (مثال: G-XXXXXXXXXX)</FormDescription>
+                                <FormControl><Input dir="ltr" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
                          <Separator />
                          <div className="space-y-4">
                             <h4 className="font-medium">Cloudinary</h4>
-                            <ApiKeyDisplay
-                                label="Cloud Name"
-                                value={apiKeys.cloudinaryCloudName}
-                                description="نام کلاد شما در سرویس Cloudinary برای بهین‌سازی و مدیریت تصاویر."
-                            />
-                            <ApiKeyDisplay
-                                label="API Key"
-                                value={apiKeys.cloudinaryApiKey}
-                                description="کلید API برای دسترسی به حساب Cloudinary شما."
-                            />
-                            <ApiKeyDisplay
-                                label="API Secret"
-                                value={apiKeys.cloudinaryApiSecret}
-                                description="کلید محرمانه برای عملیات‌های امن در Cloudinary."
-                            />
+                             <FormField control={form.control} name="integrations.cloudinary.cloudName" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Cloudinary Cloud Name</FormLabel>
+                                    <FormControl><Input dir="ltr" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                             <FormField control={form.control} name="integrations.cloudinary.apiKey" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Cloudinary API Key</FormLabel>
+                                    <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                             <FormField control={form.control} name="integrations.cloudinary.apiSecret" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Cloudinary API Secret</FormLabel>
+                                    <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
                         </div>
                     </CardContent>
                 </Card>
@@ -394,5 +374,3 @@ export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
     </Form>
   );
 }
-
-    
