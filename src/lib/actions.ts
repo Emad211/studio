@@ -320,28 +320,39 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
     
-    const { currentPassword, newPassword, confirmNewPassword, ...newSettings } = validatedData;
+    // Create a mutable copy of the current settings
+    const updatedSettings: SiteSettings = { ...data.settings };
     
-    // Merge new settings into existing settings to preserve fields not in the form
-    const updatedSettings = {
-        ...data.settings,
-        ...newSettings
-    };
+    const { currentPassword, newPassword, confirmNewPassword, ...newSettingsData } = validatedData;
 
+    // Merge all the new data from the form into the settings object
+    updatedSettings.en = newSettingsData.en;
+    updatedSettings.fa = newSettingsData.fa;
+    updatedSettings.seo = newSettingsData.seo;
+    updatedSettings.socials = newSettingsData.socials;
+    updatedSettings.adminEmail = newSettingsData.adminEmail;
+    updatedSettings.integrations = newSettingsData.integrations;
+    
+    // Handle password change if a new password is provided
     if (newPassword) {
         if (!currentPassword) {
             throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
         }
         
-        const currentPasswordHash = data.settings.adminPasswordHash || '';
+        const currentPasswordHash = updatedSettings.adminPasswordHash || '';
         const inputCurrentPasswordHash = Buffer.from(currentPassword).toString('base64');
         
         if (inputCurrentPasswordHash !== currentPasswordHash) {
             throw new Error("رمز عبور فعلی نادرست است.");
         }
+        
+        // Only update the hash if the current password is correct
         updatedSettings.adminPasswordHash = Buffer.from(newPassword).toString('base64');
     }
     
+    // The adminPasswordHash is now preserved if no new password is set
+    // and updated correctly if a new password is set.
+
     data.settings = updatedSettings;
     await writeData(data);
 
