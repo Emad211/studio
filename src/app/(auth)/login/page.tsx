@@ -13,15 +13,66 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { HeroBackground } from "@/components/sections/hero-background"
+import { handleLogin } from "@/lib/actions"
+import { useFormState } from 'react-dom'
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
+
+const initialState = {
+  message: '',
+}
+
+function LoginForm() {
+  const router = useRouter();
+  const [state, formAction] = useFormState(async (prevState: any, formData: FormData) => {
+    const result = await handleLogin(prevState, formData);
+    if (result.success) {
+      router.push('/admin');
+    }
+    return result;
+  }, initialState);
+
+  return (
+    <form action={formAction} className="space-y-6">
+      {state?.message && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>خطا در ورود</AlertTitle>
+          <AlertDescription>
+            {state.message}
+          </AlertDescription>
+        </Alert>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="email">ایمیل</Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="admin@example.com"
+          required
+          autoComplete="email"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password">رمز عبور</Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+        />
+      </div>
+      <Button type="submit" className="w-full">
+        ورود
+      </Button>
+    </form>
+  )
+}
+
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    router.push('/admin');
-  }
-
   return (
     <>
       <HeroBackground />
@@ -34,35 +85,11 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email">ایمیل</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@example.com"
-                  required
-                  autoComplete="email"
-                  defaultValue="admin@example.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">رمز عبور</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required 
-                  autoComplete="current-password"
-                  defaultValue="password"
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                ورود
-              </Button>
-            </form>
+            <LoginForm />
           </CardContent>
         </Card>
       </div>
     </>
   )
 }
+
