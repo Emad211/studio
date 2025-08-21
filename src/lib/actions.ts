@@ -319,7 +319,7 @@ export async function saveSiteSettings(formData: z.infer<typeof publicSettingsSc
 }
 
 const credentialsSchema = z.object({
-    adminEmail: z.string().email(),
+    adminEmail: z.string().email("Please enter a valid admin email."),
     currentPassword: z.string().optional(),
     newPassword: z.string().optional(),
     confirmNewPassword: z.string().optional(),
