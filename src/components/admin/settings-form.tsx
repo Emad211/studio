@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { SiteSettings } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -20,10 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { saveSiteSettings } from "@/lib/actions";
+import { saveSiteSettings, getApiKeys } from "@/lib/actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Search, Share2, Shield } from "lucide-react";
+import { Globe, Search, Share2, Shield, Plug, Copy } from "lucide-react";
 import { Separator } from "../ui/separator";
 
 const settingsSchema = z.object({
@@ -63,18 +63,49 @@ const settingsSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
 
-interface SettingsFormProps {
-  settings: SiteSettings;
+interface ApiKeyDisplayProps {
+  label: string;
+  value: string;
+  description: string;
 }
 
-export function SettingsForm({ settings }: SettingsFormProps) {
+function ApiKeyDisplay({ label, value, description }: ApiKeyDisplayProps) {
+    const { toast } = useToast();
+    
+    const handleCopy = () => {
+        navigator.clipboard.writeText(value);
+        toast({
+            title: "کپی شد",
+            description: `${label} در کلیپ‌بورد کپی شد.`
+        });
+    }
+
+    return (
+        <div className="space-y-2">
+            <Label>{label}</Label>
+            <FormDescription>{description}</FormDescription>
+            <div className="flex items-center gap-2">
+                <Input dir="ltr" readOnly value={value} className="font-mono bg-muted" />
+                <Button type="button" variant="ghost" size="icon" onClick={handleCopy}>
+                    <Copy className="w-4 h-4" />
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+interface SettingsFormProps {
+  settings: SiteSettings;
+  apiKeys: Awaited<ReturnType<typeof getApiKeys>>;
+}
+
+export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    // Add default empty values for the new security fields
     defaultValues: {
       ...settings,
       security: {
@@ -92,7 +123,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         await saveSiteSettings(data);
         toast({
           title: "موفقیت",
-          description: "تنظیمات با موفقیت ذخیره شد.",
+          description: "تنظیمات با موفقیت ذخیره شد. تغییرات امنیتی نیاز به ویرایش فایل .env و ری‌استارت سرور دارد.",
         });
         router.refresh();
       } catch (error) {
@@ -109,11 +140,12 @@ export function SettingsForm({ settings }: SettingsFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
-            <TabsTrigger value="general"><Globe className="w-4 h-4 mr-2" />عمومی</TabsTrigger>
-            <TabsTrigger value="seo"><Search className="w-4 h-4 mr-2" />سئو</TabsTrigger>
-            <TabsTrigger value="social"><Share2 className="w-4 h-4 mr-2" />شبکه‌های اجتماعی</TabsTrigger>
-            <TabsTrigger value="security"><Shield className="w-4 h-4 mr-2" />امنیت</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto">
+            <TabsTrigger value="general"><Globe className="w-4 h-4 ml-2" />عمومی</TabsTrigger>
+            <TabsTrigger value="seo"><Search className="w-4 h-4 ml-2" />سئو</TabsTrigger>
+            <TabsTrigger value="social"><Share2 className="w-4 h-4 ml-2" />شبکه‌های اجتماعی</TabsTrigger>
+            <TabsTrigger value="security"><Shield className="w-4 h-4 ml-2" />امنیت</TabsTrigger>
+            <TabsTrigger value="integrations"><Plug className="w-4 h-4 ml-2" />یکپارچه‌سازی</TabsTrigger>
           </TabsList>
           
           <TabsContent value="general">
@@ -276,13 +308,14 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <FormField control={form.control} name="security.adminEmail" render={({ field }) => (
                     <FormItem>
                         <FormLabel>ایمیل ادمین</FormLabel>
-                        <FormDescription>این ایمیل برای ورود و دریافت نوتیفیکیشن‌ها استفاده می‌شود.</FormDescription>
+                        <FormDescription>این ایمیل برای ورود و دریافت نوتیفیکیشن‌ها استفاده می‌شود. برای اعمال تغییر، فایل .env را ویرایش کنید.</FormDescription>
                         <FormControl><Input dir="ltr" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <Separator />
                  <h4 className="text-lg font-medium">تغییر رمز عبور</h4>
+                 <FormDescription>برای تغییر رمز عبور، باید فایل .env را مستقیما ویرایش کرده و سرور را ری‌استارت کنید.</FormDescription>
                 <FormField control={form.control} name="security.currentPassword" render={({ field }) => (
                     <FormItem>
                         <FormLabel>رمز عبور فعلی</FormLabel>
@@ -307,6 +340,49 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               </CardContent>
             </Card>
           </TabsContent>
+
+            <TabsContent value="integrations">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>یکپارچه‌سازی و API Keys</CardTitle>
+                        <CardDescription>
+                            کلیدهای API برای سرویس‌های خارجی در اینجا نمایش داده می‌شوند. این مقادیر از فایل .env خوانده شده و برای امنیت، قابل ویرایش در اینجا نیستند.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6" dir="rtl">
+                        <ApiKeyDisplay
+                            label="Gemini API Key"
+                            value={apiKeys.geminiApiKey}
+                            description="کلید برای استفاده از مدل‌های هوش مصنوعی Gemini در بخش‌هایی مانند چت‌بات و تولید محتوای وبلاگ."
+                        />
+                        <Separator />
+                         <ApiKeyDisplay
+                            label="Google Analytics ID"
+                            value={apiKeys.googleAnalyticsId}
+                            description="شناسه اندازه‌گیری گوگل آنالیتیکس برای ردیابی ترافیک سایت. (مثال: G-XXXXXXXXXX)"
+                        />
+                         <Separator />
+                         <div className="space-y-4">
+                            <h4 className="font-medium">Cloudinary</h4>
+                            <ApiKeyDisplay
+                                label="Cloud Name"
+                                value={apiKeys.cloudinaryCloudName}
+                                description="نام کلاد شما در سرویس Cloudinary برای بهینه‌سازی و مدیریت تصاویر."
+                            />
+                            <ApiKeyDisplay
+                                label="API Key"
+                                value={apiKeys.cloudinaryApiKey}
+                                description="کلید API برای دسترسی به حساب Cloudinary شما."
+                            />
+                            <ApiKeyDisplay
+                                label="API Secret"
+                                value={apiKeys.cloudinaryApiSecret}
+                                description="کلید محرمانه برای عملیات‌های امن در Cloudinary."
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+            </TabsContent>
 
         </Tabs>
 

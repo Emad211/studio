@@ -8,6 +8,7 @@ import { z } from "zod";
 import type { Project, BlogPost, SiteSettings } from "./data";
 import { getInitialData, services } from "./data";
 import { cookies } from 'next/headers'
+import 'dotenv/config'
 
 // This is a mock database. In a real application, you would use a database
 // like PostgreSQL, MongoDB, or Firebase.
@@ -79,6 +80,7 @@ export async function handleLogin(prevState: any, formData: FormData) {
     const adminPassword = process.env.ADMIN_PASSWORD;
 
     if (!adminEmail || !adminPassword) {
+      console.error("Admin credentials are not set in .env file.");
       return { success: false, message: "تنظیمات ورود در سرور پیکربندی نشده است." };
     }
 
@@ -99,6 +101,7 @@ export async function handleLogin(prevState: any, formData: FormData) {
     if (error instanceof z.ZodError) {
       return { success: false, message: "لطفاً ایمیل و رمز عبور معتبر وارد کنید." };
     }
+    console.error("Login error:", error);
     return { success: false, message: "خطای ناشناخته‌ای رخ داد." };
   }
 }
@@ -303,16 +306,10 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
     
-    // This is a simplified example. In a real app, you'd want to handle password changes securely.
-    // For now, we're just updating the admin email in the settings.
-    process.env.ADMIN_EMAIL = validatedData.security.adminEmail;
-
-    // You would typically not store passwords directly or handle them this way.
-    // This is a placeholder for a more robust system.
-    if (validatedData.security.newPassword) {
-        console.log("Password change requested. In a real app, you would hash and store this securely.");
-        // process.env.ADMIN_PASSWORD = validatedData.security.newPassword;
-    }
+    // Note: We are NOT saving sensitive info like passwords to the JSON file.
+    // This action only updates the non-sensitive settings.
+    // Password and email changes should be handled by updating .env variables,
+    // which is beyond the scope of what this function can do for security reasons.
     
     data.settings = {
         en: validatedData.en,
@@ -330,4 +327,17 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     revalidatePath("/", "page");
     revalidatePath("/en", "page");
     revalidatePath("/admin/settings", "page");
+}
+
+export async function getApiKeys() {
+    // This function securely reads API keys from the server environment
+    // and makes them available to the client-side settings page.
+    // It does NOT write or expose them in any other way.
+    return {
+        geminiApiKey: process.env.GEMINI_API_KEY ? '******' + process.env.GEMINI_API_KEY.slice(-4) : 'Not Set',
+        googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || 'Not Set',
+        cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || 'Not Set',
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY ? '******' + process.env.CLOUDINARY_API_KEY.slice(-4) : 'Not Set',
+        cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET ? '******' + process.env.CLOUDINARY_API_SECRET.slice(-4) : 'Not Set',
+    };
 }
