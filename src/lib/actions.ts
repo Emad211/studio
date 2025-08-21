@@ -75,8 +75,8 @@ export async function handleLogin(prevState: any, formData: FormData) {
   try {
     const { email, password } = loginSchema.parse(Object.fromEntries(formData));
     const settings = await getSiteSettings();
-    const adminEmail = settings.advanced.adminEmail;
-    const adminPasswordHash = settings.advanced.adminPasswordHash;
+    const adminEmail = settings.adminEmail;
+    const adminPasswordHash = settings.adminPasswordHash;
 
     if (!adminEmail || !adminPasswordHash) {
       return { success: false, message: "تنظیمات ورود در سرور پیکربندی نشده است." };
@@ -291,12 +291,10 @@ const settingsSchema = z.object({
       github: z.string().url(),
       telegram: z.string().url(),
   }),
-  security: z.object({
-      adminEmail: z.string().email(),
-      currentPassword: z.string().optional(),
-      newPassword: z.string().optional(),
-      confirmNewPassword: z.string().optional(),
-  }),
+  adminEmail: z.string().email(),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().optional(),
+  confirmNewPassword: z.string().optional(),
   integrations: z.object({
     geminiApiKey: z.string().optional(),
     googleAnalyticsId: z.string().optional(),
@@ -307,13 +305,13 @@ const settingsSchema = z.object({
     })
   })
 }).refine(data => {
-    if (data.security.newPassword) {
-        return data.security.newPassword === data.security.confirmNewPassword;
+    if (data.newPassword) {
+        return data.newPassword === data.confirmNewPassword;
     }
     return true;
 }, {
     message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
-    path: ["security", "confirmNewPassword"],
+    path: ["confirmNewPassword"],
 });
 
 
@@ -321,19 +319,17 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     const validatedData = settingsSchema.parse(formData);
     const data = await readData();
     
-    // --- Security Logic ---
-    const { currentPassword, newPassword } = validatedData.security;
-    let newPasswordHash = data.settings.advanced.adminPasswordHash;
+    const { currentPassword, newPassword, ...securityData } = validatedData;
+    let newPasswordHash = data.settings.adminPasswordHash;
 
     if (newPassword) {
         if (!currentPassword) {
             throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
         }
-        const storedPassword = Buffer.from(data.settings.advanced.adminPasswordHash, 'base64').toString('utf-8');
+        const storedPassword = Buffer.from(data.settings.adminPasswordHash, 'base64').toString('utf-8');
         if (currentPassword !== storedPassword) {
             throw new Error("رمز عبور فعلی نادرست است.");
         }
-        // Encode the new password
         newPasswordHash = Buffer.from(newPassword).toString('base64');
     }
     
@@ -342,16 +338,13 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
         fa: validatedData.fa,
         seo: validatedData.seo,
         socials: validatedData.socials,
+        adminEmail: validatedData.adminEmail,
+        adminPasswordHash: newPasswordHash,
         integrations: validatedData.integrations,
-        advanced: {
-            adminEmail: validatedData.security.adminEmail,
-            adminPasswordHash: newPasswordHash,
-        },
     };
 
     await writeData(data);
 
-    // Revalidate all paths that might use settings
     revalidatePath("/", "layout");
     revalidatePath("/admin/settings", "page");
 }

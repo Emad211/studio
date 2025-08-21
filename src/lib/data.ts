@@ -76,10 +76,8 @@ export interface SiteSettings {
         github: string;
         telegram: string;
     };
-    advanced: {
-        adminEmail: string;
-        adminPasswordHash: string; // Storing hash instead of plain text
-    };
+    adminEmail: string;
+    adminPasswordHash: string; // Storing hash instead of plain text
     integrations: {
         geminiApiKey?: string;
         googleAnalyticsId?: string;
@@ -355,12 +353,8 @@ export function getInitialData() {
             github: "https://github.com/Emad211",
             telegram: "https://t.me/Freelancer_programmerr"
         },
-        advanced: {
-            adminEmail: "admin@example.com",
-            // Storing a base64 encoded password for simplicity. 
-            // In a real production app, use a strong hashing algorithm like bcrypt.
-            adminPasswordHash: Buffer.from("admin").toString('base64'),
-        },
+        adminEmail: "admin@example.com",
+        adminPasswordHash: Buffer.from("admin").toString('base64'),
         integrations: {
             geminiApiKey: "",
             googleAnalyticsId: "",
