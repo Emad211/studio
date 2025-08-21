@@ -5,7 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useTransition, useState } from "react";
+import { useTransition, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { BlogPost } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -195,6 +195,19 @@ export function BlogForm({ post }: BlogFormProps) {
   });
 
   const watchedValues = useWatch({ control: form.control });
+  const watchedTitleFa = useWatch({ control: form.control, name: 'title_fa' });
+
+  useEffect(() => {
+    if (watchedTitleFa && !post) { // Only auto-generate for new posts
+      const slug = watchedTitleFa
+        .toLowerCase()
+        .replace(/[^a-z0-9\u0600-\u06FF\s-]/g, '') // Remove non-alphanumeric, non-Persian characters
+        .trim()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/-+/g, '-'); // Replace multiple - with single -
+      form.setValue("slug", slug, { shouldValidate: true });
+    }
+  }, [watchedTitleFa, form, post]);
 
   const setAiGeneratedValues = (data: any) => {
     form.setValue("content_fa", data.content_fa, { shouldValidate: true, shouldDirty: true });
@@ -223,20 +236,6 @@ export function BlogForm({ post }: BlogFormProps) {
       }
     });
   };
-
-  const generateSlug = () => {
-    const title = form.getValues("title_fa");
-    if (title) {
-      const slug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9\u0600-\u06FF\s-]/g, '') // Remove non-alphanumeric, non-Persian characters
-        .trim()
-        .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(/-+/g, '-'); // Replace multiple - with single -
-      form.setValue("slug", slug, { shouldValidate: true });
-    }
-  };
-
 
   return (
     <Form {...form}>
@@ -467,14 +466,9 @@ export function BlogForm({ post }: BlogFormProps) {
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel>اسلاگ (Slug)</FormLabel>
-                            <div className="flex gap-2">
-                                <FormControl>
+                             <FormControl>
                                 <Input dir="ltr" placeholder="a-unique-slug" {...field} />
                                 </FormControl>
-                                <Button type="button" variant="outline" size="icon" onClick={generateSlug} aria-label="ایجاد اسلاگ خودکار">
-                                    <Sparkles className="w-4 h-4" />
-                                </Button>
-                            </div>
                              <FormDescription>شناسه منحصر به فرد پست در URL.</FormDescription>
                             <FormMessage />
                             </FormItem>
