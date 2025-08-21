@@ -8,7 +8,7 @@
  * - ProjectQnAOutput - The return type for the answerProjectQuestion function.
  */
 
-import { ai } from '@/ai/genkit';
+import { ai, initPromise } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const ProjectQnAInputSchema = z.object({
@@ -23,6 +23,7 @@ const ProjectQnAOutputSchema = z.object({
 export type ProjectQnAOutput = z.infer<typeof ProjectQnAOutputSchema>;
 
 export async function answerProjectQuestion(input: ProjectQnAInput): Promise<ProjectQnAOutput> {
+  await initPromise; // Ensure Genkit is initialized
   const result = await projectQnAFlow(input);
   return result;
 }

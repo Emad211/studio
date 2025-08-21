@@ -8,7 +8,7 @@
  * - BlogPostGeneratorOutput - The return type for the generateBlogPost function.
  */
 
-import { ai } from '@/ai/genkit';
+import { ai, initPromise } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const BlogPostGeneratorInputSchema = z.object({
@@ -27,6 +27,7 @@ const BlogPostGeneratorOutputSchema = z.object({
 export type BlogPostGeneratorOutput = z.infer<typeof BlogPostGeneratorOutputSchema>;
 
 export async function generateBlogPost(input: BlogPostGeneratorInput): Promise<BlogPostGeneratorOutput> {
+  await initPromise; // Ensure Genkit is initialized
   const result = await blogPostGeneratorFlow(input);
   return result;
 }

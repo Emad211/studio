@@ -1,63 +1,41 @@
 
-import { genkit, GenerationCommonConfig } from 'genkit';
+import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 import { getCredentials } from '@/lib/actions';
 
-// The googleAI() plugin configuration.
-// It will be initialized asynchronously.
-let googleAiPlugin: ReturnType<typeof googleAI>;
+// The main `ai` object for the application.
+// It will be configured asynchronously.
+export const ai = genkit({
+  plugins: [], // Plugins will be added dynamically
+});
 
 // A promise to ensure initialization is only done once.
-let initPromise: Promise<void> | null = null;
-
-async function initializeGenkit() {
-  if (initPromise) {
-    return initPromise;
-  }
-  
-  initPromise = (async () => {
+export const initPromise = (async () => {
+  try {
     const credentials = await getCredentials();
     const geminiApiKey = credentials.integrations?.geminiApiKey || process.env.GEMINI_API_KEY;
 
     if (!geminiApiKey) {
       console.warn("Gemini API Key is not configured. AI features will not be available.");
-      googleAiPlugin = googleAI({ apiKey: "YOUR_DUMMY_API_KEY_HERE" }); // Provide a dummy key to avoid crashing
+      // Configure with a dummy key to prevent crashes if no key is available.
+      ai.configure({
+        plugins: [googleAI({ apiKey: "YOUR_DUMMY_API_KEY_HERE" })],
+      });
     } else {
-      googleAiPlugin = googleAI({ apiKey: geminiApiKey });
+      ai.configure({
+        plugins: [googleAI({ apiKey: geminiApiKey })],
+        // Flow-level configuration
+        flow: {
+          // All flows will use this model unless they override it.
+          model: 'googleai/gemini-2.0-flash',
+        },
+      });
     }
-    
-    // The main `ai` object configuration
-    genkit({
-      plugins: [googleAiPlugin],
-      // Flow-level configuration
-      flow: {
-        // All flows will use this model unless they override it.
-        model: 'googleai/gemini-2.0-flash',
-      },
-    });
-
-  })();
-  
-  return initPromise;
-}
-
-// Custom `ai` object that ensures initialization before use.
-// This wraps the global genkit functions to make sure initializeGenkit() is called first.
-export const ai = {
-  defineFlow: (...args: Parameters<typeof genkit.defineFlow>) => {
-    // Flows are defined at startup, so we don't need to await initialization here.
-    return genkit.defineFlow(...args);
-  },
-  definePrompt: (...args: Parameters<typeof genkit.definePrompt>) => {
-    return genkit.definePrompt(...args);
-  },
-  generate: async (...args: Parameters<typeof genkit.generate>) => {
-    await initializeGenkit();
-    return genkit.generate(...args);
-  },
-   embed: async (...args: Parameters<typeof genkit.embed>) => {
-    await initializeGenkit();
-    return genkit.embed(...args);
-  },
-  // Add other genkit functions you use here...
-};
+  } catch (error) {
+     console.error("Failed to initialize Genkit:", error);
+     // Configure with a dummy key in case of any error during credential fetching.
+     ai.configure({
+        plugins: [googleAI({ apiKey: "YOUR_DUMMY_API_KEY_HERE" })],
+      });
+  }
+})();
