@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   const title = `${project.title} | ${settings.en.siteName}`;
   const url = `${settings.seo.siteURL}/en/projects/${project.slug}`;
+  const ogImage = project.image || settings.seo.ogImage;
 
   return {
     title: title,
@@ -42,6 +43,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         description: project.description,
         type: 'article',
         url: url,
+        images: ogImage ? [ogImage] : [],
         authors: [settings.en.authorName],
     },
     twitter: {
@@ -49,6 +51,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         title: title,
         description: project.description,
         creator: settings.seo.twitterUsername ? `@${settings.seo.twitterUsername}` : undefined,
+        images: ogImage ? [ogImage] : [],
     },
   };
 }
