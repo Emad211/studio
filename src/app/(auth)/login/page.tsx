@@ -14,7 +14,8 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { HeroBackground } from "@/components/sections/hero-background"
 import { handleLogin } from "@/lib/actions"
-import { useFormState, useFormStatus } from 'react-dom'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, Loader2 } from "lucide-react"
 
@@ -35,7 +36,7 @@ function SubmitButton() {
 
 function LoginForm() {
   const router = useRouter();
-  const [state, formAction] = useFormState(async (prevState: any, formData: FormData) => {
+  const [state, formAction] = useActionState(async (prevState: any, formData: FormData) => {
     const result = await handleLogin(prevState, formData);
     if (result.success) {
       router.push('/admin');
