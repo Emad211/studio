@@ -25,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Search, Share2, Shield, Plug, Copy } from "lucide-react";
 import { Separator } from "../ui/separator";
+import { Label } from "@/components/ui/label";
 
 const settingsSchema = z.object({
   en: z.object({
@@ -367,7 +368,7 @@ export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
                             <ApiKeyDisplay
                                 label="Cloud Name"
                                 value={apiKeys.cloudinaryCloudName}
-                                description="نام کلاد شما در سرویس Cloudinary برای بهینه‌سازی و مدیریت تصاویر."
+                                description="نام کلاد شما در سرویس Cloudinary برای بهین‌سازی و مدیریت تصاویر."
                             />
                             <ApiKeyDisplay
                                 label="API Key"
@@ -393,3 +394,5 @@ export function SettingsForm({ settings, apiKeys }: SettingsFormProps) {
     </Form>
   );
 }
+
+    
