@@ -8,6 +8,7 @@ import { useEffect, useState, useMemo } from "react";
 import type { Project } from "@/lib/data";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchParams } from "next/navigation";
 
 const FADE_UP_ANIMATION_VARIANTS = {
   hidden: { opacity: 0, y: 10 },
@@ -48,11 +49,10 @@ function ProjectSkeleton() {
 }
 
 
-export default function ProjectsPage({ searchParams }: {
-  searchParams?: { [key: string]: string | string[] | undefined }
-}) {
-  const categories = searchParams?.categories;
-  const search = searchParams?.search;
+export default function ProjectsPage() {
+  const searchParams = useSearchParams();
+  const categories = searchParams.getAll('categories');
+  const search = searchParams.get('search');
   
   const [projects, setProjects] = useState<Project[]>([]);
   const [allCategories, setAllCategories] = useState<string[]>([]);
