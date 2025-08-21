@@ -65,7 +65,12 @@ const settingsSchema = z.object({
         apiSecret: z.string().optional(),
     })
   })
-}).refine(data => data.security.newPassword === data.security.confirmNewPassword, {
+}).refine(data => {
+    if (data.security.newPassword) {
+        return data.security.newPassword === data.security.confirmNewPassword;
+    }
+    return true;
+}, {
     message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
     path: ["security", "confirmNewPassword"],
 });
@@ -83,7 +88,19 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: settings,
+    defaultValues: {
+      en: settings.en,
+      fa: settings.fa,
+      seo: settings.seo,
+      socials: settings.socials,
+      integrations: settings.integrations,
+      security: {
+        adminEmail: settings.advanced.adminEmail,
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      }
+    },
   });
 
   const onSubmit = (data: SettingsFormValues) => {

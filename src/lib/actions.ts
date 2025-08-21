@@ -75,13 +75,13 @@ export async function handleLogin(prevState: any, formData: FormData) {
   try {
     const { email, password } = loginSchema.parse(Object.fromEntries(formData));
     const settings = await getSiteSettings();
-    const { adminEmail, adminPasswordHash } = settings.security;
+    const adminEmail = settings.advanced.adminEmail;
+    const adminPasswordHash = settings.advanced.adminPasswordHash;
 
     if (!adminEmail || !adminPasswordHash) {
       return { success: false, message: "تنظیمات ورود در سرور پیکربندی نشده است." };
     }
     
-    // Decode the stored password
     const storedPassword = Buffer.from(adminPasswordHash, 'base64').toString('utf-8');
 
     if (email === adminEmail && password === storedPassword) {
@@ -323,13 +323,13 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     
     // --- Security Logic ---
     const { currentPassword, newPassword } = validatedData.security;
-    let newPasswordHash = data.settings.security.adminPasswordHash;
+    let newPasswordHash = data.settings.advanced.adminPasswordHash;
 
     if (newPassword) {
         if (!currentPassword) {
             throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
         }
-        const storedPassword = Buffer.from(data.settings.security.adminPasswordHash, 'base64').toString('utf-8');
+        const storedPassword = Buffer.from(data.settings.advanced.adminPasswordHash, 'base64').toString('utf-8');
         if (currentPassword !== storedPassword) {
             throw new Error("رمز عبور فعلی نادرست است.");
         }
@@ -343,7 +343,7 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
         seo: validatedData.seo,
         socials: validatedData.socials,
         integrations: validatedData.integrations,
-        security: {
+        advanced: {
             adminEmail: validatedData.security.adminEmail,
             adminPasswordHash: newPasswordHash,
         },
