@@ -23,12 +23,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveProject } from "@/lib/actions";
 import { services } from "@/lib/data";
-import { Separator } from "../ui/separator";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Bot, Image as ImageIcon, Link } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { MarkdownGuide } from "./markdown-guide";
+import { Switch } from "../ui/switch";
+import { cn } from "@/lib/utils";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -41,10 +40,11 @@ const projectSchema = z.object({
   categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
   
   // Showcase fields
-  showcaseType: z.enum(['links', 'simulator', 'ai_chatbot']),
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
+  showcase_simulator: z.boolean(),
   gallery: z.string().optional(),
+  showcase_ai_chatbot: z.boolean(),
   aiPromptContext: z.string().optional(),
 
   // Page Content fields
@@ -66,129 +66,138 @@ interface ProjectFormProps {
   project?: Project;
 }
 
-const ShowcaseFields = ({ control }: { control: any }) => {
-    const showcaseType = useWatch({
-      control,
-      name: "showcaseType",
-    });
+const ShowcaseFields = ({ form }: { form: any }) => {
+    const { control } = form;
+    const showcaseSimulator = useWatch({ control, name: "showcase_simulator" });
+    const showcaseAIChatbot = useWatch({ control, name: "showcase_ai_chatbot" });
   
     return (
       <Card>
         <CardHeader>
             <CardTitle>ویترین پروژه</CardTitle>
+            <CardDescription>ویترین‌های تعاملی پروژه خود را در اینجا مدیریت کنید. لینک‌های گیت‌هاب و پیش‌نمایش زنده همیشه نمایش داده می‌شوند.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8">
-            <FormField
-            control={control}
-            name="showcaseType"
-            render={({ field }) => (
-                <FormItem className="space-y-3">
-                <FormLabel>نوع ویترین را انتخاب کنید</FormLabel>
-                <FormControl>
-                    <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                    >
-                    <FormItem>
-                        <FormControl>
-                            <RadioGroupItem value="links" id="links" className="sr-only" />
-                        </FormControl>
-                        <Label htmlFor="links" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                            <Link className="mb-2 h-6 w-6" />
-                            لینک‌ها
-                        </Label>
-                    </FormItem>
-                    <FormItem>
-                        <FormControl>
-                            <RadioGroupItem value="simulator" id="simulator" className="sr-only" />
-                        </FormControl>
-                        <Label htmlFor="simulator" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                            <ImageIcon className="mb-2 h-6 w-6" />
-                            شبیه‌ساز (گالری)
-                        </Label>
-                    </FormItem>
-                    <FormItem>
-                        <FormControl>
-                            <RadioGroupItem value="ai_chatbot" id="ai_chatbot" className="sr-only" />
-                        </FormControl>
-                        <Label htmlFor="ai_chatbot" className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                            <Bot className="mb-2 h-6 w-6" />
-                            چت‌بات AI
-                        </Label>
-                    </FormItem>
-                    </RadioGroup>
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            {showcaseType === 'links' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FormField
+        <CardContent className="space-y-6 pt-2">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <FormField
+              control={control}
+              name="github"
+              render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>لینک گیت‌هاب</FormLabel>
+                  <FormControl>
+                      <Input dir="ltr" placeholder="https://github.com/..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  </FormItem>
+              )}
+              />
+              <FormField
+              control={control}
+              name="live"
+              render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>لینک پیش‌نمایش زنده</FormLabel>
+                  <FormControl>
+                      <Input dir="ltr" placeholder="https://..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  </FormItem>
+              )}
+              />
+           </div>
+
+            <div className="space-y-4 rounded-lg border p-4">
+              <FormField
+                control={control}
+                name="showcase_simulator"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-primary" />
+                        فعال‌سازی شبیه‌ساز (گالری)
+                      </FormLabel>
+                      <FormDescription>
+                        با فعال‌سازی، یک گالری تصاویر تعاملی در صفحه پروژه نمایش داده می‌شود.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+               <div className={cn("transition-all duration-300 ease-in-out", showcaseSimulator ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden")}>
+                    <div className="pt-4 border-t">
+                        <FormField
+                            control={control}
+                            name="gallery"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>گالری تصاویر/GIF شبیه‌ساز</FormLabel>
+                                <FormDescription>
+                                    لیستی از URL های تصاویر یا GIF، که هر کدام با یک خط جدید از هم جدا شده‌اند.
+                                </FormDescription>
+                                <FormControl>
+                                    <Textarea dir="ltr" className="min-h-[150px] font-code" placeholder="https://.../image1.png\nhttps://.../animation.gif" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-4 rounded-lg border p-4">
+               <FormField
+                control={control}
+                name="showcase_ai_chatbot"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base flex items-center gap-2">
+                         <Bot className="w-5 h-5 text-primary" />
+                        فعال‌سازی چت‌بات AI
+                        </FormLabel>
+                      <FormDescription>
+                        با فعال‌سازی، یک چت‌بات هوشمند برای پاسخ به سوالات کاربران اضافه می‌شود.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <div className={cn("transition-all duration-300 ease-in-out", showcaseAIChatbot ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden")}>
+                <div className="pt-4 border-t">
+                  <FormField
                     control={control}
-                    name="github"
+                    name="aiPromptContext"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>لینک گیت‌هاب</FormLabel>
+                        <FormLabel>متن زمینه برای چت‌بات هوش مصنوعی</FormLabel>
+                        <FormDescription>
+                            این متنی است که به عنوان دانش پایه به ربات داده می‌شود تا به سوالات کاربران پاسخ دهد.
+                        </FormDescription>
                         <FormControl>
-                            <Input dir="ltr" placeholder="https://github.com/..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={control}
-                    name="live"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>لینک پیش‌نمایش زنده</FormLabel>
-                        <FormControl>
-                            <Input dir="ltr" placeholder="https://..." {...field} />
+                            <Textarea className="min-h-[150px]" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
                     )}
                     />
                 </div>
-            )}
-            {showcaseType === 'simulator' && (
-                <FormField
-                control={control}
-                name="gallery"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>گالری تصاویر/GIF شبیه‌ساز</FormLabel>
-                    <FormDescription>
-                        لیستی از URL های تصاویر یا GIF، که هر کدام با یک خط جدید از هم جدا شده‌اند.
-                    </FormDescription>
-                    <FormControl>
-                        <Textarea dir="ltr" className="min-h-[150px] font-code" placeholder="https://.../image1.png\nhttps://.../animation.gif" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            )}
-            {showcaseType === 'ai_chatbot' && (
-                <FormField
-                control={control}
-                name="aiPromptContext"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>متن زمینه برای چت‌بات هوش مصنوعی</FormLabel>
-                    <FormDescription>
-                        این متنی است که به عنوان دانش پایه به ربات داده می‌شود تا به سوالات کاربران پاسخ دهد.
-                    </FormDescription>
-                    <FormControl>
-                        <Textarea className="min-h-[150px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            )}
+              </div>
+            </div>
         </CardContent>
       </Card>
     );
@@ -219,10 +228,11 @@ export function ProjectForm({ project }: ProjectFormProps) {
           image: "https://placehold.co/600x400.png",
           tags: "",
           categories: [],
-          showcaseType: 'links',
           github: "",
           live: "",
+          showcase_simulator: false,
           gallery: "",
+          showcase_ai_chatbot: false,
           aiPromptContext: "",
           about: "",
           about_fa: "",
@@ -418,7 +428,7 @@ export function ProjectForm({ project }: ProjectFormProps) {
             </CardContent>
         </Card>
 
-        <ShowcaseFields control={form.control} />
+        <ShowcaseFields form={form} />
 
         <Card>
             <CardHeader>
@@ -574,3 +584,4 @@ export function ProjectForm({ project }: ProjectFormProps) {
     </Form>
   );
 }
+

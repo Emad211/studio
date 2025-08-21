@@ -77,10 +77,11 @@ const projectSchema = z.object({
   categories: z.array(z.string()).min(1, "حداقل یک دسته‌بندی انتخاب کنید."),
   
   // Showcase fields
-  showcaseType: z.enum(['links', 'simulator', 'ai_chatbot']),
   github: z.string().url("لینک گیت‌هاب باید یک URL معتبر باشد.").optional().or(z.literal('')),
   live: z.string().url("لینک پیش‌نمایش زنده باید یک URL معتبر باشد.").optional().or(z.literal('')),
+  showcase_simulator: z.boolean(),
   gallery: z.string().optional(),
+  showcase_ai_chatbot: z.boolean(),
   aiPromptContext: z.string().optional(),
 
   // Page Content fields
@@ -117,7 +118,6 @@ export async function saveProject(
       live: validatedData.live,
     },
     gallery: validatedData.gallery ? validatedData.gallery.split("\n").map(url => url.trim()).filter(url => url) : [],
-    aiPromptContext: validatedData.aiPromptContext,
   };
 
   if (existingSlug) {
@@ -290,3 +290,4 @@ export async function saveSiteSettings(formData: z.infer<typeof settingsSchema>)
     // Revalidate all paths that might use settings
     revalidatePath("/", "layout");
 }
+

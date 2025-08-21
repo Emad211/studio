@@ -54,36 +54,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-const Showcase = ({ project }: { project: Project }) => {
-  if (project.showcaseType === 'simulator' && project.gallery && project.gallery.length > 0) {
-    return <div dir="ltr"><ProjectSimulator images={project.gallery} lang="fa" /></div>;
-  }
-
-  if (project.showcaseType === 'ai_chatbot' && project.aiPromptContext) {
-    return <ProjectAIChat projectContext={project.aiPromptContext} lang="fa" />;
-  }
-
-  // Default to links
-  return (
-      <div className="flex justify-center gap-4">
-        {project.links.github && (
-          <Button asChild variant="outline">
-            <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
-              <Github className="ml-2 h-4 w-4" /> گیت‌هاب
-            </Link>
-          </Button>
-        )}
-        {project.links.live && (
-          <Button asChild>
-            <Link href={project.links.live} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="ml-2 h-4 w-4" /> پیش‌نمایش زنده
-            </Link>
-          </Button>
-        )}
-      </div>
-  )
-}
-
 const MarkdownContent = ({ content }: { content: string }) => (
     <ReactMarkdown
         remarkPlugins={[remarkGfm]}
@@ -170,9 +140,33 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
         <div className="space-y-8">
             <div className="text-center">
                 <h2 className="text-3xl font-bold font-headline text-primary">ویترین پروژه</h2>
-                <p className="mt-2 text-muted-foreground">پروژه را از طریق ویترین تعاملی زیر کاوش کنید.</p>
+                <p className="mt-2 text-muted-foreground">پروژه را از طریق لینک‌ها یا ویترین‌های تعاملی زیر کاوش کنید.</p>
             </div>
-            <Showcase project={project} />
+            
+             <div className="flex justify-center gap-4">
+                {project.links.github && (
+                <Button asChild variant="outline">
+                    <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
+                    <Github className="ml-2 h-4 w-4" /> گیت‌هاب
+                    </Link>
+                </Button>
+                )}
+                {project.links.live && (
+                <Button asChild>
+                    <Link href={project.links.live} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="ml-2 h-4 w-4" /> پیش‌نمایش زنده
+                    </Link>
+                </Button>
+                )}
+            </div>
+
+            {project.showcase_simulator && project.gallery && project.gallery.length > 0 && (
+                <div dir="ltr"><ProjectSimulator images={project.gallery} lang="fa" /></div>
+            )}
+
+            {project.showcase_ai_chatbot && project.aiPromptContext && (
+                <ProjectAIChat projectContext={project.aiPromptContext} lang="fa" />
+            )}
         </div>
 
         <div className="mt-16">

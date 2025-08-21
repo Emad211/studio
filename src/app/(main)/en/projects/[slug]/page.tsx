@@ -54,37 +54,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-
-const Showcase = ({ project }: { project: Project }) => {
-  if (project.showcaseType === 'simulator' && project.gallery && project.gallery.length > 0) {
-    return <ProjectSimulator images={project.gallery} lang="en" />;
-  }
-
-  if (project.showcaseType === 'ai_chatbot' && project.aiPromptContext) {
-    return <ProjectAIChat projectContext={project.aiPromptContext} lang="en" />;
-  }
-
-  // Default to links
-  return (
-      <div className="flex justify-center gap-4">
-        {project.links.github && (
-          <Button asChild variant="outline">
-            <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
-              <Github className="mr-2 h-4 w-4" /> GitHub
-            </Link>
-          </Button>
-        )}
-        {project.links.live && (
-          <Button asChild>
-            <Link href={project.links.live} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" /> Live Demo
-            </Link>
-          </Button>
-        )}
-      </div>
-  )
-}
-
 const MarkdownContent = ({ content }: { content: string }) => (
     <ReactMarkdown
         remarkPlugins={[remarkGfm]}
@@ -171,9 +140,33 @@ export default async function ProjectDetailsPage({ params }: { params: { slug: s
         <div className="space-y-8">
             <div className="text-center">
                 <h2 className="text-3xl font-bold font-headline text-primary">Project Showcase</h2>
-                <p className="mt-2 text-muted-foreground">Explore the project through the interactive showcase below.</p>
+                <p className="mt-2 text-muted-foreground">Explore the project through the links or interactive showcases below.</p>
             </div>
-            <Showcase project={project} />
+            
+            <div className="flex justify-center gap-4">
+                {project.links.github && (
+                <Button asChild variant="outline">
+                    <Link href={project.links.github} target="_blank" rel="noopener noreferrer">
+                    <Github className="mr-2 h-4 w-4" /> GitHub
+                    </Link>
+                </Button>
+                )}
+                {project.links.live && (
+                <Button asChild>
+                    <Link href={project.links.live} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" /> Live Demo
+                    </Link>
+                </Button>
+                )}
+            </div>
+
+            {project.showcase_simulator && project.gallery && project.gallery.length > 0 && (
+                <ProjectSimulator images={project.gallery} lang="en" />
+            )}
+
+            {project.showcase_ai_chatbot && project.aiPromptContext && (
+                <ProjectAIChat projectContext={project.aiPromptContext} lang="en" />
+            )}
         </div>
 
         <div className="mt-16">

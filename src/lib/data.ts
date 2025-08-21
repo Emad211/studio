@@ -16,7 +16,8 @@ export interface Project {
     github?: string;
     live?: string;
   };
-  showcaseType: 'links' | 'simulator' | 'ai_chatbot';
+  showcase_simulator: boolean;
+  showcase_ai_chatbot: boolean;
   gallery?: string[];
   aiPromptContext?: string;
   about: string;
@@ -97,7 +98,8 @@ export function getInitialData() {
           github: "https://github.com/Emad211",
           live: "#",
         },
-        showcaseType: "links",
+        showcase_simulator: false,
+        showcase_ai_chatbot: false,
         gallery: [],
         aiPromptContext: "",
         about: "This project is an advanced e-commerce platform that leverages AI to create a personalized shopping experience. The system analyzes user behavior to provide tailored product recommendations, increasing engagement and sales. It includes a comprehensive admin dashboard for managing products, users, and orders.",
@@ -125,7 +127,8 @@ export function getInitialData() {
             github: "",
             live: ""
         },
-        showcaseType: "simulator",
+        showcase_simulator: true,
+        showcase_ai_chatbot: false,
         gallery: [
           "https://placehold.co/1280x720.png",
           "https://placehold.co/1280x720.png",
@@ -157,7 +160,8 @@ export function getInitialData() {
           github: "https://github.com/Emad211",
           live: "#",
         },
-        showcaseType: "links",
+        showcase_simulator: false,
+        showcase_ai_chatbot: false,
         gallery: [],
         aiPromptContext: "",
         about: "This is the very portfolio website you are looking at. It's designed to be a clean, modern, and performant platform to showcase my work in the field of AI and software development. It features a bilingual interface (English/Persian) and a content management system for projects and blog posts.",
@@ -185,7 +189,8 @@ export function getInitialData() {
             github: "",
             live: ""
         },
-        showcaseType: "ai_chatbot",
+        showcase_simulator: false,
+        showcase_ai_chatbot: true,
         gallery: [],
         aiPromptContext: "This project is a sophisticated weather forecasting application that leverages a Long Short-Term Memory (LSTM) deep learning model, implemented with TensorFlow and Keras. The primary goal was to achieve higher accuracy in long-range weather predictions compared to traditional models. The model was trained on a massive historical weather dataset spanning over 20 years, including variables like temperature, humidity, wind speed, and pressure. A Flask API was developed to serve the model's predictions, which can be integrated into various front-end applications. One of the main challenges was handling the time-series nature of the data and preventing model overfitting, which was addressed using techniques like dropout and early stopping. The final model demonstrated a 15% improvement in accuracy for 7-day forecasts over the baseline model.",
         about: "This project aims to provide more accurate weather forecasts using a deep learning approach. Traditional models often struggle with long-term predictions, but by using an LSTM (Long Short-Term Memory) network, this model can capture complex temporal dependencies in historical weather data.",
@@ -680,3 +685,4 @@ export const experienceFa = [
         duration: "فروردین ۱۳۹۸ - فروردین ۱۳۹۹"
     }
 ];
+
