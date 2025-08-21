@@ -5,7 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Project } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveProject } from "@/lib/actions";
 import { services } from "@/lib/data";
-import { Bot, Image as ImageIcon, Link, UploadCloud, Loader2 } from "lucide-react";
+import { Bot, Image as ImageIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { MarkdownGuide } from "./markdown-guide";
 import { Switch } from "../ui/switch";
 import { cn } from "@/lib/utils";
-import NextImage from "next/image";
+import { ImageUploader } from "./image-uploader";
 
 const projectSchema = z.object({
   title: z.string().min(1, "عنوان انگلیسی الزامی است."),
@@ -65,78 +65,6 @@ type ProjectFormValues = z.infer<typeof projectSchema>;
 
 interface ProjectFormProps {
   project?: Project;
-}
-
-function ImageUploader({ form }: { form: any }) {
-    const { toast } = useToast();
-    const [isUploading, setIsUploading] = useState(false);
-    const router = useRouter();
-
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            const result = await response.json();
-
-            if (!response.ok || !result.success) {
-                throw new Error(result.message || 'خطا در آپلود فایل');
-            }
-
-            form.setValue('image', result.url, { shouldValidate: true, shouldDirty: true });
-            toast({ title: "موفقیت", description: "تصویر با موفقیت آپلود شد." });
-            router.refresh();
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "خطا", description: error.message });
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    const imageUrl = form.watch('image');
-
-    return (
-        <div className="space-y-2">
-            {imageUrl && (
-                <div className="relative w-full aspect-video rounded-md overflow-hidden border">
-                    <NextImage src={imageUrl} alt="پیش‌نمایش تصویر" fill className="object-cover" />
-                </div>
-            )}
-            <div className="flex items-center gap-2">
-                <Input
-                    dir="ltr"
-                    placeholder="https://example.com/image.png"
-                    value={imageUrl || ''}
-                    onChange={(e) => form.setValue('image', e.target.value, { shouldValidate: true, shouldDirty: true })}
-                    className="flex-grow"
-                />
-                 <Button asChild variant="outline" className="relative cursor-pointer">
-                    <div>
-                        {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-                        <input
-                            type="file"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={handleFileUpload}
-                            disabled={isUploading}
-                            accept="image/*"
-                        />
-                    </div>
-                </Button>
-            </div>
-             <FormDescription>
-                می‌توانید یک URL را مستقیماً جای‌گذاری کنید یا فایل جدیدی را از سیستم خود آپلود نمایید.
-            </FormDescription>
-        </div>
-    )
 }
 
 const ShowcaseFields = ({ form }: { form: any }) => {
@@ -471,13 +399,18 @@ export function ProjectForm({ project }: ProjectFormProps) {
                 )}
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FormField
+                     <FormField
                         control={form.control}
                         name="image"
-                        render={() => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>تصویر اصلی پروژه</FormLabel>
-                                <ImageUploader form={form} />
+                                <FormControl>
+                                     <ImageUploader 
+                                        value={field.value || ''}
+                                        onChange={field.onChange}
+                                     />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}

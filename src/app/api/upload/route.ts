@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { getSiteSettings } from '@/lib/actions';
@@ -41,6 +40,7 @@ export async function POST(request: Request) {
 
         const result = await cloudinary.uploader.upload(fileUri, {
             folder: 'portfolio_uploads',
+            resource_type: 'auto',
         });
         
         return NextResponse.json({ success: true, url: result.secure_url });

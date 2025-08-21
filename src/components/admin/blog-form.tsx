@@ -25,7 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SeoPreview } from "./seo-preview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Sparkles, Loader2, UploadCloud } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +38,8 @@ import {
 import { generateBlogPost, BlogPostGeneratorInput } from "@/ai/flows/blog-post-generator-flow";
 import { Label } from "@/components/ui/label";
 import { MarkdownGuide } from "./markdown-guide";
-import Image from "next/image";
+import { ImageUploader } from "./image-uploader";
+
 
 const blogPostSchema = z.object({
   title_fa: z.string().min(1, "عنوان فارسی الزامی است."),
@@ -64,78 +65,6 @@ type BlogPostFormValues = z.infer<typeof blogPostSchema>;
 
 interface BlogFormProps {
   post?: BlogPost;
-}
-
-function ImageUploader({ fieldName, form }: { fieldName: "featured_image" | "og_image", form: any }) {
-    const { toast } = useToast();
-    const [isUploading, setIsUploading] = useState(false);
-    const router = useRouter();
-
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            const result = await response.json();
-
-            if (!response.ok || !result.success) {
-                throw new Error(result.message || 'خطا در آپلود فایل');
-            }
-
-            form.setValue(fieldName, result.url, { shouldValidate: true, shouldDirty: true });
-            toast({ title: "موفقیت", description: "تصویر با موفقیت آپلود شد." });
-            router.refresh();
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "خطا", description: error.message });
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    const imageUrl = form.watch(fieldName);
-
-    return (
-        <div className="space-y-2">
-            {imageUrl && (
-                <div className="relative w-full aspect-video rounded-md overflow-hidden border">
-                    <Image src={imageUrl} alt="پیش‌نمایش تصویر" fill className="object-cover" />
-                </div>
-            )}
-            <div className="flex items-center gap-2">
-                <Input
-                    dir="ltr"
-                    placeholder="https://example.com/image.png"
-                    value={imageUrl || ''}
-                    onChange={(e) => form.setValue(fieldName, e.target.value, { shouldValidate: true, shouldDirty: true })}
-                    className="flex-grow"
-                />
-                 <Button asChild variant="outline" className="relative cursor-pointer">
-                    <div>
-                        {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-                        <input
-                            type="file"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={handleFileUpload}
-                            disabled={isUploading}
-                            accept="image/*"
-                        />
-                    </div>
-                </Button>
-            </div>
-             <FormDescription>
-                می‌توانید یک URL را مستقیماً جای‌گذاری کنید یا فایل جدیدی را از سیستم خود آپلود نمایید.
-            </FormDescription>
-        </div>
-    )
 }
 
 function AiGeneratorDialog({ setFormValues }: { setFormValues: (data: any) => void }) {
@@ -567,9 +496,14 @@ export function BlogForm({ post }: BlogFormProps) {
                         name="featured_image"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>تصویر شاخص</FormLabel>
-                             <ImageUploader fieldName="featured_image" form={form} />
-                            <FormMessage />
+                                <FormLabel>تصویر شاخص</FormLabel>
+                                <FormControl>
+                                    <ImageUploader
+                                        value={field.value || ''}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -578,12 +512,17 @@ export function BlogForm({ post }: BlogFormProps) {
                         name="og_image"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>تصویر Open Graph</FormLabel>
-                             <ImageUploader fieldName="og_image" form={form} />
-                            <FormDescription>
-                                برای اشتراک‌گذاری در شبکه‌های اجتماعی (1200x630). اگر خالی باشد از تصویر شاخص استفاده می‌شود.
-                            </FormDescription>
-                            <FormMessage />
+                                <FormLabel>تصویر Open Graph</FormLabel>
+                                 <FormControl>
+                                    <ImageUploader
+                                        value={field.value || ''}
+                                        onChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormDescription>
+                                    برای اشتراک‌گذاری در شبکه‌های اجتماعی (1200x630). اگر خالی باشد از تصویر شاخص استفاده می‌شود.
+                                </FormDescription>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
