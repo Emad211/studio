@@ -2,83 +2,66 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import fs from "node:fs/promises";
-import path from "node:path";
 import { z } from "zod";
 import type { Project, BlogPost, SiteSettings, Credentials } from "./data";
-import { getInitialData, services, getInitialCredentials } from "./data";
-import { cookies } from 'next/headers'
+import { services } from "./data";
+import { cookies } from 'next/headers';
+import { db } from "./firebase";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, writeBatch, query, orderBy } from "firebase/firestore";
 
-const DATA_FILE = path.join(process.cwd(), "src", "lib", "_data.json");
-const CREDENTIALS_FILE = path.join(process.cwd(), ".credentials.json");
+// --- Data Access Functions for Firebase ---
 
-type DbData = {
-    projects: Project[];
-    blogPosts: BlogPost[];
-    settings: SiteSettings;
+// Helper function to get a single document
+async function getDocument<T>(collectionName: string, docId: string): Promise<T | null> {
+    const docRef = doc(db, collectionName, docId);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() as T : null;
 }
-
-// Data Access Functions for Public Data (_data.json)
-async function readData(): Promise<DbData> {
-  try {
-    const fileContent = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(fileContent);
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
-      console.log("Data file not found, initializing...");
-      const initialData = getInitialData();
-      await writeData(initialData);
-      return initialData;
-    }
-    console.error("Error reading data file:", error);
-    throw error;
-  }
-}
-
-async function writeData(data: DbData): Promise<void> {
-  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
-// Data Access Functions for Sensitive Data (.credentials.json)
-async function readCredentials(): Promise<Credentials> {
-    try {
-        const fileContent = await fs.readFile(CREDENTIALS_FILE, "utf-8");
-        return JSON.parse(fileContent);
-    } catch (error: any) {
-        if (error.code === 'ENOENT') {
-            console.log("Credentials file not found, initializing...");
-            const initialCredentials = getInitialCredentials();
-            await writeCredentials(initialCredentials);
-            return initialCredentials;
-        }
-        console.error("Error reading credentials file:", error);
-        throw error;
-    }
-}
-
-async function writeCredentials(data: Credentials): Promise<void> {
-    await fs.writeFile(CREDENTIALS_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
 
 // Public Data Getters
 export async function getProjects(): Promise<Project[]> {
-    const data = await readData();
-    return data.projects || [];
+    const projectsCollection = collection(db, "projects");
+    const q = query(projectsCollection, orderBy("title_fa"));
+    const projectsSnapshot = await getDocs(q);
+    return projectsSnapshot.docs.map(doc => doc.data() as Project);
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-    const data = await readData();
-    return data.blogPosts || [];
+    const postsCollection = collection(db, "blogPosts");
+    const q = query(postsCollection, orderBy("date", "desc"));
+    const postsSnapshot = await getDocs(q);
+    return postsSnapshot.docs.map(doc => doc.data() as BlogPost);
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-    const data = await readData();
-    return data.settings || getInitialData().settings;
+    const settings = await getDocument<SiteSettings>("config", "siteSettings");
+    if (!settings) {
+        // This should only happen on first run. Consider creating a default settings doc if it doesn't exist.
+        // For now, returning a default structure to avoid crashes.
+        return {
+            en: { siteName: "", authorName: "", metaTitle: "", metaDescription: "" },
+            fa: { siteName: "", authorName: "", metaTitle: "", metaDescription: "" },
+            seo: { siteURL: "" },
+            socials: { email: "", github: "", telegram: "" },
+        };
+    }
+    return settings;
 }
 
 export async function getCredentials(): Promise<Credentials> {
-    return await readCredentials();
+    const creds = await getDocument<Credentials>("config", "credentials");
+    if (!creds) {
+         return {
+            adminEmail: "",
+            adminPasswordHash: "",
+            integrations: {
+                cloudinary: { apiKey: "", apiSecret: "", cloudName: "" },
+                geminiApiKey: "",
+                googleAnalyticsId: "",
+            }
+        };
+    }
+    return creds;
 }
 
 export async function getAllCategories(lang: 'en' | 'fa') {
@@ -162,7 +145,14 @@ export async function saveProject(
   existingSlug?: string
 ) {
   const validatedData = projectSchema.parse(formData);
-  const data = await readData();
+  const slug = validatedData.slug;
+  
+  if (!existingSlug) {
+      const existingDoc = await getDoc(doc(db, "projects", slug));
+      if (existingDoc.exists()) {
+          throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
+      }
+  }
 
   const categories_fa = validatedData.categories.map(categoryName => {
     const service = services.find(s => s.title === categoryName);
@@ -180,38 +170,24 @@ export async function saveProject(
     gallery: validatedData.gallery ? validatedData.gallery.split("\n").map(url => url.trim()).filter(url => url) : [],
   };
 
-  if (existingSlug) {
-    const projectIndex = data.projects.findIndex((p) => p.slug === existingSlug);
-    if (projectIndex !== -1) {
-      data.projects[projectIndex] = { ...data.projects[projectIndex], ...projectData };
-    }
-  } else {
-    if (data.projects.some(p => p.slug === projectData.slug)) {
-        throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
-    }
-    data.projects.unshift(projectData);
-  }
+  await setDoc(doc(db, "projects", slug), projectData, { merge: true });
 
-  await writeData(data);
   revalidatePath("/admin/projects");
   revalidatePath("/projects");
   revalidatePath("/en/projects");
-  revalidatePath(`/projects/${validatedData.slug}`);
-  revalidatePath(`/en/projects/${validatedData.slug}`);
+  revalidatePath(`/projects/${slug}`);
+  revalidatePath(`/en/projects/${slug}`);
   revalidatePath("/");
   revalidatePath("/en");
-
 }
 
 export async function deleteProject(slug: string): Promise<void> {
-  const data = await readData();
-  data.projects = data.projects.filter((p) => p.slug !== slug);
-  await writeData(data);
-  revalidatePath("/admin/projects");
-  revalidatePath("/projects");
-  revalidatePath("/en/projects");
-  revalidatePath("/");
-  revalidatePath("/en");
+    await deleteDoc(doc(db, "projects", slug));
+    revalidatePath("/admin/projects");
+    revalidatePath("/projects");
+    revalidatePath("/en/projects");
+    revalidatePath("/");
+    revalidatePath("/en");
 }
 
 // --- Blog Post Actions ---
@@ -235,13 +211,19 @@ const blogPostSchema = z.object({
   og_image: z.string().url({ message: "لطفاً یک URL معتبر برای تصویر OG وارد کنید." }).optional().or(z.literal('')),
 });
 
-
 export async function saveBlogPost(
   formData: z.infer<typeof blogPostSchema>,
   existingSlug?: string
 ) {
   const validatedData = blogPostSchema.parse(formData);
-  const data = await readData();
+  const slug = validatedData.slug;
+  
+   if (!existingSlug) {
+      const existingDoc = await getDoc(doc(db, "blogPosts", slug));
+      if (existingDoc.exists()) {
+          throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
+      }
+  }
 
   const blogPostData: Omit<BlogPost, 'description' | 'description_fa'> & { description?: string; description_fa?: string } = {
     ...validatedData,
@@ -253,31 +235,17 @@ export async function saveBlogPost(
   blogPostData.description_fa = validatedData.meta_description_fa || blogPostData.content_fa.substring(0, 150);
   blogPostData.description = validatedData.meta_description_en || (blogPostData.content || '').substring(0, 150);
 
+  await setDoc(doc(db, "blogPosts", slug), blogPostData as BlogPost, { merge: true });
 
-  if (existingSlug) {
-    const postIndex = data.blogPosts.findIndex((p) => p.slug === existingSlug);
-    if (postIndex !== -1) {
-      data.blogPosts[postIndex] = blogPostData as BlogPost;
-    }
-  } else {
-     if (data.blogPosts.some(p => p.slug === blogPostData.slug)) {
-        throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
-    }
-    data.blogPosts.unshift(blogPostData as BlogPost);
-  }
-
-  await writeData(data);
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
   revalidatePath("/en/blog");
-  revalidatePath(`/blog/${blogPostData.slug}`);
-  revalidatePath(`/en/blog/${blogPostData.slug}`);
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath(`/en/blog/${slug}`);
 }
 
 export async function deleteBlogPost(slug: string): Promise<void> {
-  const data = await readData();
-  data.blogPosts = data.blogPosts.filter((p) => p.slug !== slug);
-  await writeData(data);
+  await deleteDoc(doc(db, "blogPosts", slug));
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
   revalidatePath("/en/blog");
@@ -285,36 +253,15 @@ export async function deleteBlogPost(slug: string): Promise<void> {
 
 // --- Site Settings Actions ---
 const publicSettingsSchema = z.object({
-  en: z.object({
-    siteName: z.string().min(1),
-    authorName: z.string().min(1),
-    metaTitle: z.string().min(1),
-    metaDescription: z.string().min(1),
-  }),
-  fa: z.object({
-    siteName: z.string().min(1),
-    authorName: z.string().min(1),
-    metaTitle: z.string().min(1),
-    metaDescription: z.string().min(1),
-  }),
-  seo: z.object({
-    siteURL: z.string().url(),
-    metaKeywords: z.string().optional(),
-    twitterUsername: z.string().optional(),
-    ogImage: z.string().url().optional().or(z.literal('')),
-  }),
-  socials: z.object({
-      email: z.string().email(),
-      github: z.string().url(),
-      telegram: z.string().url(),
-  }),
+  en: z.object({ siteName: z.string().min(1), authorName: z.string().min(1), metaTitle: z.string().min(1), metaDescription: z.string().min(1), }),
+  fa: z.object({ siteName: z.string().min(1), authorName: z.string().min(1), metaTitle: z.string().min(1), metaDescription: z.string().min(1), }),
+  seo: z.object({ siteURL: z.string().url(), metaKeywords: z.string().optional(), twitterUsername: z.string().optional(), ogImage: z.string().url().optional().or(z.literal('')), }),
+  socials: z.object({ email: z.string().email(), github: z.string().url(), telegram: z.string().url(), }),
 });
 
 export async function saveSiteSettings(formData: z.infer<typeof publicSettingsSchema>) {
     const validatedData = publicSettingsSchema.parse(formData);
-    const data = await readData();
-    data.settings = validatedData;
-    await writeData(data);
+    await setDoc(doc(db, "config", "siteSettings"), validatedData, { merge: true });
     revalidatePath("/", "layout");
 }
 
@@ -326,48 +273,30 @@ const credentialsSchema = z.object({
     integrations: z.object({
         geminiApiKey: z.string().optional(),
         googleAnalyticsId: z.string().optional(),
-        cloudinary: z.object({
-            cloudName: z.string().optional(),
-            apiKey: z.string().optional(),
-            apiSecret: z.string().optional(),
-        })
+        cloudinary: z.object({ cloudName: z.string().optional(), apiKey: z.string().optional(), apiSecret: z.string().optional(), })
     })
 }).refine(data => {
-    if (data.newPassword) {
-        return data.newPassword === data.confirmNewPassword;
-    }
+    if (data.newPassword) { return data.newPassword === data.confirmNewPassword; }
     return true;
-}, {
-    message: "رمز عبور جدید و تکرار آن باید یکسان باشند.",
-    path: ["confirmNewPassword"],
-});
+}, { message: "رمز عبور جدید و تکرار آن باید یکسان باشند.", path: ["confirmNewPassword"], });
 
 
 export async function saveCredentials(formData: z.infer<typeof credentialsSchema>) {
     const validatedData = credentialsSchema.parse(formData);
-    const currentCredentials = await readCredentials();
+    const currentCredentials = await getCredentials();
 
-    const newCredentials: Credentials = { ...currentCredentials };
-    
-    newCredentials.adminEmail = validatedData.adminEmail;
-    newCredentials.integrations = validatedData.integrations;
+    const newCredentials: Partial<Credentials> = {
+        adminEmail: validatedData.adminEmail,
+        integrations: validatedData.integrations
+    };
 
-    // Handle password change
     if (validatedData.newPassword) {
-        if (!validatedData.currentPassword) {
-            throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید.");
-        }
-        
+        if (!validatedData.currentPassword) { throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید."); }
         const inputCurrentPasswordHash = Buffer.from(validatedData.currentPassword).toString('base64');
-        
-        if (inputCurrentPasswordHash !== currentCredentials.adminPasswordHash) {
-            throw new Error("رمز عبور فعلی نادرست است.");
-        }
-        
+        if (inputCurrentPasswordHash !== currentCredentials.adminPasswordHash) { throw new Error("رمز عبور فعلی نادرست است."); }
         newCredentials.adminPasswordHash = Buffer.from(validatedData.newPassword).toString('base64');
     }
     
-    await writeCredentials(newCredentials);
-
+    await setDoc(doc(db, "config", "credentials"), newCredentials, { merge: true });
     revalidatePath("/admin/settings");
 }
