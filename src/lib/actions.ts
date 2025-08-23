@@ -39,9 +39,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         // This should only happen on first run. Consider creating a default settings doc if it doesn't exist.
         // For now, returning a default structure to avoid crashes.
         return {
-            en: { siteName: "", authorName: "", metaTitle: "", metaDescription: "" },
-            fa: { siteName: "", authorName: "", metaTitle: "", metaDescription: "" },
-            seo: { siteURL: "" },
+            en: { siteName: "Site Name", authorName: "Author Name", metaTitle: "Default Meta Title", metaDescription: "Default Meta Description" },
+            fa: { siteName: "نام سایت", authorName: "نام نویسنده", metaTitle: "عنوان متا پیش‌فرض", metaDescription: "توضیحات متا پیش‌فرض" },
+            seo: { siteURL: "https://example.com" },
             socials: { email: "", github: "", telegram: "" },
         };
     }
