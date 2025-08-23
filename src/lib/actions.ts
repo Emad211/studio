@@ -13,24 +13,39 @@ import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, writeBatch, query,
 
 // Helper function to get a single document
 async function getDocument<T>(collectionName: string, docId: string): Promise<T | null> {
-    const docRef = doc(db, collectionName, docId);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() as T : null;
+    if (!db) return null;
+    try {
+        const docRef = doc(db, collectionName, docId);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists() ? docSnap.data() as T : null;
+    } catch (error) {
+        console.warn(`[Firestore] Could not fetch document '${collectionName}/${docId}':`, error);
+        return null;
+    }
 }
+
+// Helper function to get a collection
+async function getCollection<T>(collectionName: string, orderField?: string, orderDir: 'asc' | 'desc' = 'asc'): Promise<T[]> {
+    if (!db) return [];
+    try {
+        const collRef = collection(db, collectionName);
+        const q = orderField ? query(collRef, orderBy(orderField, orderDir)) : query(collRef);
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => doc.data() as T);
+    } catch (error) {
+        console.warn(`[Firestore] Could not fetch collection '${collectionName}':`, error);
+        return [];
+    }
+}
+
 
 // Public Data Getters
 export async function getProjects(): Promise<Project[]> {
-    const projectsCollection = collection(db, "projects");
-    const q = query(projectsCollection, orderBy("title_fa"));
-    const projectsSnapshot = await getDocs(q);
-    return projectsSnapshot.docs.map(doc => doc.data() as Project);
+    return getCollection<Project>("projects", "title_fa");
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-    const postsCollection = collection(db, "blogPosts");
-    const q = query(postsCollection, orderBy("date", "desc"));
-    const postsSnapshot = await getDocs(q);
-    return postsSnapshot.docs.map(doc => doc.data() as BlogPost);
+    return getCollection<BlogPost>("blogPosts", "date", "desc");
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -144,6 +159,7 @@ export async function saveProject(
   formData: z.infer<typeof projectSchema>,
   existingSlug?: string
 ) {
+  if (!db) throw new Error("Firebase is not initialized.");
   const validatedData = projectSchema.parse(formData);
   const slug = validatedData.slug;
   
@@ -182,6 +198,7 @@ export async function saveProject(
 }
 
 export async function deleteProject(slug: string): Promise<void> {
+    if (!db) throw new Error("Firebase is not initialized.");
     await deleteDoc(doc(db, "projects", slug));
     revalidatePath("/admin/projects");
     revalidatePath("/projects");
@@ -215,6 +232,7 @@ export async function saveBlogPost(
   formData: z.infer<typeof blogPostSchema>,
   existingSlug?: string
 ) {
+  if (!db) throw new Error("Firebase is not initialized.");
   const validatedData = blogPostSchema.parse(formData);
   const slug = validatedData.slug;
   
@@ -245,6 +263,7 @@ export async function saveBlogPost(
 }
 
 export async function deleteBlogPost(slug: string): Promise<void> {
+  if (!db) throw new Error("Firebase is not initialized.");
   await deleteDoc(doc(db, "blogPosts", slug));
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
@@ -260,6 +279,7 @@ const publicSettingsSchema = z.object({
 });
 
 export async function saveSiteSettings(formData: z.infer<typeof publicSettingsSchema>) {
+    if (!db) throw new Error("Firebase is not initialized.");
     const validatedData = publicSettingsSchema.parse(formData);
     await setDoc(doc(db, "config", "siteSettings"), validatedData, { merge: true });
     revalidatePath("/", "layout");
@@ -282,6 +302,7 @@ const credentialsSchema = z.object({
 
 
 export async function saveCredentials(formData: z.infer<typeof credentialsSchema>) {
+    if (!db) throw new Error("Firebase is not initialized.");
     const validatedData = credentialsSchema.parse(formData);
     const currentCredentials = await getCredentials();
 
