@@ -6,7 +6,7 @@ import { z } from "zod";
 import type { Project, BlogPost, SiteSettings, Credentials } from "./data";
 import { services } from "./data";
 import { cookies } from 'next/headers';
-import { put, del, list, head } from '@vercel/blob';
+import { put, head, del } from '@vercel/blob';
 
 // --- Data Structure for the main JSON file ---
 interface AppData {
@@ -23,16 +23,24 @@ const CREDENTIALS_KEY = "credentials.json";
 // Gets all public application data (projects, posts, settings)
 async function getAppData(): Promise<AppData> {
     try {
-        const blob = await head(`${DATA_KEY}`);
+        const blob = await head(DATA_KEY);
         const response = await fetch(blob.url);
         if (!response.ok) {
-            if (response.status === 404) return getDefaultAppData();
+            if (response.status === 404) {
+                 console.log(`'${DATA_KEY}' not found. Initializing with default data.`);
+                 const defaultData = getDefaultAppData();
+                 await saveAppData(defaultData);
+                 return defaultData;
+            }
             throw new Error(`Failed to fetch app data: ${response.statusText}`);
         }
         return await response.json();
     } catch (error) {
         if ((error as any).message.includes('404')) {
-             return getDefaultAppData();
+             console.log(`'${DATA_KEY}' not found. Initializing with default data.`);
+             const defaultData = getDefaultAppData();
+             await saveAppData(defaultData);
+             return defaultData;
         }
         console.warn(`[Vercel Blob] Could not fetch '${DATA_KEY}'. Returning default data. Error:`, error);
         return getDefaultAppData();
@@ -41,23 +49,34 @@ async function getAppData(): Promise<AppData> {
 
 // Saves all public application data
 async function saveAppData(data: AppData): Promise<void> {
-    await put(DATA_KEY, JSON.stringify(data, null, 2), { access: 'public' });
+    await put(DATA_KEY, JSON.stringify(data, null, 2), { 
+        access: 'public',
+        token: process.env.BLOB_READ_WRITE_TOKEN 
+    });
     revalidatePath("/", "layout");
 }
 
 // Gets sensitive credentials
-async function getCredentials(): Promise<Credentials> {
+export async function getCredentials(): Promise<Credentials> {
     try {
-        const blob = await head(`${CREDENTIALS_KEY}`);
+        const blob = await head(CREDENTIALS_KEY, { token: process.env.BLOB_READ_WRITE_TOKEN });
         const response = await fetch(blob.url);
         if (!response.ok) {
-            if (response.status === 404) return getDefaultCredentials();
+            if (response.status === 404) {
+                console.log(`'${CREDENTIALS_KEY}' not found. Initializing with default credentials.`);
+                const defaultCreds = getDefaultCredentials();
+                await saveCredentialsData(defaultCreds);
+                return defaultCreds;
+            }
             throw new Error(`Failed to fetch credentials: ${response.statusText}`);
         }
         return await response.json();
     } catch (error) {
        if ((error as any).message.includes('404')) {
-            return getDefaultCredentials();
+            console.log(`'${CREDENTIALS_KEY}' not found. Initializing with default credentials.`);
+            const defaultCreds = getDefaultCredentials();
+            await saveCredentialsData(defaultCreds);
+            return defaultCreds;
         }
         console.warn(`[Vercel Blob] Could not fetch '${CREDENTIALS_KEY}'. Returning default credentials. Error:`, error);
         return getDefaultCredentials();
@@ -66,7 +85,10 @@ async function getCredentials(): Promise<Credentials> {
 
 // Saves sensitive credentials
 async function saveCredentialsData(data: Credentials): Promise<void> {
-    await put(CREDENTIALS_KEY, JSON.stringify(data, null, 2), { access: 'public' }); // Note: URL is unguessable
+    await put(CREDENTIALS_KEY, JSON.stringify(data, null, 2), { 
+        access: 'public', // URL is unguessable
+        token: process.env.BLOB_READ_WRITE_TOKEN 
+    }); 
 }
 
 
@@ -74,13 +96,125 @@ async function saveCredentialsData(data: Credentials): Promise<void> {
 
 function getDefaultAppData(): AppData {
     return {
-        projects: [],
-        blogPosts: [],
+        projects: [
+          {
+            title: "AI Financial Trading Agent",
+            title_fa: "عامل هوشمند معاملات مالی",
+            slug: "ai-trading-agent",
+            categories: ["AI Model Development", "AI Agent Development"],
+            categories_fa: ["توسعه مدل‌های هوش مصنوعی", "توسعه ایجنت‌های هوشمند"],
+            description: "An autonomous agent that analyzes market data, predicts stock movements, and executes trades using reinforcement learning.",
+            description_fa: "یک عامل هوشمند و مستقل که داده‌های بازار را تحلیل کرده، حرکت سهام را پیش‌بینی می‌کند و با استفاده از یادگیری تقویتی معاملات را انجام می‌دهد.",
+            image: "https://picsum.photos/600/400?random=1",
+            tags: ["Reinforcement Learning", "LLM", "Python", "TensorFlow"],
+            links: {
+              github: "https://github.com",
+              live: "https://google.com"
+            },
+            showcase_simulator: false,
+            showcase_ai_chatbot: true,
+            aiPromptContext: "The AI Financial Trading Agent is a sophisticated system built with Python, TensorFlow, and reinforcement learning. Its core architecture consists of three main components: the Data Ingestion module, the Prediction Engine, and the Execution Module. The Data Ingestion module collects real-time market data from various APIs like Alpha Vantage and Polygon. The Prediction Engine uses a combination of an LSTM model for time-series forecasting and a transformer-based model to analyze news sentiment. The agent was trained over 5 years of historical S&P 500 data and achieved a Sharpe ratio of 1.8 in backtesting, significantly outperforming the buy-and-hold strategy. The biggest challenge was managing risk and preventing catastrophic losses during market volatility, which was solved by implementing a dynamic stop-loss mechanism based on the VIX index.",
+            about: "This project showcases the development of a fully autonomous financial trading agent. The agent leverages advanced AI techniques to operate in the stock market, aiming to maximize returns while managing risk. The core of this project is a sophisticated reinforcement learning model that learns and adapts its trading strategies over time.",
+            about_fa: "این پروژه توسعه یک عامل معاملات مالی کاملاً مستقل را به نمایش می‌گذارد. این عامل از تکنیک‌های پیشرفته هوش مصنوعی برای فعالیت در بازار سهام بهره می‌برد و هدف آن حداکثر کردن بازده و مدیریت ریسک است. هسته اصلی این پروژه یک مدل یادگیری تقویتی پیچیده است که استراتژی‌های معاملاتی خود را در طول زمان یاد می‌گیرد و تطبیق می‌دهد.",
+            technical_details: "The agent is built on a microservices architecture using Python. The primary AI model is a Deep Q-Network (DQN) implemented in TensorFlow. Market data is streamed via WebSockets and processed in real-time. A custom-built backtesting engine, based on Pandas and NumPy, was developed to evaluate the agent's performance on historical data.",
+            technical_details_fa: "این عامل بر اساس یک معماری میکروسرویس با پایتون ساخته شده است. مدل اصلی هوش مصنوعی یک شبکه Deep Q-Network (DQN) است که با TensorFlow پیاده‌سازی شده. داده‌های بازار از طریق وب‌سوکت‌ها استریم شده و به صورت بلادرنگ پردازش می‌شوند. یک موتور بک‌تست سفارشی بر پایه Pandas و NumPy برای ارزیابی عملکرد عامل بر روی داده‌های تاریخی توسعه داده شد.",
+            challenges: "One of the main challenges was the high volatility and noise in financial data, which made training a stable agent difficult. Another challenge was preventing the agent from overfitting to historical data and ensuring it could generalize to new market conditions.",
+            challenges_fa: "یکی از چالش‌های اصلی، نوسانات و نویز بالای داده‌های مالی بود که آموزش یک عامل پایدار را دشوار می‌کرد. چالش دیگر جلوگیری از بیش‌برازش (overfitting) عامل به داده‌های تاریخی و اطمینان از قابلیت تعمیم آن به شرایط جدید بازار بود.",
+            solution: "To combat noise, we implemented advanced data preprocessing techniques, including wavelet transforms. To prevent overfitting, we used a combination of dropout layers in the neural network and an ensemble of models trained on different time periods. A strict risk management module was also integrated to automatically halt trading during black swan events.",
+            solution_fa: "برای مقابله با نویز، ما تکنیک‌های پیش‌پردازش داده پیشرفته‌ای، از جمله تبدیل موجک، را پیاده‌سازی کردیم. برای جلوگیری از بیش‌برازش، از ترکیبی از لایه‌های dropout در شبکه عصبی و یک گروه از مدل‌های آموزش دیده بر روی دوره‌های زمانی مختلف استفاده کردیم. یک ماژول مدیریت ریسک سختگیرانه نیز برای توقف خودکار معاملات در طول رویدادهای قوی سیاه ادغام شد.",
+            code_snippet: "def execute_trade(self, action, stock_price):\n    if action == 'buy':\n        self.portfolio.buy(stock=self.ticker, price=stock_price)\n        print(f'Executing BUY for {self.ticker} at {stock_price}')\n    elif action == 'sell':\n        self.portfolio.sell(stock=self.ticker, price=stock_price)\n        print(f'Executing SELL for {self.ticker} at {stock_price}')",
+            code_snippet_fa: "def execute_trade(self, action, stock_price):\n    if action == 'buy':\n        self.portfolio.buy(stock=self.ticker, price=stock_price)\n        print(f'خرید سهم {self.ticker} با قیمت {stock_price}')\n    elif action == 'sell':\n        self.portfolio.sell(stock=self.ticker, price=stock_price)\n        print(f'فروش سهم {self.ticker} با قیمت {stock_price}')"
+          },
+          {
+            title: "Computer Vision Security System",
+            title_fa: "سیستم امنیتی با بینایی کامپیوتر",
+            slug: "cv-security-system",
+            categories: ["AI Model Development", "Data Analysis & Statistics"],
+            categories_fa: ["توسعه مدل‌های هوش مصنوعی", "تحلیل داده و آمار"],
+            description: "An intelligent security system that uses YOLOv8 for real-time object detection to identify intruders and unauthorized objects.",
+            description_fa: "یک سیستم امنیتی هوشمند که از مدل YOLOv8 برای تشخیص اشیاء در زمان واقعی جهت شناسایی متجاوزین و اشیاء غیرمجاز استفاده می‌کند.",
+            image: "https://picsum.photos/600/400?random=2",
+            tags: ["Computer Vision", "YOLOv8", "PyTorch", "OpenCV"],
+            links: {
+              github: "https://github.com",
+            },
+            showcase_simulator: true,
+            gallery: [
+                "https://res.cloudinary.com/dfiwrj1dm/image/upload/v1725066491/cld-sample-2.jpg",
+                "https://res.cloudinary.com/dfiwrj1dm/image/upload/v1725066487/cld-sample.jpg",
+                "https://res.cloudinary.com/dfiwrj1dm/image/upload/v1725066495/samples/people/boy-snow-hoodie.jpg",
+                "https://res.cloudinary.com/dfiwrj1dm/image/upload/v1725066498/samples/landscapes/beach-boat.jpg"
+            ],
+            showcase_ai_chatbot: false,
+            about: "This project involves building a real-time security monitoring system using state-of-the-art object detection models. The system can be deployed on edge devices like a Raspberry Pi and streams video to a central server for analysis and alerting. It is designed to be robust against various lighting conditions and camera angles.",
+            about_fa: "این پروژه شامل ساخت یک سیستم نظارت امنیتی بلادرنگ با استفاده از مدل‌های پیشرفته تشخیص اشیاء است. این سیستم قابلیت استقرار بر روی دستگاه‌های لبه مانند رزبری پای را دارد و ویدیو را برای تحلیل و هشدار به یک سرور مرکزی استریم می‌کند. این سیستم به گونه‌ای طراحی شده که در برابر شرایط نوری مختلف و زوایای دوربین مقاوم باشد.",
+            technical_details: "The core of the system is a fine-tuned YOLOv8 model, trained on a custom dataset of security footage. The model is implemented using PyTorch. Video processing and streaming are handled by OpenCV and GStreamer. The backend is a Flask server that receives alerts and sends notifications via Telegram Bot API.",
+            technical_details_fa: "هسته اصلی سیستم یک مدل YOLOv8 بهینه‌سازی شده است که بر روی یک مجموعه داده سفارشی از فیلم‌های امنیتی آموزش دیده است. مدل با استفاده از PyTorch پیاده‌سازی شده. پردازش و استریم ویدیو توسط OpenCV و GStreamer انجام می‌شود. بک‌اند یک سرور Flask است که هشدارها را دریافت کرده و از طریق API ربات تلگرام اعلان ارسال می‌کند.",
+            challenges: "The primary challenge was achieving high accuracy in low-light conditions. Another significant hurdle was optimizing the model to run efficiently on resource-constrained edge devices without sacrificing too much accuracy.",
+            challenges_fa: "چالش اصلی، دستیابی به دقت بالا در شرایط کم نور بود. مانع مهم دیگر، بهینه‌سازی مدل برای اجرای کارآمد بر روی دستگاه‌های لبه با منابع محدود بدون قربانی کردن بیش از حد دقت بود.",
+            solution: "To improve low-light performance, we used data augmentation techniques like random brightness and contrast adjustments. For optimization, we applied model quantization and used the TensorRT engine, which resulted in a 3x speedup on the edge device with only a 2% drop in mAP.",
+            solution_fa: "برای بهبود عملکرد در نور کم، از تکنیک‌های افزایش داده مانند تنظیمات تصادفی روشنایی و کنتراست استفاده کردیم. برای بهینه‌سازی، ما کوانتیزه‌سازی مدل را اعمال کرده و از موتور TensorRT استفاده نمودیم که منجر به افزایش سرعت ۳ برابری روی دستگاه لبه با تنها ۲٪ کاهش در mAP شد.",
+            code_snippet: "results = model(frame)  # Run YOLOv8 inference\nfor r in results:\n    boxes = r.boxes\n    for box in boxes:\n        if model.names[int(box.cls)] == 'person':\n            send_alert(frame, box.xyxy)",
+            code_snippet_fa: "results = model(frame)  # اجرای مدل YOLOv8\nfor r in results:\n    boxes = r.boxes\n    for box in boxes:\n        if model.names[int(box.cls)] == 'person':\n            send_alert(frame, box.xyxy) # ارسال هشدار شناسایی انسان"
+          }
+        ],
+        blogPosts: [
+            {
+                slug: "rise-of-generative-ai",
+                title: "The Rise of Generative AI",
+                title_fa: "ظهور هوش مصنوعی مولد",
+                description: "A deep dive into the models, technologies, and implications of the recent explosion in generative AI, from LLMs to diffusion models.",
+                description_fa: "نگاهی عمیق به مدل‌ها، تکنولوژی‌ها و پیامدهای انفجار اخیر در حوزه هوش مصنوعی مولد، از مدل‌های زبان بزرگ تا مدل‌های انتشاری.",
+                date: "2024-08-15",
+                tags: ["Generative AI", "LLM", "Diffusion Models", "Technology"],
+                content: "Generative AI has taken the world by storm. In this post, we explore the core concepts behind this revolution...",
+                content_fa: "هوش مصنوعی مولد جهان را متحول کرده است. در این پست، ما مفاهیم اصلی پشت این انقلاب را بررسی می‌کنیم...",
+                featured_image: "https://picsum.photos/1280/720?random=3",
+                status: 'published',
+                meta_title_en: "The Ultimate Guide to Generative AI in 2024",
+                meta_description_en: "Learn everything you need to know about Generative AI, including Large Language Models (LLMs) and image diffusion models. Explore the tech and its impact.",
+                meta_title_fa: "راهنمای جامع هوش مصنوعی مولد در سال ۲۰۲۴",
+                meta_description_fa: "همه چیز را در مورد هوش مصنوعی مولد، از جمله مدل‌های زبان بزرگ (LLM) و مدل‌های انتشار تصویر بیاموزید. با این تکنولوژی و تاثیرات آن آشنا شوید.",
+                og_image: "https://picsum.photos/1200/630?random=4"
+            },
+            {
+                slug: "deep-dive-tensorflow",
+                title: "Deep Dive into TensorFlow 2.0",
+                title_fa: "بررسی عمیق TensorFlow 2.0",
+                description: "An overview of the key features and changes in TensorFlow 2.0, with code examples and best practices.",
+                description_fa: "مروری بر ویژگی‌ها و تغییرات کلیدی در TensorFlow 2.0، همراه با مثال‌های کد و بهترین شیوه‌ها.",
+                date: "2024-07-22",
+                tags: ["TensorFlow", "Deep Learning", "Python"],
+                content: "TensorFlow 2.0 introduced many changes, including eager execution by default. This article explores how to adapt your code...",
+                content_fa: "تنسورفلو ۲.۰ تغییرات زیادی را معرفی کرد، از جمله اجرای مشتاقانه (eager execution) به صورت پیش‌فرض. این مقاله به بررسی چگونگی تطبیق کدهای شما می‌پردازد...",
+                featured_image: "https://picsum.photos/1280/720?random=5",
+                status: 'draft',
+            }
+        ],
         siteSettings: {
-            en: { siteName: "Site Name", authorName: "Author Name", metaTitle: "Default Meta Title", metaDescription: "Default Meta Description" },
-            fa: { siteName: "نام سایت", authorName: "نام نویسنده", metaTitle: "عنوان متا پیش‌فرض", metaDescription: "توضیحات متا پیش‌فرض" },
-            seo: { siteURL: "https://example.com" },
-            socials: { email: "", github: "", telegram: "" },
+            en: { 
+                siteName: "Emad Karimi", 
+                authorName: "Emad Karimi", 
+                metaTitle: "Emad Karimi - AI Specialist & Developer", 
+                metaDescription: "The professional portfolio of Emad Karimi, an AI specialist and computer engineer." 
+            },
+            fa: { 
+                siteName: "عماد کریمی", 
+                authorName: "عماد کریمی", 
+                metaTitle: "عماد کریمی - متخصص هوش مصنوعی و توسعه‌دهنده", 
+                metaDescription: "پورتفولیو حرفه‌ای عماد کریمی، متخصص هوش مصنوعی و مهندس کامپیوتر." 
+            },
+            seo: { 
+                siteURL: "https://example.com",
+                metaKeywords: "AI, Artificial Intelligence, Portfolio, Developer, Computer Engineer",
+                twitterUsername: "your_twitter",
+                ogImage: "https://picsum.photos/1200/630?random=6"
+            },
+            socials: { 
+                email: "test@example.com", 
+                github: "https://github.com", 
+                telegram: "https://telegram.org"
+            },
         }
     };
 }
@@ -100,18 +234,34 @@ function getDefaultCredentials(): Credentials {
 // --- Public Data Getters ---
 
 export async function getProjects(): Promise<Project[]> {
-    const data = await getAppData();
-    return data.projects.sort((a, b) => a.title_fa.localeCompare(b.title_fa));
+    try {
+        const data = await getAppData();
+        return data.projects.sort((a, b) => a.title_fa.localeCompare(b.title_fa));
+    } catch (error) {
+        console.error("Failed to get projects:", error);
+        return [];
+    }
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-    const data = await getAppData();
-    return data.blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+     try {
+        const data = await getAppData();
+        return data.blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    } catch (error) {
+        console.error("Failed to get blog posts:", error);
+        return [];
+    }
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-    const data = await getAppData();
-    return data.siteSettings;
+    try {
+        const data = await getAppData();
+        return data.siteSettings;
+    } catch (error) {
+        console.error("Failed to get site settings:", error);
+        // Return a fallback default to prevent crashes
+        return getDefaultAppData().siteSettings;
+    }
 }
 
 export async function getAllCategories(lang: 'en' | 'fa') {

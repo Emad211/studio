@@ -299,7 +299,7 @@ export const services: Service[] = [
     title: "AI Agent Development",
     title_fa: "توسعه ایجنت‌های هوشمند",
     description: "Building intelligent, autonomous agents that can reason, plan, and execute complex tasks to automate workflows and enhance capabilities.",
-    description_fa: "ساخت ایجنت‌های هوشمند و مستقل که می‌توانند استدلال، برنامه‌ریزی و اجرای وظایf پیچیده را برای خودکارسازی گردش کار و افزایش قابلیت‌ها انجام دهند.",
+    description_fa: "ساخت ایجنت‌های هوشمند و مستقل که می‌توانند استدلال، برنامه‌ریزی و اجرای وظایف پیچیده را برای خودکارسازی گردش کار و افزایش قابلیت‌ها انجام دهند.",
     icon: Bot,
   },
   {
