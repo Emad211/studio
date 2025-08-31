@@ -6,77 +6,112 @@ import { z } from "zod";
 import type { Project, BlogPost, SiteSettings, Credentials } from "./data";
 import { services } from "./data";
 import { cookies } from 'next/headers';
-import { db } from "./firebase";
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, writeBatch, query, orderBy } from "firebase/firestore";
+import { put, del, list, head } from '@vercel/blob';
 
-// --- Data Access Functions for Firebase ---
+// --- Data Structure for the main JSON file ---
+interface AppData {
+    projects: Project[];
+    blogPosts: BlogPost[];
+    siteSettings: SiteSettings;
+}
 
-// Helper function to get a single document
-async function getDocument<T>(collectionName: string, docId: string): Promise<T | null> {
-    if (!db) return null;
+// --- Vercel Blob Helper Functions ---
+
+const DATA_KEY = "data.json";
+const CREDENTIALS_KEY = "credentials.json";
+
+// Gets all public application data (projects, posts, settings)
+async function getAppData(): Promise<AppData> {
     try {
-        const docRef = doc(db, collectionName, docId);
-        const docSnap = await getDoc(docRef);
-        return docSnap.exists() ? docSnap.data() as T : null;
+        const blob = await head(`${DATA_KEY}`);
+        const response = await fetch(blob.url);
+        if (!response.ok) {
+            if (response.status === 404) return getDefaultAppData();
+            throw new Error(`Failed to fetch app data: ${response.statusText}`);
+        }
+        return await response.json();
     } catch (error) {
-        console.warn(`[Firestore] Could not fetch document '${collectionName}/${docId}':`, error);
-        return null;
+        if ((error as any).message.includes('404')) {
+             return getDefaultAppData();
+        }
+        console.warn(`[Vercel Blob] Could not fetch '${DATA_KEY}'. Returning default data. Error:`, error);
+        return getDefaultAppData();
     }
 }
 
-// Helper function to get a collection
-async function getCollection<T>(collectionName: string, orderField?: string, orderDir: 'asc' | 'desc' = 'asc'): Promise<T[]> {
-    if (!db) return [];
+// Saves all public application data
+async function saveAppData(data: AppData): Promise<void> {
+    await put(DATA_KEY, JSON.stringify(data, null, 2), { access: 'public' });
+    revalidatePath("/", "layout");
+}
+
+// Gets sensitive credentials
+async function getCredentials(): Promise<Credentials> {
     try {
-        const collRef = collection(db, collectionName);
-        const q = orderField ? query(collRef, orderBy(orderField, orderDir)) : query(collRef);
-        const snapshot = await getDocs(q);
-        return snapshot.docs.map(doc => doc.data() as T);
+        const blob = await head(`${CREDENTIALS_KEY}`);
+        const response = await fetch(blob.url);
+        if (!response.ok) {
+            if (response.status === 404) return getDefaultCredentials();
+            throw new Error(`Failed to fetch credentials: ${response.statusText}`);
+        }
+        return await response.json();
     } catch (error) {
-        console.warn(`[Firestore] Could not fetch collection '${collectionName}':`, error);
-        return [];
+       if ((error as any).message.includes('404')) {
+            return getDefaultCredentials();
+        }
+        console.warn(`[Vercel Blob] Could not fetch '${CREDENTIALS_KEY}'. Returning default credentials. Error:`, error);
+        return getDefaultCredentials();
     }
 }
 
-
-// Public Data Getters
-export async function getProjects(): Promise<Project[]> {
-    return getCollection<Project>("projects", "title_fa");
+// Saves sensitive credentials
+async function saveCredentialsData(data: Credentials): Promise<void> {
+    await put(CREDENTIALS_KEY, JSON.stringify(data, null, 2), { access: 'public' }); // Note: URL is unguessable
 }
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
-    return getCollection<BlogPost>("blogPosts", "date", "desc");
-}
 
-export async function getSiteSettings(): Promise<SiteSettings> {
-    const settings = await getDocument<SiteSettings>("config", "siteSettings");
-    if (!settings) {
-        // This should only happen on first run. Consider creating a default settings doc if it doesn't exist.
-        // For now, returning a default structure to avoid crashes.
-        return {
+// --- Default Data Functions (for first-time setup) ---
+
+function getDefaultAppData(): AppData {
+    return {
+        projects: [],
+        blogPosts: [],
+        siteSettings: {
             en: { siteName: "Site Name", authorName: "Author Name", metaTitle: "Default Meta Title", metaDescription: "Default Meta Description" },
             fa: { siteName: "نام سایت", authorName: "نام نویسنده", metaTitle: "عنوان متا پیش‌فرض", metaDescription: "توضیحات متا پیش‌فرض" },
             seo: { siteURL: "https://example.com" },
             socials: { email: "", github: "", telegram: "" },
-        };
-    }
-    return settings;
+        }
+    };
 }
 
-export async function getCredentials(): Promise<Credentials> {
-    const creds = await getDocument<Credentials>("config", "credentials");
-    if (!creds) {
-         return {
-            adminEmail: "",
-            adminPasswordHash: "",
-            integrations: {
-                cloudinary: { apiKey: "", apiSecret: "", cloudName: "" },
-                geminiApiKey: "",
-                googleAnalyticsId: "",
-            }
-        };
-    }
-    return creds;
+function getDefaultCredentials(): Credentials {
+    const defaultPassword = process.env.ADMIN_PASSWORD || "admin";
+    const passwordHash = Buffer.from(defaultPassword).toString('base64');
+    return {
+        adminEmail: process.env.ADMIN_EMAIL || "admin@example.com",
+        adminPasswordHash: passwordHash,
+        integrations: {
+            geminiApiKey: process.env.GEMINI_API_KEY || "",
+        }
+    };
+}
+
+// --- Public Data Getters ---
+
+export async function getProjects(): Promise<Project[]> {
+    const data = await getAppData();
+    return data.projects.sort((a, b) => a.title_fa.localeCompare(b.title_fa));
+}
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+    const data = await getAppData();
+    return data.blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+    const data = await getAppData();
+    return data.siteSettings;
 }
 
 export async function getAllCategories(lang: 'en' | 'fa') {
@@ -159,15 +194,14 @@ export async function saveProject(
   formData: z.infer<typeof projectSchema>,
   existingSlug?: string
 ) {
-  if (!db) throw new Error("Firebase is not initialized.");
   const validatedData = projectSchema.parse(formData);
-  const slug = validatedData.slug;
+  const data = await getAppData();
   
-  if (!existingSlug) {
-      const existingDoc = await getDoc(doc(db, "projects", slug));
-      if (existingDoc.exists()) {
-          throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
-      }
+  const slug = validatedData.slug;
+  const isEditing = !!existingSlug;
+  
+  if (!isEditing && data.projects.some(p => p.slug === slug)) {
+      throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
   }
 
   const categories_fa = validatedData.categories.map(categoryName => {
@@ -186,25 +220,25 @@ export async function saveProject(
     gallery: validatedData.gallery ? validatedData.gallery.split("\n").map(url => url.trim()).filter(url => url) : [],
   };
 
-  await setDoc(doc(db, "projects", slug), projectData, { merge: true });
+  if (isEditing) {
+    const index = data.projects.findIndex(p => p.slug === existingSlug);
+    if (index !== -1) {
+      data.projects[index] = projectData;
+    } else {
+        // This case should ideally not happen if UI is correct
+        data.projects.push(projectData);
+    }
+  } else {
+    data.projects.push(projectData);
+  }
 
-  revalidatePath("/admin/projects");
-  revalidatePath("/projects");
-  revalidatePath("/en/projects");
-  revalidatePath(`/projects/${slug}`);
-  revalidatePath(`/en/projects/${slug}`);
-  revalidatePath("/");
-  revalidatePath("/en");
+  await saveAppData(data);
 }
 
 export async function deleteProject(slug: string): Promise<void> {
-    if (!db) throw new Error("Firebase is not initialized.");
-    await deleteDoc(doc(db, "projects", slug));
-    revalidatePath("/admin/projects");
-    revalidatePath("/projects");
-    revalidatePath("/en/projects");
-    revalidatePath("/");
-    revalidatePath("/en");
+    const data = await getAppData();
+    data.projects = data.projects.filter(p => p.slug !== slug);
+    await saveAppData(data);
 }
 
 // --- Blog Post Actions ---
@@ -232,42 +266,43 @@ export async function saveBlogPost(
   formData: z.infer<typeof blogPostSchema>,
   existingSlug?: string
 ) {
-  if (!db) throw new Error("Firebase is not initialized.");
-  const validatedData = blogPostSchema.parse(formData);
-  const slug = validatedData.slug;
-  
-   if (!existingSlug) {
-      const existingDoc = await getDoc(doc(db, "blogPosts", slug));
-      if (existingDoc.exists()) {
-          throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
-      }
-  }
+    const validatedData = blogPostSchema.parse(formData);
+    const data = await getAppData();
+    const slug = validatedData.slug;
+    const isEditing = !!existingSlug;
 
-  const blogPostData: Omit<BlogPost, 'description' | 'description_fa'> & { description?: string; description_fa?: string } = {
-    ...validatedData,
-    title: validatedData.title || validatedData.title_fa,
-    content: validatedData.content || validatedData.content_fa,
-    tags: validatedData.tags.split(",").map((t) => t.trim()),
-  };
+    if (!isEditing && data.blogPosts.some(p => p.slug === slug)) {
+        throw new Error("اسلاگ تکراری است. لطفاً یک اسلاگ دیگر انتخاب کنید.");
+    }
+    
+    const blogPostData: Omit<BlogPost, 'description' | 'description_fa'> & { description?: string; description_fa?: string } = {
+        ...validatedData,
+        title: validatedData.title || validatedData.title_fa,
+        content: validatedData.content || validatedData.content_fa,
+        tags: validatedData.tags.split(",").map((t) => t.trim()),
+    };
 
-  blogPostData.description_fa = validatedData.meta_description_fa || blogPostData.content_fa.substring(0, 150);
-  blogPostData.description = validatedData.meta_description_en || (blogPostData.content || '').substring(0, 150);
+    blogPostData.description_fa = validatedData.meta_description_fa || blogPostData.content_fa.substring(0, 150);
+    blogPostData.description = validatedData.meta_description_en || (blogPostData.content || '').substring(0, 150);
 
-  await setDoc(doc(db, "blogPosts", slug), blogPostData as BlogPost, { merge: true });
-
-  revalidatePath("/admin/blog");
-  revalidatePath("/blog");
-  revalidatePath("/en/blog");
-  revalidatePath(`/blog/${slug}`);
-  revalidatePath(`/en/blog/${slug}`);
+    if (isEditing) {
+        const index = data.blogPosts.findIndex(p => p.slug === existingSlug);
+        if (index !== -1) {
+            data.blogPosts[index] = blogPostData as BlogPost;
+        } else {
+            data.blogPosts.push(blogPostData as BlogPost);
+        }
+    } else {
+        data.blogPosts.push(blogPostData as BlogPost);
+    }
+    
+    await saveAppData(data);
 }
 
 export async function deleteBlogPost(slug: string): Promise<void> {
-  if (!db) throw new Error("Firebase is not initialized.");
-  await deleteDoc(doc(db, "blogPosts", slug));
-  revalidatePath("/admin/blog");
-  revalidatePath("/blog");
-  revalidatePath("/en/blog");
+  const data = await getAppData();
+  data.blogPosts = data.blogPosts.filter(p => p.slug !== slug);
+  await saveAppData(data);
 }
 
 // --- Site Settings Actions ---
@@ -279,10 +314,10 @@ const publicSettingsSchema = z.object({
 });
 
 export async function saveSiteSettings(formData: z.infer<typeof publicSettingsSchema>) {
-    if (!db) throw new Error("Firebase is not initialized.");
     const validatedData = publicSettingsSchema.parse(formData);
-    await setDoc(doc(db, "config", "siteSettings"), validatedData, { merge: true });
-    revalidatePath("/", "layout");
+    const data = await getAppData();
+    data.siteSettings = validatedData;
+    await saveAppData(data);
 }
 
 const credentialsSchema = z.object({
@@ -292,8 +327,6 @@ const credentialsSchema = z.object({
     confirmNewPassword: z.string().optional(),
     integrations: z.object({
         geminiApiKey: z.string().optional(),
-        googleAnalyticsId: z.string().optional(),
-        cloudinary: z.object({ cloudName: z.string().optional(), apiKey: z.string().optional(), apiSecret: z.string().optional(), })
     })
 }).refine(data => {
     if (data.newPassword) { return data.newPassword === data.confirmNewPassword; }
@@ -302,7 +335,6 @@ const credentialsSchema = z.object({
 
 
 export async function saveCredentials(formData: z.infer<typeof credentialsSchema>) {
-    if (!db) throw new Error("Firebase is not initialized.");
     const validatedData = credentialsSchema.parse(formData);
     const currentCredentials = await getCredentials();
 
@@ -318,6 +350,13 @@ export async function saveCredentials(formData: z.infer<typeof credentialsSchema
         newCredentials.adminPasswordHash = Buffer.from(validatedData.newPassword).toString('base64');
     }
     
-    await setDoc(doc(db, "config", "credentials"), newCredentials, { merge: true });
+    // Create a new object with all credentials, merging old and new
+    const finalCredentials: Credentials = {
+        adminEmail: newCredentials.adminEmail || currentCredentials.adminEmail,
+        adminPasswordHash: newCredentials.adminPasswordHash || currentCredentials.adminPasswordHash,
+        integrations: newCredentials.integrations || currentCredentials.integrations,
+    };
+
+    await saveCredentialsData(finalCredentials);
     revalidatePath("/admin/settings");
 }

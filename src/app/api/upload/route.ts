@@ -1,53 +1,34 @@
 
+import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
-import { getCredentials } from '@/lib/actions';
+import { customAlphabet } from 'nanoid';
 
-async function configureCloudinary() {
-    const credentials = await getCredentials();
-    const { cloudName, apiKey, apiSecret } = credentials.integrations.cloudinary || {};
+// Creates a 16-character unique ID
+const nanoid = customAlphabet(
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+  16
+);
 
-    if (!cloudName || !apiKey || !apiSecret) {
-        throw new Error('Cloudinary configuration is missing. Please add it in the admin settings panel.');
-    }
+export async function POST(request: Request): Promise<NextResponse> {
+  const { searchParams } = new URL(request.url);
+  const filename = searchParams.get('filename');
 
-    cloudinary.config({
-        cloud_name: cloudName,
-        api_key: apiKey,
-        api_secret: apiSecret,
-    });
-}
+  if (!filename || !request.body) {
+    return NextResponse.json(
+      { message: 'Missing filename or body' },
+      { status: 400 },
+    );
+  }
 
-export async function POST(request: Request) {
-    try {
-        await configureCloudinary();
-    } catch (error: any) {
-        return NextResponse.json({ success: false, message: error.message }, { status: 400 });
-    }
-    
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
+  // The filename is coming from the client, so we need to sanitize it
+  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const uniqueFilename = `${nanoid()}-${sanitizedFilename}`;
 
-    if (!file) {
-        return NextResponse.json({ success: false, message: 'No file provided' }, { status: 400 });
-    }
+  // The `put` function returns a `BlobResult` object
+  // which includes the URL of the uploaded blob.
+  const blob = await put(uniqueFilename, request.body, {
+    access: 'public',
+  });
 
-    try {
-        const fileBuffer = await file.arrayBuffer();
-        const mimeType = file.type;
-        const encoding = 'base64';
-        const base64Data = Buffer.from(fileBuffer).toString('base64');
-        const fileUri = `data:${mimeType};${encoding},${base64Data}`;
-
-        const result = await cloudinary.uploader.upload(fileUri, {
-            folder: 'portfolio_uploads',
-            resource_type: 'auto',
-        });
-        
-        return NextResponse.json({ success: true, url: result.secure_url });
-
-    } catch (error) {
-        console.error('Error uploading to Cloudinary:', error);
-        return NextResponse.json({ success: false, message: 'Upload failed due to a server error.' }, { status: 500 });
-    }
+  return NextResponse.json({ success: true, url: blob.url });
 }

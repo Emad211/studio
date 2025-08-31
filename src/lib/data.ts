@@ -82,12 +82,6 @@ export interface Credentials {
     adminPasswordHash: string;
     integrations: {
         geminiApiKey?: string;
-        googleAnalyticsId?: string;
-        cloudinary?: {
-            cloudName?: string;
-            apiKey?: string;
-            apiSecret?: string;
-        }
     }
 }
 

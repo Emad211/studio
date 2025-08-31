@@ -22,7 +22,6 @@ export function ImageUploader({ value, onChange }: ImageUploaderProps) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check file size (e.g., 5MB limit)
     if (file.size > 5 * 1024 * 1024) {
         toast({
             variant: "destructive",
@@ -33,13 +32,11 @@ export function ImageUploader({ value, onChange }: ImageUploaderProps) {
     }
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
+    
     try {
-      const response = await fetch("/api/upload", {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
         method: "POST",
-        body: formData,
+        body: file,
       });
 
       const result = await response.json();

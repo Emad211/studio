@@ -59,12 +59,6 @@ const credentialsSchema = z.object({
   confirmNewPassword: z.string().optional(),
   integrations: z.object({
     geminiApiKey: z.string().optional(),
-    googleAnalyticsId: z.string().optional(),
-    cloudinary: z.object({
-        cloudName: z.string().optional(),
-        apiKey: z.string().optional(),
-        apiSecret: z.string().optional(),
-    })
   })
 }).refine(data => {
     if (data.newPassword) {
@@ -153,12 +147,11 @@ export function SettingsForm({ settings, credentials }: SettingsFormProps) {
   return (
     <div className="space-y-8">
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
             <TabsTrigger value="general"><Globe className="w-4 h-4 ml-2" />عمومی</TabsTrigger>
             <TabsTrigger value="seo"><Search className="w-4 h-4 ml-2" />سئو</TabsTrigger>
             <TabsTrigger value="social"><Share2 className="w-4 h-4 ml-2" />شبکه‌های اجتماعی</TabsTrigger>
-            <TabsTrigger value="security"><Shield className="w-4 h-4 ml-2" />امنیت</TabsTrigger>
-            <TabsTrigger value="integrations"><Plug className="w-4 h-4 ml-2" />یکپارچه‌سازی</TabsTrigger>
+            <TabsTrigger value="security"><Shield className="w-4 h-4 ml-2" />امنیت و API</TabsTrigger>
           </TabsList>
           
           <TabsContent value="general">
@@ -336,113 +329,69 @@ export function SettingsForm({ settings, credentials }: SettingsFormProps) {
             <Form {...credentialsForm}>
                 <form onSubmit={credentialsForm.handleSubmit(onCredentialsSubmit)} className="space-y-8">
                     <Card>
-                    <CardHeader>
-                        <CardTitle>تنظیمات امنیتی</CardTitle>
-                        <CardDescription>ایمیل و رمز عبور خود برای ورود به پنل مدیریت را تغییر دهید.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6" dir="rtl">
-                        <FormField control={credentialsForm.control} name="adminEmail" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>ایمیل ادمین</FormLabel>
-                                <FormDescription>این ایمیل برای ورود و دریافت نوتیفیکیشن‌ها استفاده می‌شود.</FormDescription>
-                                <FormControl><Input dir="ltr" {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <Separator />
-                        <h4 className="text-lg font-medium">تغییر رمز عبور</h4>
-                        <FormDescription>برای تغییر رمز عبور، رمز فعلی خود را وارد کنید. اگر فیلدهای رمز عبور جدید را خالی بگذارید، رمز عبور فعلی بدون تغییر باقی خواهد ماند.</FormDescription>
-                        <FormField control={credentialsForm.control} name="currentPassword" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>رمز عبور فعلی</FormLabel>
-                                <FormControl><Input type="password" dir="ltr" {...field} autoComplete="current-password" /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={credentialsForm.control} name="newPassword" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>رمز عبور جدید</FormLabel>
-                                <FormControl><Input type="password" dir="ltr" {...field} autoComplete="new-password"/></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={credentialsForm.control} name="confirmNewPassword" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>تکرار رمز عبور جدید</FormLabel>
-                                <FormControl><Input type="password" dir="ltr" {...field} autoComplete="new-password" /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                    </CardContent>
+                        <CardHeader>
+                            <CardTitle>اطلاعات کاربری ادمین</CardTitle>
+                            <CardDescription>ایمیل و رمز عبور خود برای ورود به پنل مدیریت را تغییر دهید.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6" dir="rtl">
+                            <FormField control={credentialsForm.control} name="adminEmail" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>ایمیل ادمین</FormLabel>
+                                    <FormDescription>این ایمیل برای ورود استفاده می‌شود.</FormDescription>
+                                    <FormControl><Input dir="ltr" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <Separator />
+                            <h4 className="text-lg font-medium">تغییر رمز عبور</h4>
+                            <FormDescription>برای تغییر رمز عبور، رمز فعلی خود را وارد کنید. اگر فیلدهای رمز عبور جدید را خالی بگذارید، رمز عبور فعلی بدون تغییر باقی خواهد ماند.</FormDescription>
+                            <FormField control={credentialsForm.control} name="currentPassword" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>رمز عبور فعلی</FormLabel>
+                                    <FormControl><Input type="password" dir="ltr" {...field} autoComplete="current-password" /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <FormField control={credentialsForm.control} name="newPassword" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>رمز عبور جدید</FormLabel>
+                                    <FormControl><Input type="password" dir="ltr" {...field} autoComplete="new-password"/></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <FormField control={credentialsForm.control} name="confirmNewPassword" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>تکرار رمز عبور جدید</FormLabel>
+                                    <FormControl><Input type="password" dir="ltr" {...field} autoComplete="new-password" /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </CardContent>
                     </Card>
-                     <Button type="submit" disabled={isCredentialsPending} size="lg">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>کلیدهای API</CardTitle>
+                            <CardDescription>
+                                کلیدهای API برای سرویس‌های خارجی را اینجا مدیریت کنید. این مقادیر به صورت امن ذخیره می‌شوند.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6" dir="rtl">
+                            <FormField control={credentialsForm.control} name="integrations.geminiApiKey" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Gemini API Key</FormLabel>
+                                    <FormDescription>کلید برای استفاده از مدل‌های هوش مصنوعی Gemini در بخش‌هایی مانند چت‌بات و تولید محتوای وبلاگ.</FormDescription>
+                                    <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </CardContent>
+                    </Card>
+                    <Button type="submit" disabled={isCredentialsPending} size="lg">
                         {isCredentialsPending ? "در حال ذخیره..." : "ذخیره اطلاعات امنیتی"}
                     </Button>
                 </form>
             </Form>
           </TabsContent>
-
-            <TabsContent value="integrations">
-                <Form {...credentialsForm}>
-                    <form onSubmit={credentialsForm.handleSubmit(onCredentialsSubmit)} className="space-y-8">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>یکپارچه‌سازی و API Keys</CardTitle>
-                                <CardDescription>
-                                    کلیدهای API برای سرویس‌های خارجی را اینجا مدیریت کنید. این مقادیر به صورت امن در سرور ذخیره می‌شوند.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6" dir="rtl">
-                                <FormField control={credentialsForm.control} name="integrations.geminiApiKey" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Gemini API Key</FormLabel>
-                                        <FormDescription>کلید برای استفاده از مدل‌های هوش مصنوعی Gemini در بخش‌هایی مانند چت‌بات و تولید محتوای وبلاگ.</FormDescription>
-                                        <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <Separator />
-                                <FormField control={credentialsForm.control} name="integrations.googleAnalyticsId" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Google Analytics ID</FormLabel>
-                                        <FormDescription>شناسه اندازه‌گیری گوگل آنالیتیکس برای ردیابی ترافیک سایت. (مثال: G-XXXXXXXXXX)</FormDescription>
-                                        <FormControl><Input dir="ltr" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <Separator />
-                                <div className="space-y-4">
-                                    <h4 className="font-medium">Cloudinary</h4>
-                                    <FormField control={credentialsForm.control} name="integrations.cloudinary.cloudName" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Cloudinary Cloud Name</FormLabel>
-                                            <FormControl><Input dir="ltr" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                    <FormField control={credentialsForm.control} name="integrations.cloudinary.apiKey" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Cloudinary API Key</FormLabel>
-                                            <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                    <FormField control={credentialsForm.control} name="integrations.cloudinary.apiSecret" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Cloudinary API Secret</FormLabel>
-                                            <FormControl><Input dir="ltr" type="password" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Button type="submit" disabled={isCredentialsPending} size="lg">
-                            {isCredentialsPending ? "در حال ذخیره..." : "ذخیره اطلاعات امنیتی"}
-                        </Button>
-                    </form>
-                </Form>
-            </TabsContent>
         </Tabs>
     </div>
   );
