@@ -488,23 +488,23 @@ export async function saveCredentials(formData: z.infer<typeof credentialsSchema
     const validatedData = credentialsSchema.parse(formData);
     const currentCredentials = await getCredentials();
 
-    const newCredentials: Partial<Credentials> = {
-        adminEmail: validatedData.adminEmail,
-        integrations: validatedData.integrations
-    };
+    let newPasswordHash = currentCredentials.adminPasswordHash;
 
     if (validatedData.newPassword) {
-        if (!validatedData.currentPassword) { throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید."); }
+        if (!validatedData.currentPassword) { 
+            throw new Error("برای تغییر رمز عبور، باید رمز عبور فعلی خود را وارد کنید."); 
+        }
         const inputCurrentPasswordHash = Buffer.from(validatedData.currentPassword).toString('base64');
-        if (inputCurrentPasswordHash !== currentCredentials.adminPasswordHash) { throw new Error("رمز عبور فعلی نادرست است."); }
-        newCredentials.adminPasswordHash = Buffer.from(validatedData.newPassword).toString('base64');
+        if (inputCurrentPasswordHash !== currentCredentials.adminPasswordHash) { 
+            throw new Error("رمز عبور فعلی نادرست است."); 
+        }
+        newPasswordHash = Buffer.from(validatedData.newPassword).toString('base64');
     }
     
-    // Create a new object with all credentials, merging old and new
     const finalCredentials: Credentials = {
-        adminEmail: newCredentials.adminEmail || currentCredentials.adminEmail,
-        adminPasswordHash: newCredentials.adminPasswordHash || currentCredentials.adminPasswordHash,
-        integrations: newCredentials.integrations || currentCredentials.integrations,
+        adminEmail: validatedData.adminEmail,
+        adminPasswordHash: newPasswordHash,
+        integrations: validatedData.integrations,
     };
 
     await saveCredentialsData(finalCredentials);
