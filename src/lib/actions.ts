@@ -220,8 +220,10 @@ function getDefaultAppData(): AppData {
 }
 
 function getDefaultCredentials(): Credentials {
-    const defaultPassword = process.env.ADMIN_PASSWORD || "admin";
+    // Use a hardcoded default password and Base64 encode it.
+    const defaultPassword = "admin";
     const passwordHash = Buffer.from(defaultPassword).toString('base64');
+    
     return {
         adminEmail: process.env.ADMIN_EMAIL || "admin@example.com",
         adminPasswordHash: passwordHash,
@@ -510,3 +512,5 @@ export async function saveCredentials(formData: z.infer<typeof credentialsSchema
     await saveCredentialsData(finalCredentials);
     revalidatePath("/admin/settings");
 }
+
+    
