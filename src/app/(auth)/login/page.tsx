@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -17,7 +18,8 @@ import { handleLogin } from "@/lib/actions"
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle, Loader2 } from "lucide-react"
+import { AlertCircle, Loader2, Home } from "lucide-react"
+import Link from "next/link"
 
 const initialState = {
   success: false,
@@ -61,7 +63,6 @@ function LoginForm() {
           id="email"
           name="email"
           type="email"
-          placeholder="admin@example.com"
           required
           autoComplete="email"
         />
@@ -97,6 +98,14 @@ export default function LoginPage() {
           <CardContent>
             <LoginForm />
           </CardContent>
+          <CardFooter className="flex-col gap-4">
+              <Button asChild variant="outline" className="w-full">
+                  <Link href="/">
+                      <Home className="ml-2 h-4 w-4" />
+                      بازگشت به سایت
+                  </Link>
+              </Button>
+          </CardFooter>
         </Card>
       </div>
     </>
